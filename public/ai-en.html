@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HISN — AI technologies at every stage</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="settings.css">
+  <style>
+    .k{display:grid;gap:10px}
+    .st{background:#ffffff0a;border:1px solid #ffffff1a;border-radius:16px;padding:12px 14px}
+    .st h2{margin:0 0 4px;font-size:16px;display:flex;gap:8px;align-items:center}
+    .st h2 .n{width:26px;height:26px;border-radius:50%;background:#8ee3c8;color:#0b1222;display:grid;place-items:center;font-size:13px;flex:none}
+    .st p.d{margin:0 0 8px;color:#c9d3e6;font-size:13.5px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{text-align:start;padding:6px 7px;border-top:1px solid #ffffff14;vertical-align:top}
+    th{color:#9fb0d0;font-weight:700;font-size:12px}
+    td:first-child{font-weight:700;color:#fff;width:34%}
+    .ok,.pl{display:inline-block;border-radius:6px;padding:0 6px;font-size:11.5px;font-weight:700;white-space:nowrap}
+    .ok{background:#4ad99126;color:#8ee3c8}.pl{background:#ffd60a22;color:#ffe680}
+    .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:#9fb0d0}
+    .try{display:flex;gap:6px;margin-top:6px}
+    .try input{flex:1;min-width:0;border-radius:10px;border:1px solid #ffffff33;background:#0b1222;color:#fff;padding:8px 10px;font:inherit;direction:ltr}
+    .res{margin-top:8px;display:grid;gap:6px}
+    .res .host{direction:ltr;font-weight:700}
+    .res .v{border-radius:10px;padding:6px 10px;font-weight:700}
+    .res .v.bad{background:#ff453a26;color:#ffb4ac}.res .v.good{background:#4ad99122;color:#8ee3c8}.res .v.mid{background:#ffd60a1f;color:#ffe680}
+    .chk{display:grid;grid-template-columns:22px 1fr;gap:4px 6px;font-size:12.5px}
+    .chk .x{color:#ff8c82;font-weight:800}.chk .y{color:#4ad991}
+    .chk .t{color:#c9d3e6}.chk .t.hit{color:#fff;font-weight:700}
+    .flow{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px;margin-top:4px}
+    .flow span{background:#ffffff12;border-radius:8px;padding:2px 8px}
+    .flow i{font-style:normal;color:#8ee3c8}
+    .ex{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.ex button{border:1px solid #ffffff2e;background:#ffffff0d;color:#fff;border-radius:999px;padding:4px 11px;font:inherit;font-size:12.5px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header class="s-top"><div class="s-brand"><img src="icon.svg" alt="" width="34" height="34"><div><b>🤖 AI technologies in HISN</b><small>Which technology is used at each stage, and its role in detecting digital fraud</small></div></div></header>
+  <main class="s-main">
+    <div class="legend"><span><span class="ok">Working in the demo</span> built and can be tried now</span><span><span class="pl">Production version</span> on the development plan</span></div>
+    <div class="k" id="stages"></div>
+    <section class="st" id="guide">
+      <h2><span class="n">📚</span>From international and local guidance to HISN</h2>
+      <p class="d">We turned the awareness advice experts give users into automatic checks that HISN runs on their behalf.</p>
+      <table><thead><tr><th>Guidance</th><th>What HISN does automatically</th><th>Source</th></tr></thead><tbody>
+        <tr><td>Watch for urgent or emotional language and threats of consequences if you don’t reply right away</td><td>Detects urgency and suspension threats with NLP</td><td>CISA</td></tr>
+        <tr><td>Be wary of requests to send personal and financial information</td><td>Detects requests for card details, passwords or verification codes</td><td>CISA</td></tr>
+        <tr><td>Beware of untrusted shortened links</td><td>Shortened-link check</td><td>CISA</td></tr>
+        <tr><td>Addresses and links with deliberate typos, like amazan.com</td><td>Look-alike spelling + letters swapped for numbers</td><td>CISA</td></tr>
+        <tr><td>Polished grammar no longer proves a message is genuine</td><td>We don’t rely on spelling mistakes; we rely on intent, links and the sender</td><td>CISA</td></tr>
+        <tr><td>Check the address starts with https and has no misspelled words</td><td>Encryption check + look-alike spelling</td><td>Al Khaleej</td></tr>
+        <tr><td>Never share banking details without verifying the sender or caller</td><td>Sender check + code-request detection during calls</td><td>Al Khaleej</td></tr>
+        <tr><td>Your bank will never contact you to ask for confidential information</td><td>Any request for a code or data in a bank’s name = high risk</td><td>Al Khaleej</td></tr>
+        <tr><td>If in doubt, hang up and contact the organisation on its official number</td><td>“End call” button inside the warning + the official number</td><td>NCSC</td></tr>
+        <tr><td>Recognise → resist → delete and report</td><td>First warning → second warning → report through the portal</td><td>CISA</td></tr>
+      </tbody></table>
+    </section>
+    <section class="st" id="links">
+      <h2><span class="n">🔗</span>How does HISN detect suspicious links?</h2>
+      <p class="d">Every link that arrives by SMS or WhatsApp automatically passes 13 checks before the user opens it; the results are combined into one risk score with the reason.</p>
+      <div class="flow"><span>Extract the link from the text</span><i>→</i><span>Parse the domain</span><i>→</i><span>13 checks</span><i>→</i><span>Combine with the message text analysis</span><i>→</i><span>Risk score + reason</span><i>→</i><span>First / second warning</span></div>
+      <table id="linkTbl" style="margin-top:8px"><thead><tr><th>Check</th><th>How it works</th><th>Example caught</th></tr></thead><tbody></tbody></table>
+      <h2 style="margin-top:12px;font-size:14.5px">Try it yourself: pick an example or type a message with a link</h2>
+      <div class="ex" id="ex"></div>
+      <div class="try"><input id="tIn" value="Nakhla Bank: your account is suspended, update your details within 24 hours http://nakhla-bank-secure.xyz/login"><button type="button" class="s-btn" id="tGo">Check</button></div>
+      <div class="res" id="tRes"></div>
+    </section>
+  </main>
+  <script src="engine.js"></script>
+  <script>
+  (() => {
+    const OK = '<span class="ok">Working in the demo</span>', PL = '<span class="pl">Production version</span>';
+    const STAGES = [
+      ['🪪', 'Activation and privacy', 'The user activates HISN once with their digital ID, then it works automatically. HISN does not access private files or track the user; it only checks incoming messages, links and calls to stop fraud.', [
+        ['Digital-ID verification', 'Ties protection to the real device owner and prevents others from turning it off', OK],
+        ['On-device AI', 'Messages and links are analysed on the phone, without sending their content out', OK],
+        ['Federated learning', 'Models improve from new fraud patterns without collecting user data', PL],
+      ]],
+      ['📩', 'Text messages and WhatsApp', 'Every incoming message is analysed on arrival, together with its sender and links.', [
+        ['Sender profiling', 'Unknown number, a name claiming to be an organisation, a new WhatsApp group', OK],
+        ['Arabic NLP and dialect', 'Normalisation, diacritic removal, clause splitting, negation', OK],
+        ['Social-engineering classification', 'Spots urgency, suspension threats, requests for card details or codes, fake prizes and jobs', OK],
+        ['Named-entity recognition (NER)', 'Identifies the organisation the message claims to be (bank, police, post…) to compare with the link', OK],
+        ['Trained Arabic language model (AraBERT / LLM)', 'More accurate classification of new, unseen messages', PL],
+      ]],
+      ['🔗', 'Links', 'Details of the checks are in the section below, with a live tester.', [
+        ['String similarity (Levenshtein) and deceptive characters', 'Catches domains that imitate the official name with one or two letters off, or look-alike characters', OK],
+        ['Threat intelligence and predicted domains', 'Institution reports + impersonation domains HISN generates in advance', OK],
+        ['ML link classification + domain age + computer vision', 'A model that learns what scam links look like, domain registration date, and comparing the page and logo with the official site', PL],
+      ]],
+      ['📞', 'Calls', 'During the call the caller’s speech is analysed sentence by sentence, and the warning appears while the call continues.', [
+        ['Deep-learning speech recognition (ASR)', 'Turns the caller’s speech into text in real time, Emirati dialect included', OK],
+        ['NLP + negation understanding', 'Tells “never give the code to anyone” (advice) from “give me the code” (fraud)', OK],
+        ['Intent classification + conversation context', 'What the caller asks for: a code, a transfer, an approval, a remote-control app', OK],
+        ['Impersonated-organisation extraction (NER)', 'Links “Khalid from Nakhla Bank” to the impersonated organisation and reminds that the real one never asks for this', OK],
+        ['Large language model assistant (optional)', 'Reads the last lines of the call and confirms ambiguous cases', OK],
+        ['Deepfake-voice and caller-ID spoofing detection', 'Tells human from synthetic voices and spots spoofed numbers', PL],
+      ]],
+      ['🛑', 'Decision and warning', 'HISN fuses every signal into one decision, and the user decides.', [
+        ['Ensemble risk scoring', 'Combines link, text, voice and organisation signals into one risk score', OK],
+        ['Explainable AI (XAI)', 'Explains the reason for the warning in plain words, not just “suspicious message”', OK],
+        ['Two-stage warning', 'A first warning, then a stronger second one only for high risk', OK],
+      ]],
+      ['🖥️', 'Remote-control apps', 'The most dangerous stage: the scammer sees the screen and controls the phone.', [
+        ['Detecting “install AnyDesk” intent in the call', 'Warns before the install', OK],
+        ['Anomaly detection', 'Active call + screen sharing + opening the bank app or photos = stop sharing immediately', PL],
+      ]],
+      ['🏛️', 'Institutions portal (third party)', 'Banks, police and organisations publish the fraud practices they detect, and everyone benefits instantly.', [
+        ['Keyphrase extraction', 'Turns the institution’s description into detectable indicators', OK],
+        ['Typosquatting generation', 'Predicts domains a scammer may register and watches them before use', OK],
+        ['Instant engine update', 'Every new warning reaches all protected devices instantly and is used in detection', OK],
+        ['Continuous learning from reports', 'Periodic retraining on new practices', PL],
+      ]],
+    ];
+    const box = document.getElementById('stages');
+    STAGES.forEach(([ic, t, d, rows], i) => {
+      const s = document.createElement('section'); s.className = 'st';
+      s.innerHTML = `<h2><span class="n">${i + 1}</span>${ic} ${t}</h2><p class="d">${d}</p><table><thead><tr><th>AI technology</th><th>Role in detecting fraud</th><th>Status</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table>`;
+      box.appendChild(s);
+    });
+    const LINKS = [
+      ['1. Official-domain list', 'Compares the domain with the registry of official bank, government and company domains', 'nakhlabank.ae ✓ official'],
+      ['2. Claimed organisation ≠ domain', 'Extracts the organisation from the text (NER) and checks the link really belongs to it', 'A “Nakhla Bank” message linking elsewhere'],
+      ['3. Look-alike spelling', 'Levenshtein distance from the official name, or the brand name inside the domain', 'nakhlabnk.ae , nakhla-bank-secure.xyz'],
+      ['4. Deceptive characters', 'Punycode and look-alike letters from other scripts (homoglyphs)', 'xn--nakhlbank-…'],
+      ['5. Raw IP address', 'A number instead of a known site name', 'http://185.22.4.9/pay'],
+      ['6. Hidden @ trick', 'Browsers ignore everything before @, so the brand shows but the destination differs', 'nakhlabank.ae@evil.xyz'],
+      ['7. Shortened links', 'Hide the real destination', 'bit.ly/3xYz'],
+      ['8. High-risk endings', 'Cheap endings common in fraud', '.xyz , .top , .click'],
+      ['9. No encryption', 'http instead of https', 'http://…'],
+      ['10. Institution reports & predicted domains', 'Domains reported in the portal, and impersonation domains HISN generated in advance', 'safe-account-adpolice.com'],
+      ['11. Organisation name as misleading subdomain', 'The official domain sits at the start; the real site is the last part before the ending', 'nakhlabank.ae.account-verify.top'],
+      ['12. Letters swapped for numbers or look-alikes', 'Maps 0→o, 1→l, 3→e, rn→m, then compares with the official name', 'nakh1abank.ae , adp0lice'],
+      ['13. Phishing words in the link', 'login, verify, update, unlock, account inside a non-official link', '…/login , …/unlock'],
+      ['+ Sender', 'A message claiming to be a bank or organisation but sent from a personal mobile number (official senders use their registered name)', 'Nakhla Bank from 0558812640'],
+    ];
+    document.querySelector('#linkTbl tbody').innerHTML = LINKS.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td dir="auto">${r[2]}</td></tr>`).join('');
+    const NAMES = { subdomain: 'Org name as misleading subdomain', swap: 'Letters swapped for numbers', kw: 'Phishing words in link', official: 'Official domain', mismatch: 'Claimed org ≠ domain', lookalike: 'Look-alike spelling', puny: 'Deceptive characters', ip: 'Raw IP', at: 'Hidden @', short: 'Shortened link', tld: 'High-risk ending', http: 'No HTTPS', intel: 'Institution reports / predicted domain' };
+    const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    function run() {
+      const E = window.ShieldEngine, txt = document.getElementById('tIn').value;
+      const v = E.analyzeMessage(txt, 'en'), rep = E.linkReport(txt, 'en'), out = document.getElementById('tRes');
+      const cls = v.level === 'danger' ? 'bad' : v.level === 'verify' ? 'mid' : 'good';
+      out.innerHTML = `<div class="v ${cls}">${esc(v.title || '')}</div>` + rep.map((lk) => `<div class="st"><div class="host">${esc(lk.host)}</div><div class="chk">${lk.checks.map((c) => {
+        let d = '';
+        if (c.id === 'official') d = c.hit ? 'not an official domain' : 'official domain of ' + lk.official;
+        else if (c.hit && c.id === 'lookalike') { const [t, a, b] = c.detail.split(':'); d = t === 'brand' ? 'uses the name ' + a : `${a} letter(s) from ${b}`; }
+        else if (c.hit && c.id === 'mismatch') d = 'the message mentions ' + c.detail;
+        else if (c.hit && c.id === 'tld') d = '.' + c.detail;
+        else if (c.hit && (c.id === 'subdomain' || c.id === 'swap')) d = 'imitates ' + c.detail;
+        else if (c.hit && c.id === 'kw') d = c.detail;
+        else if (c.hit && c.id === 'intel') { const [t, o] = c.detail.split(':'); d = (t === 'reported' ? 'reported by ' : 'predicted for ') + o; }
+        return `<span class="${c.hit ? 'x' : 'y'}">${c.hit ? '✗' : '✓'}</span><span class="t ${c.hit ? 'hit' : ''}">${NAMES[c.id]}${d ? ' — ' + esc(d) : ''}</span>`;
+      }).join('')}</div></div>`).join('') + (v.reasons || []).map((r) => `<small>• ${esc(r)}</small>`).join('<br>');
+    }
+    const EX = [
+      ['🪤 Misleading subdomain', 'Nakhla Bank: unusual sign-in detected. Confirm your identity within 30 minutes: https://nakhlabank.ae.account-verify.top/login'],
+      ['🔤 Number for a letter', 'Nakhla Bank: your card is blocked. To reactivate: https://nakh1abank.ae/unlock'],
+      ['🎭 Hidden @', 'Nakhla Bank: update your details: https://nakhlabank.ae@secure-pay.xyz/update'],
+      ['✂️ Shortened link', 'Congratulations! You won AED 10,000, claim it here: https://bit.ly/3xYzQ'],
+      ['🔢 Raw IP', 'Emirates Post: your parcel is on hold, pay AED 7.50: http://185.22.4.9/pay'],
+      ['✅ Official link', 'Nakhla Bank: see our latest offers on our website https://www.nakhlabank.ae'],
+    ];
+    const exBox = document.getElementById('ex');
+    EX.forEach(([l, t]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = l; b.addEventListener('click', () => { document.getElementById('tIn').value = t; run(); }); exBox.appendChild(b); });
+    document.getElementById('tGo').addEventListener('click', run);
+    document.getElementById('tIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+    fetch('/api/patterns').then((r) => r.json()).then((j) => window.ShieldEngine.setPatterns(j.patterns || [])).catch(() => {}).then(run);
+  })();
+  </script>
+</body>
+</html>

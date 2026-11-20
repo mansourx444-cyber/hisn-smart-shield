@@ -9,13 +9,13 @@
 </head>
 <body>
   <header class="s-top">
-    <div class="s-brand"><img src="icon.svg" alt="" width="34" height="34"><div><b>⚙️ الإعدادات — تسجيلات المكالمات</b><small>ارفع صوتك لكل جملة: المحتال (رجل) ومريم (فتاة)</small></div></div>
+    <div class="s-brand"><img src="icon.svg" alt="" width="34" height="34"><div><b id="stTitle">⚙️ الإعدادات — تسجيلات المكالمات</b><small id="stSub">ارفع صوتك لكل جملة: المحتال (رجل) ومريم (فتاة)</small></div></div>
   </header>
   <main class="s-main">
     <p class="s-note" id="lockNote" hidden>🔒 رفع التسجيلات وحذفها متاح فقط من الجهاز الذي يعمل عليه النظام.</p>
     <details class="s-help">
-      <summary>📘 كيف أرفع الأصوات؟</summary>
-      <ol>
+      <summary id="helpSum">📘 كيف أرفع الأصوات؟</summary>
+      <ol id="helpList">
         <li>اختر المكالمة من الأعلى. كل جملة لها رقم (#1، #2، …).</li>
         <li>اضغط <b>⬆ رفع</b> بجانب الجملة واختر ملف الصوت (mp3 أو wav أو m4a أو ogg)، أو اضغط <b>⏺ تسجيل</b> وسجّل بصوتك مباشرة.</li>
         <li>أو ارفع عدة ملفات مرة واحدة بزر <b>رفع عدة ملفات</b>: سمِّ الملفات برقم الجملة، مثل <code>bank-1.mp3</code> و<code>bank-2.mp3</code>، فتُوزَّع تلقائيًا.</li>
@@ -28,7 +28,7 @@
       <div class="s-card-h">
         <div><h2 id="scTitle"></h2><small id="scStat"></small></div>
         <div class="s-actions">
-          <label class="s-btn ghost">رفع عدة ملفات<input type="file" id="bulk" accept="audio/*" multiple hidden></label>
+          <label class="s-btn ghost" id="bulkLbl">رفع عدة ملفات<input type="file" id="bulk" accept="audio/*" multiple hidden></label>
           <button type="button" class="s-btn" id="playAll">▶ تشغيل المكالمة كاملة</button>
         </div>
       </div>

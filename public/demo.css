@@ -143,3 +143,16 @@ body.demo{margin:0;min-height:100vh;overflow:hidden;color:#e8ecf5;background:rad
 .d-pill,.d-wire,.d-event{flex:none}
 .d-bridge .d-ai{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ffffff33 transparent}
 .d-bridge .d-log{flex:0 1 auto;min-height:40px;overflow-y:auto}
+
+/* زر اللغة: عربي | English */
+#dLang{display:inline-flex;gap:0;padding:3px;border-radius:999px;background:#ffffff14;border:1px solid #ffffff33;cursor:pointer}
+#dLang span{padding:4px 12px;border-radius:999px;font-weight:700;font-size:13px;color:#c9d3e6;line-height:1.4}
+#dLang span.on{background:#D4AF37;color:#1a1408}
+/* ترويسة: الأزرار في سطر واحد بدون التفاف */
+.d-top{grid-template-columns:auto 1fr auto}
+.d-brand{justify-self:center;min-width:0}
+.d-brand h1{white-space:nowrap}
+.d-actions .d-lang{white-space:nowrap}
+#dLang{align-items:center}
+@media (max-width:1700px){.d-actions{gap:6px}.d-actions .d-lang{padding:4px 10px;font-size:12px}.d-left{gap:10px}}
+@media (max-width:1450px){.d-brand p{display:none}.d-brand h1{font-size:19px}.d-logo.l42{height:32px}.d-logo.college{height:54px}}

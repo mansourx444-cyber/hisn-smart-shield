@@ -2,8 +2,32 @@
 (() => {
   'use strict';
   const $ = (s) => document.querySelector(s);
-  const NAMES = { bank: 'موظف بنك مزيف يطلب الرمز', police: 'محقق مزيف و«حساب آمن»', approve: 'موافقة على إشعار الهوية الرقمية', remote: 'دعم فني مزيف وبرنامج تحكم', refuse: 'ردّ مريم عند إنهاء المكالمة' };
-  const PART = { dialog: 'بداية المكالمة', cont: 'بعد «متابعة المكالمة» (التنبيه الأول)', comply: 'بعد تجاهل التحذير مرة ثانية (تنجح الخدعة)' };
+  let lang = 'ar'; try { lang = JSON.parse(localStorage.getItem('ds.lang') || '"ar"'); } catch {}
+  const EN = lang === 'en';
+  const L = EN ? {
+    names: { bank: 'Fake bank employee asks for the code', police: 'Fake investigator and “safe account”', approve: 'Digital-ID notification approval', remote: 'Fake tech support and remote app', refuse: 'Maryam’s reply when ending the call' },
+    part: { dialog: 'Start of the call', cont: 'After “Continue call” (first warning)', comply: 'After ignoring the warning again (the scam succeeds)' },
+    stat: (h, n, id) => `${h} of ${n} lines recorded — bulk-upload file names: ${id}-1.mp3, ${id}-2.mp3 …`,
+    scam: '👨 Scammer', vic: '👩 Maryam', key: ' — ⚠ the risky line', has: (k) => `✓ Recording available (${k} KB)`, none: 'No recording — the synthetic voice will read it',
+    up: '⬆ Upload', rec: '⏺ Record', stop: '⏹ Stop', uploading: (l) => `Uploading ${l}…`, saved: (l) => `✓ Saved recording ${l}`, deleted: (l) => `Recording ${l} deleted`,
+    fail: (l, e) => `Could not upload ${l}: ${e === 'type' ? 'unsupported file type (use mp3, wav, m4a or ogg)' : e === 'size' ? 'file too large (20 MB max)' : e === 'local-only' ? 'uploading works only on the system’s computer' : 'error'}`,
+    mic: 'Microphone access was not allowed', recording: (l) => `🔴 Recording ${l}… speak, then press “Stop”`, bulk: (ok, skip) => `✓ Uploaded ${ok} file(s)${skip.length ? ` — line number not recognised in: ${skip.join(', ')}` : ''}`,
+  } : {
+    names: { bank: 'موظف بنك مزيف يطلب الرمز', police: 'محقق مزيف و«حساب آمن»', approve: 'موافقة على إشعار الهوية الرقمية', remote: 'دعم فني مزيف وبرنامج تحكم', refuse: 'ردّ مريم عند إنهاء المكالمة' },
+    part: { dialog: 'بداية المكالمة', cont: 'بعد «متابعة المكالمة» (التنبيه الأول)', comply: 'بعد تجاهل التحذير مرة ثانية (تنجح الخدعة)' },
+    stat: (h, n, id) => `${h} من ${n} جمل مسجّلة — اسم الملفات للرفع الجماعي: ${id}-1.mp3 ، ${id}-2.mp3 …`,
+    scam: '👨 المحتال', vic: '👩 مريم', key: ' — ⚠ الجملة الخطيرة', has: (k) => `✓ يوجد تسجيل (${k} ك.ب)`, none: 'لا يوجد تسجيل — سيُقرأ بالصوت المولَّد',
+    up: '⬆ رفع', rec: '⏺ تسجيل', stop: '⏹ إيقاف', uploading: (l) => `جارٍ رفع ${l}…`, saved: (l) => `✓ تم حفظ تسجيل ${l}`, deleted: (l) => `حُذف تسجيل ${l}`,
+    fail: (l, e) => `تعذّر رفع ${l}: ${e === 'type' ? 'نوع الملف غير مدعوم (استخدم mp3 أو wav أو m4a أو ogg)' : e === 'size' ? 'الملف كبير جدًا (الحد 20 م.ب)' : e === 'local-only' ? 'الرفع متاح فقط من جهاز النظام' : 'خطأ'}`,
+    mic: 'لم يُسمح باستخدام الميكروفون', recording: (l) => `🔴 يسجّل ${l}… تكلّم ثم اضغط «إيقاف»`, bulk: (ok, skip) => `✓ رُفع ${ok} ملف${skip.length ? ` — لم يُعرف رقم الجملة في: ${skip.join('، ')}` : ''}`,
+  };
+  const NAMES = L.names, PART = L.part;
+  if (EN) {
+    document.documentElement.lang = 'en'; document.documentElement.dir = 'ltr'; document.title = 'HISN settings — call recordings';
+    const T = { stTitle: '⚙️ Settings — call recordings', stSub: 'Upload a voice for every line: the scammer (man) and Maryam (girl). Recordings play in the Arabic calls.', lockNote: '🔒 Uploading and deleting recordings works only on the computer running the system.', helpSum: '📘 How do I upload voices?', bulkLbl: 'Upload several files', playAll: '▶ Play the full call',
+      helpList: '<li>Pick the call above. Every line has a number (#1, #2, …).</li><li>Press <b>⬆ Upload</b> next to a line and choose an audio file (mp3, wav, m4a or ogg), or press <b>⏺ Record</b> to record your voice directly.</li><li>Or upload several files at once with <b>Upload several files</b>: name them by line number, e.g. <code>bank-1.mp3</code>, <code>bank-2.mp3</code>, and they are assigned automatically.</li><li>A line with a recording plays your voice in the call; a line without one is read by the synthetic voice.</li><li>If you edit the call text in <code>call-scripts-ar.txt</code> and the line order changes, review the recordings here.</li>' };
+    for (const [id, v] of Object.entries(T)) { const el = document.getElementById(id); if (!el) continue; if (id === 'helpList') el.innerHTML = v; else if (id === 'bulkLbl') el.firstChild.textContent = v; else el.textContent = v; }
+  }
   const REFUSE = 'لا مشكور، ما بعطي أي معلومات. بتواصل مع الجهة بنفسي على رقمها الرسمي.';
   let scripts = {}, clips = {}, canEdit = false, cur = 'bank', playing = null, rec = null;
 
@@ -51,7 +75,7 @@
     }
     const rows = rowsOf(cur);
     $('#scTitle').textContent = NAMES[cur];
-    $('#scStat').textContent = `${rows.filter((r) => clips[r.key]).length} من ${rows.length} جمل مسجّلة — اسم الملفات للرفع الجماعي: ${cur}-1.mp3 ، ${cur}-2.mp3 …`;
+    $('#scStat').textContent = L.stat(rows.filter((r) => clips[r.key]).length, rows.length, cur);
     const ol = $('#lines'); ol.textContent = '';
     let lastPart = null;
     rows.forEach((r, n) => {
@@ -59,11 +83,11 @@
       const has = !!clips[r.key];
       const li = document.createElement('li'); li.className = `s-line ${r.who}${has ? ' has' : ''}`; li.dataset.key = r.key;
       li.innerHTML = `<span class="s-num">#${n + 1}</span>
-        <div class="s-txt"><small>${r.who === 's' ? '👨 المحتال' : '👩 مريم'}${r.key ? ' — ⚠ الجملة الخطيرة' : ''}</small><div dir="auto"></div><span class="s-st">${has ? '✓ يوجد تسجيل (' + Math.round(clips[r.key].size / 1024) + ' ك.ب)' : 'لا يوجد تسجيل — سيُقرأ بالصوت المولَّد'}</span></div>
+        <div class="s-txt"><small>${r.who === 's' ? L.scam : L.vic}${r.key ? L.key : ''}</small><div dir="auto"></div><span class="s-st">${has ? L.has(Math.round(clips[r.key].size / 1024)) : L.none}</span></div>
         <div class="s-ctl">
           <button type="button" class="play" ${has ? '' : 'disabled'}>▶</button>
-          <label class="${canEdit ? '' : 'dis'}">⬆ رفع<input type="file" accept="audio/*" hidden></label>
-          <button type="button" class="rec" ${canEdit ? '' : 'disabled'}>⏺ تسجيل</button>
+          <label class="${canEdit ? '' : 'dis'}">${L.up}<input type="file" accept="audio/*" hidden></label>
+          <button type="button" class="rec" ${canEdit ? '' : 'disabled'}>${L.rec}</button>
           <button type="button" class="del" ${has && canEdit ? '' : 'disabled'}>🗑</button>
         </div>`;
       li.querySelector('.s-txt div').textContent = r.text.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '');
@@ -76,14 +100,14 @@
   }
   async function upload(key, blob, label) {
     const ext = ((blob.name || '').match(/\.[a-z0-9]+$/i) || [''])[0].toLowerCase();
-    msg(`جارٍ رفع ${label}…`);
+    msg(L.uploading(label));
     const r = await fetch(`/api/clips?key=${encodeURIComponent(key)}&ext=${encodeURIComponent(ext)}`, { method: 'POST', headers: { 'Content-Type': blob.type || 'application/octet-stream' }, body: blob }).catch(() => null);
-    if (!r || !r.ok) { const e = r ? (await r.json().catch(() => ({}))).error : 'net'; msg(`تعذّر رفع ${label}: ${e === 'type' ? 'نوع الملف غير مدعوم (استخدم mp3 أو wav أو m4a أو ogg)' : e === 'size' ? 'الملف كبير جدًا (الحد 20 م.ب)' : e === 'local-only' ? 'الرفع متاح فقط من جهاز النظام' : 'خطأ'}`, true); return false; }
-    clips = (await r.json()).clips || clips; msg(`✓ تم حفظ تسجيل ${label}`); render(); return true;
+    if (!r || !r.ok) { const e = r ? (await r.json().catch(() => ({}))).error : 'net'; msg(L.fail(label, e), true); return false; }
+    clips = (await r.json()).clips || clips; msg(L.saved(label)); render(); return true;
   }
   async function del(key, label) {
     const r = await fetch(`/api/clips?key=${encodeURIComponent(key)}`, { method: 'DELETE' }).catch(() => null);
-    if (r && r.ok) { clips = (await r.json()).clips || {}; msg(`حُذف تسجيل ${label}`); render(); }
+    if (r && r.ok) { clips = (await r.json()).clips || {}; msg(L.deleted(label)); render(); }
   }
   function stopPlaying() { if (playing) { playing.a.pause(); playing.li && playing.li.classList.remove('playing'); playing = null; } }
   function play(key, li) {
@@ -97,17 +121,17 @@
   async function record(key, btn, label) {
     if (rec) { rec.stop(); return; }
     let stream;
-    try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); } catch { msg('لم يُسمح باستخدام الميكروفون', true); return; }
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); } catch { msg(L.mic, true); return; }
     const chunks = [];
     const type = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : '';
     rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
     rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
     rec.onstop = async () => {
-      stream.getTracks().forEach((t) => t.stop()); btn.classList.remove('on'); btn.textContent = '⏺ تسجيل'; rec = null;
+      stream.getTracks().forEach((t) => t.stop()); btn.classList.remove('on'); btn.textContent = L.rec; rec = null;
       const blob = new Blob(chunks, { type: 'audio/webm' });
       if (blob.size > 1000) await upload(key, blob, label);
     };
-    rec.start(); btn.classList.add('on'); btn.textContent = '⏹ إيقاف'; msg(`🔴 يسجّل ${label}… تكلّم ثم اضغط «إيقاف»`);
+    rec.start(); btn.classList.add('on'); btn.textContent = L.stop; msg(L.recording(label));
   }
   $('#bulk').addEventListener('change', async (e) => {
     const files = [...e.target.files]; e.target.value = '';
@@ -118,7 +142,7 @@
       if (!(n >= 1 && n <= rows.length)) { skip.push(f.name); continue; }
       if (await upload(rows[n - 1].key, f, `#${n}`)) ok++;
     }
-    msg(`✓ رُفع ${ok} ملف${skip.length ? ` — لم يُعرف رقم الجملة في: ${skip.join('، ')}` : ''}`, !!skip.length && !ok);
+    msg(L.bulk(ok, skip), !!skip.length && !ok);
   });
   $('#playAll').addEventListener('click', async () => {
     const lis = [...document.querySelectorAll('.s-line')];

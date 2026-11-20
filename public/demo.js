@@ -198,7 +198,7 @@
 
   function applyLang() {
     document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    $('#dTitle').textContent = tt('title'); $('#dSub').textContent = tt('sub'); $('#dLang').textContent = tt('other');
+    $('#dTitle').textContent = tt('title'); $('#dSub').textContent = tt('sub'); $('#dLang').innerHTML = `<span class="${lang === 'ar' ? 'on' : ''}">عربي</span><span class="${lang === 'en' ? 'on' : ''}">English</span>`; $('#dLang').setAttribute('aria-label', lang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية');
     $('#capScam').textContent = tt('scam'); $('#capVic').textContent = tt('vic'); $('#dPortal').textContent = tt('portal');
     renderUX();
     renderState();
@@ -294,6 +294,10 @@
     try { localStorage.setItem('ds.lang', JSON.stringify(lang)); } catch {}
     applyLang();
     fVic.contentWindow.location.reload(); fScam.contentWindow.location.reload(); sentCode = null; linked = false;
+    // اللغة نفسها في كل الأجزاء: بوابة الجهات وصفحة التقنيات والإعدادات
+    if ($('#fPartner').src) $('#fPartner').contentWindow.location.reload();
+    if (!$('#drawerAi').hidden) $('#fAiTech').src = (lang === 'en' ? '/ai-en.html' : '/ai.html') + '?t=' + Date.now();
+    if (!$('#drawerSet').hidden) $('#fSettings').src = '/settings.html?frame=0&t=' + Date.now();
   });
 
   $('#dPortal').addEventListener('click', () => {
@@ -309,7 +313,7 @@
   $('#setClose').addEventListener('click', () => { $('#drawerSet').hidden = true; });
   $('#dAiTech').addEventListener('click', () => {
     const dr = $('#drawerAi'); const open = dr.hidden; dr.hidden = !open; $('#drawer').hidden = true; $('#drawerSet').hidden = true;
-    if (open) $('#fAiTech').src = '/ai.html?lang=' + lang;
+    if (open) $('#fAiTech').src = (lang === 'en' ? '/ai-en.html' : '/ai.html') + '?t=' + Date.now();
   });
   $('#aiClose').addEventListener('click', () => { $('#drawerAi').hidden = true; });
   fScam.src = '/scammer.html?frame=0';
