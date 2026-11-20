@@ -210,6 +210,7 @@ function serveStatic(req, res, pathname) {
   else if (p === '/scammer') p = '/scammer.html';
   else if (p === '/partners') p = '/partners.html';
   else if (p === '/settings') p = '/settings.html';
+  else if (p === '/phones') p = '/phones.html';
   const file = path.normalize(path.join(PUBLIC, p));
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, buf) => {
@@ -224,6 +225,11 @@ async function handler(req, res) {
   const p = url.pathname;
   const roomOf = (code) => { const r = rooms.get(String(code || '')); if (r) r.last = Date.now(); return r; };
 
+  if (p === '/api/tunnel' && req.method === 'GET') {
+    if (!isLocalAdmin(req)) return json(res, 403, { error: 'local-only' });
+    const list = [...rooms.values()].sort((a, b) => b.created - a.created).slice(0, 5).map((r) => ({ code: r.code, user: !!r.sse.user, caller: !!r.sse.caller, created: r.created }));
+    return json(res, 200, { ...tunnel, port: PORT, rooms: list });
+  }
   if (p === '/api/clips' && req.method === 'GET') return json(res, 200, { clips: listClips(), canEdit: isLocalAdmin(req) });
   if (p === '/api/clips' && (req.method === 'POST' || req.method === 'DELETE')) {
     if (!isLocalAdmin(req)) { req.resume(); return json(res, 403, { error: 'local-only' }); }
@@ -423,4 +429,29 @@ const onReq = (req, res) => handler(req, res).catch((e) => { log('[http] error',
 let server;
 if (process.env.SSL_KEY && process.env.SSL_CERT) server = https.createServer({ key: fs.readFileSync(process.env.SSL_KEY), cert: fs.readFileSync(process.env.SSL_CERT) }, onReq);
 else server = http.createServer(onReq);
+/* ------------------------------ رابط آمن للهواتف (Cloudflare Tunnel) ------------------------------ */
+// عند التشغيل بـ TUNNEL=1 يفتح الخادم رابط https عامًا مؤقتًا حتى تتصل به الهواتف من أي شبكة (والميكروفون يحتاج https)
+const tunnel = { status: process.env.TUNNEL === '1' ? 'starting' : 'off', url: null, error: null };
+function startTunnel() {
+  const { spawn } = require('child_process');
+  const cands = ['cloudflared'];
+  if (process.platform === 'win32') for (const base of [process.env['ProgramFiles(x86)'], process.env.ProgramFiles, process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'Microsoft', 'WinGet', 'Links')]) if (base) cands.push(path.join(base, base.endsWith('Links') ? '' : 'cloudflared', 'cloudflared.exe'));
+  const tryNext = (i) => {
+    if (i >= cands.length) { tunnel.status = 'missing'; tunnel.error = 'cloudflared not found'; log('[tunnel] cloudflared غير مثبت'); return; }
+    let cp; try { cp = spawn(cands[i], ['tunnel', '--no-autoupdate', '--url', `http://localhost:${PORT}`], { windowsHide: true }); } catch { return tryNext(i + 1); }
+    let started = false;
+    cp.on('error', () => { if (!started) tryNext(i + 1); });
+    const onData = (buf) => {
+      started = true;
+      const m = String(buf).match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/);
+      if (m && tunnel.url !== m[0]) { tunnel.url = m[0]; tunnel.status = 'ready'; log('[tunnel]', m[0]); }
+    };
+    cp.stdout.on('data', onData); cp.stderr.on('data', onData);
+    cp.on('exit', (c) => { if (started) { tunnel.status = 'error'; tunnel.error = 'cloudflared exited ' + c; tunnel.url = null; log('[tunnel] توقف', c); setTimeout(() => { tunnel.status = 'starting'; startTunnel(); }, 5000); } });
+    process.on('exit', () => { try { cp.kill(); } catch {} });
+  };
+  tryNext(0);
+}
+if (process.env.TUNNEL === '1') startTunnel();
+
 server.listen(PORT, () => log(`الدرع الذكي يعمل على المنفذ ${PORT} — التفريغ اللحظي: ${KEY ? STT_MODEL + ' (' + STT_API + ')' : 'متوقف (وضع العرض بعبارات تمثيلية)'}`));
