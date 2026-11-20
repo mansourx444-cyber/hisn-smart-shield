@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>بوابة الجهات — الدرع الذكي</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="partners.css">
+</head>
+<body>
+  <header class="p-top">
+    <div class="p-brand"><img src="icon.svg" alt="" width="36" height="36"><div><b id="tBrand"></b><small id="tBrandSub"></small></div></div>
+    <button id="langBtn" class="p-chip" type="button"></button>
+  </header>
+
+  <!-- الدخول -->
+  <main id="vLogin" class="p-main">
+    <section class="p-card p-hero">
+      <h1 id="tLoginTitle"></h1>
+      <p id="tLoginDesc"></p>
+      <label for="orgSel" class="p-lbl" id="tOrg"></label>
+      <select id="orgSel" class="p-in"></select>
+      <button id="btnLogin" class="p-btn" type="button"><span aria-hidden="true">🪪</span> <span id="tLoginBtn"></span></button>
+      <p id="loginState" class="p-hint" role="status"></p>
+      <p class="p-note" id="tPrivacy"></p>
+    </section>
+  </main>
+
+  <!-- لوحة الجهة -->
+  <main id="vDash" class="p-main" hidden>
+    <section class="p-org">
+      <div><small id="tSignedAs"></small><h1 id="orgName"></h1><small id="orgDomain" dir="ltr"></small></div>
+      <button id="btnLogout" class="p-chip" type="button"></button>
+    </section>
+
+    <section class="p-stats">
+      <div class="p-stat"><b id="sMine">0</b><small id="tMine"></small></div>
+      <div class="p-stat"><b id="sHits">0</b><small id="tHits"></small></div>
+      <div class="p-stat"><b id="sAll">0</b><small id="tAll"></small></div>
+    </section>
+
+    <section class="p-card">
+      <h2 id="tPublish"></h2>
+      <p class="p-hint" id="tPublishDesc"></p>
+      <div class="p-grid">
+        <div><label class="p-lbl" for="fChannel" id="tChannel"></label><select id="fChannel" class="p-in"></select></div>
+        <div><label class="p-lbl" for="fSev" id="tSev"></label><select id="fSev" class="p-in"></select></div>
+      </div>
+      <label class="p-lbl" for="fTitle" id="tTitle"></label>
+      <input id="fTitle" class="p-in" maxlength="120" dir="auto">
+      <label class="p-lbl" for="fDesc" id="tDesc"></label>
+      <textarea id="fDesc" class="p-in" rows="2" dir="auto"></textarea>
+      <label class="p-lbl" for="fSample" id="tSample"></label>
+      <textarea id="fSample" class="p-in" rows="3" dir="auto"></textarea>
+      <label class="p-lbl" for="fPhrases" id="tPhrases"></label>
+      <input id="fPhrases" class="p-in" dir="auto">
+      <label class="p-lbl" for="fDomains" id="tDomains"></label>
+      <input id="fDomains" class="p-in" dir="ltr">
+      <div class="p-row">
+        <button id="btnExample" class="p-chip" type="button"></button>
+        <button id="btnPublish" class="p-btn" type="button"></button>
+      </div>
+      <p id="pubState" class="p-hint" role="status"></p>
+    </section>
+
+    <section class="p-card">
+      <h2 id="tPredict"></h2>
+      <p class="p-hint" id="tPredictDesc"></p>
+      <div id="predicted" class="p-tags"></div>
+    </section>
+
+    <section class="p-card">
+      <h2 id="tList"></h2>
+      <ul id="list" class="p-list"></ul>
+    </section>
+  </main>
+  <script src="engine.js"></script>
+  <script src="partners.js"></script>
+</body>
+</html>

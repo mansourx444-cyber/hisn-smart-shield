@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2545">
+  <title>حِصن — الدرع الذكي</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="iphone.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><img src="icon.svg" alt="" width="28" height="28"><span data-i18n="appName"></span></div>
+    <button id="langBtn" class="lang-btn" type="button"></button>
+  </header>
+
+  <main>
+    <!-- التفعيل (أول تشغيل) -->
+    <section id="scr-activate" class="screen">
+      <div class="hero">
+        <img src="icon.svg" alt="">
+        <h1 data-i18n="appName"></h1>
+        <p class="lead" data-i18n="tagline"></p>
+      </div>
+      <div class="card idcard" id="idCard">
+        <b data-i18n="idTitle"></b>
+        <small class="hint" data-i18n="idDesc"></small>
+        <button id="btnIdLogin" class="btn-secondary" type="button"><span aria-hidden="true">🪪</span> <span data-i18n="idLogin"></span></button>
+        <p id="idState" class="hint" role="status"></p>
+      </div>
+      <button id="btnActivate" class="btn-huge" type="button" style="min-height:120px;font-size:1.6rem" disabled><span data-i18n="activate"></span></button>
+      <div class="card" id="optList">
+        <label class="opt"><input type="checkbox" data-opt="links" checked><span><b data-i18n="optLinks"></b><small data-i18n="optLinksDesc"></small></span></label>
+        <label class="opt"><input type="checkbox" data-opt="msgs" checked><span><b data-i18n="optMsgs"></b><small id="msgsDesc"></small></span></label>
+        <label class="opt"><input type="checkbox" data-opt="calls" checked><span><b data-i18n="optCalls"></b><small data-i18n="optCallsDesc"></small></span></label>
+        <label class="opt" id="optAssistRow" hidden><input type="checkbox" data-opt="assist" checked><span><b data-i18n="optAssist"></b><small data-i18n="optAssistDesc"></small></span></label>
+      </div>
+      <p class="note" data-i18n="decideNote"></p>
+      <p class="note privacy" data-i18n="privacy"></p>
+      <div class="lang-choice" role="group" aria-label="Language">
+        <button type="button" class="chip" data-lang="ar">العربية</button>
+        <button type="button" class="chip" data-lang="en">English</button>
+      </div>
+      <button class="link-btn" type="button" data-go="sender" data-i18n="useAsSender"></button>
+    </section>
+
+    <!-- الرئيسية بعد التفعيل -->
+    <section id="scr-home" class="screen">
+      <div class="guard" id="guard">
+        <div class="guard-ring"><img src="icon.svg" alt=""></div>
+        <h1 id="guardTitle"></h1>
+        <p id="guardSub"></p>
+        <div class="chips" id="statusChips"></div>
+      </div>
+      <div class="gstats">
+        <div><b id="stMsgs">0</b><small data-i18n="stMsgs"></small></div>
+        <div><b id="stThreats">0</b><small data-i18n="stThreats"></small></div>
+        <div><b id="stCalls">0</b><small data-i18n="stCalls"></small></div>
+      </div>
+      <span id="statusBox" hidden></span><span id="statusTitle" hidden></span>
+      <div class="pair"><span data-i18n="pairCode"></span><b id="pairCode">----</b></div>
+      <h2 data-i18n="recent"></h2>
+      <ul id="inbox" class="inbox"></ul>
+      <p id="inboxEmpty" class="empty" data-i18n="inboxEmpty"></p>
+      <details class="card settings tech" open>
+        <summary data-i18n="techTitle"></summary>
+        <div id="techList"></div>
+      </details>
+      <details class="card settings">
+        <summary data-i18n="settings"></summary>
+        <div id="setList"></div>
+        <p class="note privacy" data-i18n="privacy"></p>
+        <button id="btnDeactivate" class="btn-off" type="button"></button>
+      </details>
+      <button class="link-btn" type="button" data-go="sender" data-i18n="useAsSender"></button>
+    </section>
+
+    <!-- الفحص اليدوي -->
+    <section id="scr-check" class="screen">
+      <button class="back" type="button" data-go="home"><span aria-hidden="true">‹</span> <span data-i18n="back"></span></button>
+      <h1 data-i18n="pasteTitle"></h1>
+      <label for="msgInput" class="label" data-i18n="pasteLabel"></label>
+      <textarea id="msgInput" rows="6" dir="auto" autocomplete="off" spellcheck="false"></textarea>
+      <button id="btnScan" class="btn-primary" type="button" data-i18n="scan"></button>
+      <button id="btnSample" class="link-btn" type="button" data-i18n="trySample"></button>
+    </section>
+
+    <!-- النتيجة: ما الخطر، ولماذا، وما الخطوة الآمنة -->
+    <section id="scr-result" class="screen" aria-live="polite">
+      <button class="back" type="button" data-go="home"><span aria-hidden="true">‹</span> <span data-i18n="back"></span></button>
+      <div id="resCard" class="result">
+        <div class="tag"><span class="tag-ico" aria-hidden="true"></span><span class="tag-txt"></span></div>
+        <h1 class="res-title"></h1>
+        <p class="res-reason"></p>
+        <ul class="res-more"></ul>
+        <p class="assist" hidden></p>
+        <p class="res-step"></p>
+      </div>
+      <button id="btnOpenLink" class="btn-secondary" type="button" hidden data-i18n="openViaShield"></button>
+      <button id="btnWhatIf" class="btn-risky" type="button" hidden data-i18n="whatIf"></button>
+      <button id="btnListen" class="btn-secondary" type="button"><span aria-hidden="true">🔊</span> <span data-i18n="listen"></span></button>
+      <button id="btnNew" class="btn-primary" type="button" data-i18n="newCheck"></button>
+    </section>
+
+    <!-- المكالمة داخل التطبيق (للمستخدم وللمتصل التجريبي) -->
+    <section id="scr-call" class="screen">
+      <div id="callerNotice" class="notice" hidden data-i18n="callerNotice"></div>
+      <div id="ringBox" class="ring" hidden>
+        <div class="avatar" aria-hidden="true">📞</div>
+        <div class="peer" data-i18n="incoming"></div>
+        <div id="ringFrom" class="cid-num" dir="ltr"></div>
+        <div id="ringLabel" class="cid-label"></div>
+        <p class="hint" data-i18n="analyzedNotice"></p>
+        <div class="row" style="width:100%">
+          <button id="btnDecline" class="btn-end" type="button" data-i18n="decline"></button>
+          <button id="btnAccept" class="btn-accept" type="button" data-i18n="accept"></button>
+        </div>
+      </div>
+      <div id="callLive" hidden>
+        <div class="call-head">
+          <div class="avatar" aria-hidden="true">👤</div>
+          <div id="callPeer" class="peer" dir="ltr"></div>
+          <div id="callPeerLabel" class="cid-label"></div>
+          <div id="callTimer" class="timer">00:00</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div id="analysisPill" class="pill waiting" role="status"></div>
+          <p class="ai-line" id="aiLine"></p>
+          <div id="transcript" class="transcript" aria-live="polite"></div>
+          <button id="btnTapAudio" class="btn-secondary" type="button" hidden data-i18n="tapAudio"></button>
+          <p id="callMsg" class="hint" role="status" style="text-align:center"></p>
+          <button id="btnEnd" class="btn-end" type="button"><span aria-hidden="true">⏹</span> <span data-i18n="endCall"></span></button>
+        </div>
+      </div>
+      <details id="demoTools" class="card demo" hidden>
+        <summary data-i18n="demoTools"></summary>
+        <p class="hint" data-i18n="demoHint"></p>
+        <div id="phraseBtns" class="phrases"></div>
+        <label class="toggle"><input id="outageToggle" type="checkbox"> <span data-i18n="simOutage"></span></label>
+      </details>
+      <details id="latencyBox" class="card demo" hidden>
+        <summary data-i18n="latencyLog"></summary>
+        <ol id="latencyList"></ol>
+      </details>
+      <audio id="remoteAudio" autoplay playsinline></audio>
+    </section>
+
+    <!-- الهاتف الثاني: مرسل ومتصل تجريبي -->
+    <section id="scr-sender" class="screen">
+      <button class="back" type="button" data-go="start"><span aria-hidden="true">‹</span> <span data-i18n="back"></span></button>
+      <h1 data-i18n="senderTitle"></h1>
+      <div class="card">
+        <label for="sPair" class="label" data-i18n="enterPair"></label>
+        <input id="sPair" class="code-input" inputmode="numeric" maxlength="4" autocomplete="off">
+        <p id="sPairState" class="hint"></p>
+      </div>
+      <div class="card">
+        <h2 data-i18n="sendSms"></h2>
+        <label for="sFrom" class="label" data-i18n="senderName"></label>
+        <input id="sFrom" class="inp" dir="auto" maxlength="40">
+        <label for="sText" class="label" data-i18n="smsText"></label>
+        <textarea id="sText" rows="5" dir="auto"></textarea>
+        <div id="presetBtns" class="phrases"></div>
+        <button id="btnSendSms" class="btn-primary" type="button" data-i18n="send"></button>
+        <p id="sSmsState" class="hint" role="status"></p>
+      </div>
+      <div class="card">
+        <h2 data-i18n="callUser"></h2>
+        <button id="btnRing" class="btn-accept" type="button"><span aria-hidden="true">📞</span> <span data-i18n="callNow"></span></button>
+        <p id="sCallState" class="hint" role="status"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- تحذير الرابط على مرحلتين (متصفح الدرع) -->
+  <div id="linkWarn" class="overlay" hidden>
+    <div class="sheet" role="alertdialog" aria-modal="true" aria-labelledby="lwTitle" aria-describedby="lwWhy">
+      <div class="tag" style="background:var(--danger-bg);color:var(--danger)"><span aria-hidden="true">⛔</span><span id="lwTag"></span></div>
+      <div class="addr" id="lwAddr"></div>
+      <h2 id="lwTitle"></h2>
+      <p id="lwWhy" class="why"></p>
+      <ul id="lwMore" class="res-more"></ul>
+      <p id="lwSafe" class="safe"></p>
+      <button id="lwBack" class="btn-primary" type="button" data-i18n="goBack"></button>
+      <button id="lwGo" class="btn-ghost" type="button"></button>
+    </div>
+  </div>
+
+  <!-- تنبيه أثناء المكالمة -->
+  <div id="alertCard" class="overlay" hidden>
+    <div class="sheet" role="alertdialog" aria-modal="true" aria-labelledby="alTitle" aria-describedby="alReason">
+      <div class="tag" style="background:var(--danger-bg);color:var(--danger)"><span aria-hidden="true">⛔</span><span data-i18n="warning"></span></div>
+      <h2 id="alTitle"></h2>
+      <p id="alReason" class="why"></p>
+      <p id="alStep" class="safe"></p>
+      <button id="alEnd" class="btn-end" type="button"><span aria-hidden="true">⏹</span> <span data-i18n="endCall"></span></button>
+      <div class="row">
+        <button id="alListen" class="btn-secondary" type="button"><span aria-hidden="true">🔊</span> <span data-i18n="listen"></span></button>
+        <button id="alDismiss" class="btn-secondary" type="button" data-i18n="continue"></button>
+      </div>
+      <button id="alWhatIf" class="btn-risky" type="button" hidden data-i18n="whatIf"></button>
+      <p id="alLatency" class="latency"></p>
+    </div>
+  </div>
+
+  <div id="toastHost"></div>
+  <script src="engine.js"></script>
+  <script src="tones.js"></script>
+  <script src="voice.js"></script>
+  <script src="app.js"></script>
+  <script src="iphone.js"></script>
+</body>
+</html>

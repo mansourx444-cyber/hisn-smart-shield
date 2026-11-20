@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>إعدادات «حِصن» — تسجيلات المكالمات</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <header class="s-top">
+    <div class="s-brand"><img src="icon.svg" alt="" width="34" height="34"><div><b>⚙️ الإعدادات — تسجيلات المكالمات</b><small>ارفع صوتك لكل جملة: المحتال (رجل) ومريم (فتاة)</small></div></div>
+  </header>
+  <main class="s-main">
+    <p class="s-note" id="lockNote" hidden>🔒 رفع التسجيلات وحذفها متاح فقط من الجهاز الذي يعمل عليه النظام.</p>
+    <details class="s-help">
+      <summary>📘 كيف أرفع الأصوات؟</summary>
+      <ol>
+        <li>اختر المكالمة من الأعلى. كل جملة لها رقم (#1، #2، …).</li>
+        <li>اضغط <b>⬆ رفع</b> بجانب الجملة واختر ملف الصوت (mp3 أو wav أو m4a أو ogg)، أو اضغط <b>⏺ تسجيل</b> وسجّل بصوتك مباشرة.</li>
+        <li>أو ارفع عدة ملفات مرة واحدة بزر <b>رفع عدة ملفات</b>: سمِّ الملفات برقم الجملة، مثل <code>bank-1.mp3</code> و<code>bank-2.mp3</code>، فتُوزَّع تلقائيًا.</li>
+        <li>الجملة التي لها تسجيل تُشغَّل بصوتك في المكالمة، والتي ليس لها تسجيل تُقرأ بالصوت المولَّد.</li>
+        <li>إذا عدّلت نص المكالمة في ملف <code>call-scripts-ar.txt</code> وتغيّر ترتيب الجمل، راجع التسجيلات هنا.</li>
+      </ol>
+    </details>
+    <nav class="s-tabs" id="tabs"></nav>
+    <section class="s-card">
+      <div class="s-card-h">
+        <div><h2 id="scTitle"></h2><small id="scStat"></small></div>
+        <div class="s-actions">
+          <label class="s-btn ghost">رفع عدة ملفات<input type="file" id="bulk" accept="audio/*" multiple hidden></label>
+          <button type="button" class="s-btn" id="playAll">▶ تشغيل المكالمة كاملة</button>
+        </div>
+      </div>
+      <p class="s-msg" id="msg" role="status"></p>
+      <ol class="s-lines" id="lines"></ol>
+    </section>
+  </main>
+  <script src="settings.js"></script>
+</body>
+</html>

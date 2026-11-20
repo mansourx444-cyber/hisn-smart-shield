@@ -1,0 +1,78 @@
+/* هاتف المحتال (محاكاة) — تصميم داكن بنمط آيفون */
+[hidden]{display:none!important}
+body.scam{margin:0;background:#000;color:#fff;font-family:-apple-system,"SF Pro Text","SF Arabic","Segoe UI","Noto Sans Arabic",Tahoma,system-ui,sans-serif;overflow:hidden}
+.sc-screen{position:fixed;inset:0;width:100vw;height:100vh;border-radius:0;max-width:480px;margin:0 auto;background:#000}
+.sc-status{color:#fff}
+.sc-main{position:absolute;inset:0;overflow:auto;padding:58px 16px 40px;scrollbar-width:none}
+.sc-main::-webkit-scrollbar{display:none}
+.sc-head{display:flex;justify-content:space-between;align-items:center}
+.sc-title{font-size:30px;font-weight:800;letter-spacing:-.4px}
+.sc-lang{background:#1c1c1e;border:0;color:#0a84ff;border-radius:999px;padding:4px 12px;font:inherit;font-size:14px;cursor:pointer}
+.sc-warn{margin:6px 0 12px;background:#3a1d00;color:#ffb340;border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5}
+.sc-link{display:flex;align-items:center;gap:10px;background:#1c1c1e;border-radius:14px;padding:10px 12px;margin-bottom:12px}
+.sc-dot{width:12px;height:12px;border-radius:50%;background:#636366;flex:none;box-shadow:0 0 0 0 #30d15880}
+.sc-link.on .sc-dot{background:#30d158;animation:dot 1.6s infinite}
+@keyframes dot{0%{box-shadow:0 0 0 0 #30d15899}100%{box-shadow:0 0 0 10px #30d15800}}
+.sc-link-txt{flex:1;display:flex;flex-direction:column;line-height:1.35}
+.sc-link-txt b{font-size:15px}.sc-link-txt small{color:#8e8e93;font-size:12.5px}
+.sc-code{width:86px;background:#2c2c2e;border:0;border-radius:10px;color:#fff;font:inherit;font-size:20px;letter-spacing:.25em;text-align:center;padding:6px;direction:ltr}
+.sc-seg{display:grid;grid-template-columns:1fr 1fr;background:#1c1c1e;border-radius:10px;padding:2px;margin-bottom:12px}
+.sc-seg button{border:0;background:none;color:#fff;font:inherit;font-size:14px;font-weight:600;padding:7px;border-radius:8px;cursor:pointer}
+.sc-seg button[aria-selected=true]{background:#636366}
+.sc-pane{display:flex;flex-direction:column;gap:12px}
+.sc-card{background:#1c1c1e;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sc-card-h{display:flex;gap:10px;align-items:center}
+.sc-ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:22px;flex:none}
+.sc-card-t{flex:1;min-width:0}
+.sc-card-t b{display:block;font-size:15.5px}
+.sc-card-t small{color:#8e8e93;font-size:12.5px}
+.sc-bubble{background:#2c2c2e;border-radius:16px;padding:8px 12px;font-size:14px;line-height:1.45;color:#e5e5ea;word-break:break-word}
+.sc-bubble .lnk{color:#64a8ff;text-decoration:underline;word-break:break-all}
+.sc-btn{border:0;border-radius:12px;padding:10px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;color:#fff;background:#ff453a}
+.sc-btn.call{background:#30d158}
+.sc-btn:disabled{opacity:.4;cursor:not-allowed}
+.sc-sent{color:#30d158;font-size:12.5px;text-align:center}
+.sc-desc{color:#aeaeb2;font-size:13px;line-height:1.5}
+
+/* المكالمة */
+.sc-call{position:absolute;inset:0;z-index:30;background:radial-gradient(120% 80% at 50% 0%,#3a3a3c,#000 70%);display:flex;flex-direction:column;padding:70px 18px 40px;gap:14px;animation:ipOpen .3s ease-out}
+.sc-call-top{display:flex;flex-direction:column;align-items:center;gap:4px}
+.sc-av{width:84px;height:84px;border-radius:50%;background:#636366;display:grid;place-items:center;font-size:42px}
+.sc-callee{font-size:24px;font-weight:600}
+.sc-callstate{color:#aeaeb2;direction:ltr;font-variant-numeric:tabular-nums}
+.sc-pill{margin-top:6px;border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:600;background:#1c3a2a;color:#30d158}
+.sc-pill.paused{background:#3a2a00;color:#ffd60a}
+.sc-pill.idle{background:#2c2c2e;color:#aeaeb2}
+.sc-script{flex:1;overflow:auto;background:#ffffff0d;border-radius:16px;padding:10px;scrollbar-width:none}
+.sc-script-h{color:#8e8e93;font-size:13px;margin:2px 4px 8px}
+.sc-phrases{display:flex;flex-direction:column;gap:8px}
+.sc-phrases button{text-align:start;border:0;border-radius:14px;background:#2c2c2e;color:#fff;font:inherit;font-size:14px;line-height:1.45;padding:9px 12px;cursor:pointer}
+.sc-phrases button.key{box-shadow:inset 0 0 0 1.5px #ff453a}
+.sc-phrases button.said{opacity:.5}
+.sc-phrases button.said::after{content:"  ✓";color:#30d158}
+.sc-phrases button:disabled{opacity:.35;cursor:not-allowed}
+.sc-call-tools{display:flex;justify-content:space-between;gap:8px}
+.sc-toggle{display:flex;align-items:center;gap:6px;font-size:13px;color:#d1d1d6}
+.sc-toggle input{width:18px;height:18px;accent-color:#30d158}
+.sc-hang{align-self:center;width:72px;height:72px;border-radius:50%;border:0;background:#ff3b30;display:grid;place-items:center;cursor:pointer}
+.sc-homebar{background:#fff!important}
+
+.sc-line{max-width:86%;border-radius:16px;padding:7px 12px;font-size:14px;line-height:1.5;animation:fadeIn .3s}
+.sc-line small{display:block;font-size:11px;opacity:.7;font-weight:700}
+.sc-line.s{align-self:flex-start;background:#3a1d1d;color:#ffd5d2}
+.sc-line.v{align-self:flex-end;background:#2c2c2e;color:#e5e5ea}
+.sc-phrases{gap:6px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}}
+
+.sc-free{display:flex;gap:10px;align-items:flex-end}
+.sc-mic{flex:none;width:58px;height:58px;border-radius:50%;border:0;background:#2c2c2e;font-size:26px;cursor:pointer;box-shadow:0 0 0 0 #ff453a}
+.sc-mic.on{background:#ff3b30;animation:micp 1.2s infinite}
+@keyframes micp{0%{box-shadow:0 0 0 0 #ff453aaa}100%{box-shadow:0 0 0 16px #ff453a00}}
+.sc-free-r{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+.sc-interim{min-height:20px;color:#ffd60a;font-size:13px}
+.sc-free-in{display:flex;gap:6px}
+.sc-free-in input{flex:1;min-width:0;background:#1c1c1e;border:1px solid #3a3a3c;border-radius:18px;color:#fff;font:inherit;font-size:14px;padding:8px 12px}
+.sc-free-in button{width:38px;border:0;border-radius:50%;background:#30d158;color:#fff;cursor:pointer}
+.sc-card.free{border:1.5px dashed #ffd60a88}
+.sc-card.free input,.sc-card.free textarea,.sc-card.free select{width:100%;box-sizing:border-box;background:#2c2c2e;border:0;border-radius:10px;color:#fff;font:inherit;font-size:14px;padding:8px 10px}
+.sc-card.free .row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}

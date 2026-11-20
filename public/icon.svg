@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <clipPath id="sh"><path d="M32 6 10 14v16c0 13.6 9.3 24.2 22 27.6 12.7-3.4 22-14 22-27.6V14L32 6z"/></clipPath>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d27a"/><stop offset="1" stop-color="#b8892f"/></linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffaf0"/><stop offset=".6" stop-color="#efe6d4"/><stop offset="1" stop-color="#d9ccb3"/></linearGradient>
+  </defs>
+  <path d="M32 3 7 12v18c0 15.4 10.6 27.4 25 31 14.4-3.6 25-15.6 25-31V12L32 3z" fill="url(#gold)"/>
+  <g clip-path="url(#sh)">
+    <rect x="0" y="0" width="64" height="22" fill="#00843D"/>
+    <rect x="0" y="22" width="64" height="15" fill="#ffffff"/>
+    <rect x="0" y="37" width="64" height="27" fill="#000000"/>
+    <rect x="0" y="0" width="20" height="64" fill="#EF3340"/>
+    <!-- قصر الحصن: السور والبرج الدائري -->
+    <g stroke="#0b2545" stroke-width="1.1" stroke-linejoin="round" fill="url(#stone)">
+      <!-- السور المسنّن -->
+      <path d="M14 58V45h1.6v-1.6h1.6V45h2v-1.6h1.6V45h2v-1.6h1.6V45h2v-1.6h1.6V45H33v13z"/>
+      <!-- جسم البرج -->
+      <path d="M33 58V27.5c0-.6.4-1 1-1h10c.6 0 1 .4 1 1V58z"/>
+      <!-- إفريز مسنّن أعلى البرج -->
+      <path d="M31.8 27.6v-3h1.6v-1.6h1.6v1.6h1.7v-1.6h1.6v1.6h1.7v-1.6h1.6v1.6h1.7v-1.6h1.6v1.6h1.6v3z"/>
+      <!-- البرج العلوي الصغير -->
+      <path d="M36 23v-4.2h1.2v-1.2h1.2v1.2h1.2v-1.2h1.2v1.2h1.2v-1.2h1.2v1.2H44V23z"/>
+      <!-- القبة والقمة -->
+      <path d="M37 18.6c0-2.2 1.8-3.8 3-4.6 1.2.8 3 2.4 3 4.6z"/>
+    </g>
+    <path d="M40 14v-2.6" stroke="#0b2545" stroke-width="1.1"/><circle cx="40" cy="11.2" r=".9" fill="#f3d27a" stroke="#0b2545" stroke-width=".6"/>
+    <!-- نوافذ -->
+    <g fill="#0b2545"><rect x="38.4" y="32" width="1.8" height="2.6" rx=".3"/><rect x="38.4" y="40" width="1.8" height="2.6" rx=".3"/><rect x="17" y="49.5" width="2.2" height="1.8"/><rect x="24" y="49.5" width="2.2" height="1.8"/></g>
+    <path d="M37.6 58v-5a1.4 1.4 0 0 1 2.8 0v5z" fill="#0b2545"/>
+  </g>
+</svg>

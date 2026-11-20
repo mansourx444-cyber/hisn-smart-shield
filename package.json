@@ -1,0 +1,12 @@
+{
+  "name": "smart-shield",
+  "version": "1.0.0",
+  "description": "الدرع الذكي — مساعدك الشخصي للوقاية من الاحتيال الإلكتروني",
+  "main": "server.js",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/engine.test.js"
+  }
+}

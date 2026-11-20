@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>«حِصن» — تقنيات الذكاء الاصطناعي في كل مرحلة</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="settings.css">
+  <style>
+    .k{display:grid;gap:10px}
+    .st{background:#ffffff0a;border:1px solid #ffffff1a;border-radius:16px;padding:12px 14px}
+    .st h2{margin:0 0 4px;font-size:16px;display:flex;gap:8px;align-items:center}
+    .st h2 .n{width:26px;height:26px;border-radius:50%;background:#8ee3c8;color:#0b1222;display:grid;place-items:center;font-size:13px;flex:none}
+    .st p.d{margin:0 0 8px;color:#c9d3e6;font-size:13.5px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{text-align:start;padding:6px 7px;border-top:1px solid #ffffff14;vertical-align:top}
+    th{color:#9fb0d0;font-weight:700;font-size:12px}
+    td:first-child{font-weight:700;color:#fff;width:34%}
+    .ok,.pl{display:inline-block;border-radius:6px;padding:0 6px;font-size:11.5px;font-weight:700;white-space:nowrap}
+    .ok{background:#4ad99126;color:#8ee3c8}.pl{background:#ffd60a22;color:#ffe680}
+    .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:#9fb0d0}
+    .try{display:flex;gap:6px;margin-top:6px}
+    .try input{flex:1;min-width:0;border-radius:10px;border:1px solid #ffffff33;background:#0b1222;color:#fff;padding:8px 10px;font:inherit;direction:ltr}
+    .res{margin-top:8px;display:grid;gap:6px}
+    .res .host{direction:ltr;font-weight:700}
+    .res .v{border-radius:10px;padding:6px 10px;font-weight:700}
+    .res .v.bad{background:#ff453a26;color:#ffb4ac}.res .v.good{background:#4ad99122;color:#8ee3c8}.res .v.mid{background:#ffd60a1f;color:#ffe680}
+    .chk{display:grid;grid-template-columns:22px 1fr;gap:4px 6px;font-size:12.5px}
+    .chk .x{color:#ff8c82;font-weight:800}.chk .y{color:#4ad991}
+    .chk .t{color:#c9d3e6}.chk .t.hit{color:#fff;font-weight:700}
+    .flow{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px;margin-top:4px}
+    .flow span{background:#ffffff12;border-radius:8px;padding:2px 8px}
+    .flow i{font-style:normal;color:#8ee3c8}
+    .ex{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.ex button{border:1px solid #ffffff2e;background:#ffffff0d;color:#fff;border-radius:999px;padding:4px 11px;font:inherit;font-size:12.5px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header class="s-top"><div class="s-brand"><img src="icon.svg" alt="" width="34" height="34"><div><b>🤖 تقنيات الذكاء الاصطناعي في «حِصن»</b><small>ما التقنية المستخدمة في كل مرحلة، ودورها في كشف الاحتيال الرقمي</small></div></div></header>
+  <main class="s-main">
+    <div class="legend"><span><span class="ok">يعمل في العرض</span> مطبّق ويمكن تجربته الآن</span><span><span class="pl">النسخة الإنتاجية</span> ضمن خطة التطوير</span></div>
+    <div class="k" id="stages"></div>
+
+    <section class="st" id="guide">
+      <h2><span class="n">📚</span>من الإرشادات الدولية والمحلية إلى «حِصن»</h2>
+      <p class="d">حوّلنا نصائح التوعية التي يطلبها الخبراء من المستخدم إلى فحوص آلية يقوم بها «حِصن» نيابةً عنه.</p>
+      <table><thead><tr><th>الإرشاد</th><th>ماذا يفعل «حِصن» تلقائيًا</th><th>المصدر</th></tr></thead><tbody>
+        <tr><td>انتبه للغة العاجلة أو العاطفية والتهديد بعواقب إن لم ترد فورًا</td><td>كشف الاستعجال والتهديد بالإيقاف بمعالجة اللغة</td><td>CISA</td></tr>
+        <tr><td>احذر طلبات إرسال معلوماتك الشخصية والمالية</td><td>كشف طلب بيانات البطاقة أو كلمة المرور أو رمز التحقق</td><td>CISA</td></tr>
+        <tr><td>احذر الروابط المختصرة غير الموثوقة</td><td>فحص الروابط المختصرة</td><td>CISA</td></tr>
+        <tr><td>عناوين وروابط بها خطأ متعمّد مثل amazan.com</td><td>التشابه الإملائي + استبدال الحروف بأرقام</td><td>CISA</td></tr>
+        <tr><td>الأخطاء اللغوية لم تعد دليلًا كافيًا؛ الرسائل المصقولة قد تكون احتيالًا</td><td>لا نعتمد على الأخطاء الإملائية؛ نعتمد على النية والروابط والمرسل</td><td>CISA</td></tr>
+        <tr><td>تحقق أن العنوان يبدأ بـ https ولا يحتوي كلمات مكتوبة خطأ</td><td>فحص التشفير + التشابه الإملائي</td><td>الخليج</td></tr>
+        <tr><td>لا تشارك معلوماتك المصرفية دون التأكد من هوية المرسل أو المتصل</td><td>فحص المرسل + كشف طلب الرمز أثناء المكالمة</td><td>الخليج</td></tr>
+        <tr><td>البنك لن يتواصل معك لطلب معلومات سرية</td><td>أي طلب رمز أو بيانات باسم بنك = خطر مرتفع</td><td>الخليج</td></tr>
+        <tr><td>عند الشك أغلق الخط وتواصل مع الجهة على رقمها الرسمي</td><td>زر «أنهِ المكالمة» في التحذير + رقم الجهة الرسمي</td><td>NCSC</td></tr>
+        <tr><td>تعرّف ← قاوم ← احذف وأبلغ</td><td>تحذير أول ← تحذير ثانٍ ← إبلاغ الجهات عبر البوابة</td><td>CISA</td></tr>
+      </tbody></table>
+    </section>
+    <section class="st" id="links">
+      <h2><span class="n">🔗</span>كيف يكشف «حِصن» الروابط المشبوهة؟</h2>
+      <p class="d">كل رابط يصل في رسالة نصية أو واتساب يمرّ تلقائيًا على 13 فحصًا قبل أن يفتحه المستخدم، ثم تُدمج النتائج في درجة خطر واحدة مع شرح السبب.</p>
+      <div class="flow"><span>استخراج الرابط من النص</span><i>←</i><span>تفكيك النطاق</span><i>←</i><span>13 فحصًا</span><i>←</i><span>دمج مع تحليل نص الرسالة</span><i>←</i><span>درجة الخطر + السبب</span><i>←</i><span>تحذير أول / تحذير ثانٍ</span></div>
+      <table id="linkTbl" style="margin-top:8px"><thead><tr><th>الفحص</th><th>كيف يعمل</th><th>مثال يُكشف</th></tr></thead><tbody></tbody></table>
+      <h2 style="margin-top:12px;font-size:14.5px">جرّب بنفسك: اختر مثالًا أو اكتب رسالة ورابطًا</h2>
+      <div class="ex" id="ex"></div>
+      <div class="try"><input id="tIn" value="بنك النخلة: حسابك موقوف، حدّث بياناتك خلال 24 ساعة http://nakhla-bank-secure.xyz/login"><button type="button" class="s-btn" id="tGo">افحص</button></div>
+      <div class="res" id="tRes"></div>
+    </section>
+  </main>
+  <script src="engine.js"></script>
+  <script>
+  (() => {
+    const OK = '<span class="ok">يعمل في العرض</span>', PL = '<span class="pl">النسخة الإنتاجية</span>';
+    const STAGES = [
+      ['🪪', 'التفعيل والخصوصية', 'يفعّل المستخدم «حِصن» مرة واحدة بالهوية الرقمية، وبعدها يعمل تلقائيًا. «حِصن» لا يطّلع على ملفاتك الخاصة ولا يتتبعك، بل يفحص الرسائل والروابط والمكالمات الواردة فقط ليتصدى للاحتيال.', [
+        ['التحقق بالهوية الرقمية', 'يربط الحماية بصاحب الجهاز الحقيقي ويمنع تعطيلها من طرف آخر', OK],
+        ['المعالجة على الجهاز (On-device AI)', 'تحليل الرسائل والروابط يتم داخل الهاتف دون إرسال محتواها للخارج', OK],
+        ['التعلّم الموحّد (Federated Learning)', 'تتحسن النماذج من أنماط الاحتيال الجديدة دون جمع بيانات المستخدمين', PL],
+      ]],
+      ['📩', 'الرسائل النصية وواتساب', 'كل رسالة واردة تُحلَّل لحظة وصولها، ومعها المرسل والروابط.', [
+        ['تحليل ملف المرسل (Sender profiling)', 'رقم غير محفوظ، اسم يدّعي جهة، مجموعة واتساب جديدة', OK],
+        ['معالجة اللغة العربية (NLP) واللهجة', 'تطبيع النص، إزالة التشكيل، تجزئة العبارات، كشف النفي', OK],
+        ['تصنيف أساليب الهندسة الاجتماعية', 'يرصد الاستعجال، التهديد بالإيقاف، طلب بيانات البطاقة أو الرمز، الجوائز والوظائف الوهمية', OK],
+        ['استخراج الكيانات (NER)', 'يعرف الجهة التي تدّعيها الرسالة (بنك، شرطة، بريد…) ليقارنها بالرابط', OK],
+        ['نموذج لغوي عربي مدرّب (AraBERT / LLM)', 'تصنيف أدق للرسائل الجديدة غير المعروفة سابقًا', PL],
+      ]],
+      ['🔗', 'الروابط', 'تفاصيل الفحوص العشرة في القسم أدناه، مع إمكانية التجربة.', [
+        ['التشابه النصي (Levenshtein) وكشف الأحرف المضللة', 'يكشف النطاقات التي تقلّد اسم الجهة الرسمية بفارق حرف أو حرفين أو بأحرف شبيهة', OK],
+        ['استخبارات التهديدات والنطاقات المتوقعة', 'بلاغات الجهات + نطاقات انتحال يولّدها «حِصن» مسبقًا', OK],
+        ['تصنيف الروابط بالتعلّم الآلي + عمر النطاق + الرؤية الحاسوبية', 'نموذج يتعلّم شكل روابط الاحتيال، وفحص تاريخ تسجيل النطاق، ومقارنة شكل الصفحة وشعارها بالموقع الرسمي', PL],
+      ]],
+      ['📞', 'المكالمات', 'أثناء المكالمة يُحلَّل كلام المتصل جملة بجملة، والتنبيه يظهر والمكالمة مستمرة.', [
+        ['تعرّف الكلام (ASR) بالتعلّم العميق', 'يحوّل كلام المتصل إلى نص لحظيًا، بما فيه اللهجة الإماراتية', OK],
+        ['معالجة اللغة الطبيعية + فهم النفي', 'يميّز «لا تعطين الرمز أحد» (نصيحة) عن «عطيني الرمز» (احتيال)', OK],
+        ['تصنيف النية + ذاكرة سياق المحادثة', 'يحدد ما يطلبه المتصل: رمز تحقق، تحويل، موافقة، تثبيت برنامج تحكم', OK],
+        ['استخراج الجهة المنتحَلة (NER)', 'يربط «معاج خالد من بنك النخلة» بالجهة المنتحَلة، ويذكّر بأن الجهة الحقيقية لا تطلب ذلك', OK],
+        ['نموذج لغوي كبير مساعد (اختياري)', 'يقرأ سياق آخر جمل المكالمة ويؤكد القرار في الحالات الملتبسة', OK],
+        ['كشف الأصوات المزيفة (Deepfake) وانتحال رقم المتصل', 'التمييز بين الصوت البشري والمولَّد، وكشف الأرقام المنتحلة', PL],
+      ]],
+      ['🛑', 'القرار والتنبيه', 'يدمج «حِصن» كل المؤشرات في قرار واحد، والمستخدم هو من يقرر.', [
+        ['تقييم المخاطر بدمج المؤشرات (Ensemble scoring)', 'يجمع مؤشرات الرابط والنص والصوت والجهة في درجة خطر واحدة', OK],
+        ['ذكاء اصطناعي قابل للتفسير (XAI)', 'يشرح للمستخدم سبب التحذير بلغة بسيطة بدل «رسالة مشبوهة» فقط', OK],
+        ['التحذير على مرحلتين', 'تحذير أول، ثم تحذير ثانٍ أشد عند الخطر المرتفع فقط', OK],
+      ]],
+      ['🖥️', 'برامج التحكم عن بعد', 'أخطر مرحلة: المحتال يرى الشاشة ويتحكم بالهاتف.', [
+        ['كشف نية «ثبّت AnyDesk» في المكالمة', 'تحذير قبل التثبيت', OK],
+        ['كشف السلوك الشاذ (Anomaly detection)', 'مكالمة جارية + مشاركة شاشة + فتح تطبيق البنك أو الصور = إيقاف المشاركة فورًا', PL],
+      ]],
+      ['🏛️', 'بوابة الجهات (طرف ثالث)', 'البنوك والشرطة والجهات تنشر أساليب الاحتيال التي رصدتها، فيستفيد منها الجميع فورًا.', [
+        ['استخراج العبارات المفتاحية (Keyphrase extraction)', 'يحوّل وصف الجهة إلى مؤشرات قابلة للكشف', OK],
+        ['توليد نطاقات الانتحال (Typosquatting generation)', 'يتوقع النطاقات التي قد يسجلها المحتال ويراقبها قبل استخدامها', OK],
+        ['التحديث الفوري للمحرك', 'كل تحذير جديد يصل فورًا لجميع الأجهزة المحمية ويُستخدم في الكشف', OK],
+        ['التعلّم المستمر من البلاغات', 'إعادة تدريب النماذج دوريًا على الأساليب الجديدة', PL],
+      ]],
+    ];
+    const box = document.getElementById('stages');
+    STAGES.forEach(([ic, t, d, rows], i) => {
+      const s = document.createElement('section'); s.className = 'st';
+      s.innerHTML = `<h2><span class="n">${i + 1}</span>${ic} ${t}</h2><p class="d">${d}</p><table><thead><tr><th>تقنية الذكاء الاصطناعي</th><th>دورها في كشف الاحتيال</th><th>الحالة</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table>`;
+      box.appendChild(s);
+    });
+    const LINKS = [
+      ['1. قائمة النطاقات الرسمية', 'يقارن النطاق بسجل النطاقات الرسمية للبنوك والجهات الحكومية والشركات', 'nakhlabank.ae ✓ رسمي'],
+      ['2. الجهة المذكورة ≠ النطاق', 'يستخرج اسم الجهة من نص الرسالة (NER) ويتحقق أن الرابط يعود لها فعلًا', 'رسالة «بنك النخلة» ورابط لموقع آخر'],
+      ['3. التشابه الإملائي', 'مسافة Levenshtein: كم حرفًا يختلف الاسم عن الاسم الرسمي، أو احتواؤه اسم الجهة', 'nakhlabnk.ae ، nakhla-bank-secure.xyz'],
+      ['4. الأحرف المضللة', 'كشف Punycode والأحرف المتشابهة من لغات أخرى (Homoglyph)', 'xn--nakhlbank-…'],
+      ['5. عنوان IP', 'رابط برقم بدل اسم موقع معروف', 'http://185.22.4.9/pay'],
+      ['6. رمز @ المخادع', 'كل ما قبل @ يتجاهله المتصفح، فيظهر اسم الجهة والوجهة غيرها', 'nakhlabank.ae@evil.xyz'],
+      ['7. الروابط المختصرة', 'تخفي الوجهة الحقيقية', 'bit.ly/3xYz'],
+      ['8. الامتدادات عالية الخطورة', 'امتدادات رخيصة شائعة في الاحتيال', '.xyz ، .top ، .click'],
+      ['9. غياب التشفير', 'الرابط http دون https', 'http://…'],
+      ['11. اسم الجهة كنطاق فرعي مضلل', 'يضع المحتال النطاق الرسمي في بداية الرابط، والموقع الحقيقي هو آخر جزء قبل الامتداد', 'nakhlabank.ae.account-verify.top'],
+      ['12. استبدال الحروف بأرقام أو حروف شبيهة', 'تحويل 0←o و1←l و3←e وrn←m ثم مقارنة الناتج بالاسم الرسمي', 'nakh1abank.ae ، adp0lice'],
+      ['13. كلمات التصيّد في الرابط', 'login ، verify ، update ، unlock ، account داخل رابط غير رسمي', '…/login ، …/unlock'],
+      ['+ المرسل', 'رسالة تدّعي أنها من بنك أو جهة لكنها من رقم جوال شخصي (الجهات ترسل باسمها المعتمد)', 'بنك النخلة من 0558812640'],
+      ['10. بلاغات الجهات والنطاقات المتوقعة', 'نطاقات أبلغت عنها الجهات في البوابة، ونطاقات انتحال ولّدها «حِصن» مسبقًا', 'safe-account-adpolice.com'],
+    ];
+    document.querySelector('#linkTbl tbody').innerHTML = LINKS.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td dir="auto">${r[2]}</td></tr>`).join('');
+    const NAMES = { subdomain: 'اسم الجهة كنطاق فرعي مضلل', swap: 'استبدال حروف بأرقام', kw: 'كلمات تصيّد في الرابط', official: 'النطاق الرسمي', mismatch: 'الجهة المذكورة ≠ النطاق', lookalike: 'تشابه إملائي', puny: 'أحرف مضللة', ip: 'عنوان IP', at: 'رمز @ مخادع', short: 'رابط مختصر', tld: 'امتداد عالي الخطورة', http: 'بدون HTTPS', intel: 'بلاغات الجهات / نطاق متوقع' };
+    const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    function run() {
+      const E = window.ShieldEngine, txt = document.getElementById('tIn').value;
+      const v = E.analyzeMessage(txt, 'ar'), rep = E.linkReport(txt, 'ar'), out = document.getElementById('tRes');
+      const cls = v.level === 'danger' ? 'bad' : v.level === 'verify' ? 'mid' : 'good';
+      out.innerHTML = `<div class="v ${cls}">${esc(v.title || '')}</div>` + rep.map((lk) => `<div class="st"><div class="host">${esc(lk.host)}</div><div class="chk">${lk.checks.map((c) => {
+        let d = '';
+        if (c.id === 'official') d = c.hit ? 'ليس نطاقًا رسميًا' : 'نطاق رسمي لـ' + lk.official;
+        else if (c.hit && c.id === 'lookalike') { const [t, a, b] = c.detail.split(':'); d = t === 'brand' ? 'يستخدم اسم ' + a : `يختلف بـ${a} حرف عن ${b}`; }
+        else if (c.hit && c.id === 'mismatch') d = 'الرسالة تذكر ' + c.detail;
+        else if (c.hit && c.id === 'tld') d = '.' + c.detail;
+        else if (c.hit && (c.id === 'subdomain' || c.id === 'swap')) d = 'يقلّد ' + c.detail;
+        else if (c.hit && c.id === 'kw') d = c.detail;
+        else if (c.hit && c.id === 'intel') { const [t, o] = c.detail.split(':'); d = (t === 'reported' ? 'حذّرت منه ' : 'توقّعه حِصن لانتحال ') + o; }
+        return `<span class="${c.hit ? 'x' : 'y'}">${c.hit ? '✗' : '✓'}</span><span class="t ${c.hit ? 'hit' : ''}">${NAMES[c.id]}${d ? ' — ' + esc(d) : ''}</span>`;
+      }).join('')}</div></div>`).join('') + (v.reasons || []).map((r) => `<small>• ${esc(r)}</small>`).join('<br>');
+    }
+    const EX = [
+      ['🪤 نطاق فرعي مضلل', 'بنك النخلة: تم رصد دخول غير معتاد. أكّد هويتك خلال 30 دقيقة: https://nakhlabank.ae.account-verify.top/login'],
+      ['🔤 رقم بدل حرف', 'بنك النخلة: بطاقتك موقوفة. لإعادة التفعيل: https://nakh1abank.ae/unlock'],
+      ['🎭 رمز @ مخادع', 'بنك النخلة: حدّث بياناتك: https://nakhlabank.ae@secure-pay.xyz/update'],
+      ['✂️ رابط مختصر', 'مبروك! ربحت 10,000 درهم، استلمها من هنا: https://bit.ly/3xYzQ'],
+      ['🔢 عنوان IP', 'بريد الإمارات: شحنتك معلّقة، ادفع 7.50 درهم: http://185.22.4.9/pay'],
+      ['✅ رابط رسمي', 'بنك النخلة: يمكنك الاطلاع على العروض في موقعنا https://www.nakhlabank.ae'],
+    ];
+    const exBox = document.getElementById('ex');
+    EX.forEach(([l, t]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = l; b.addEventListener('click', () => { document.getElementById('tIn').value = t; run(); }); exBox.appendChild(b); });
+    document.getElementById('tGo').addEventListener('click', run);
+    document.getElementById('tIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+    fetch('/api/patterns').then((r) => r.json()).then((j) => window.ShieldEngine.setPatterns(j.patterns || [])).catch(() => {}).then(run);
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "حِصن — الدرع الذكي",
+  "short_name": "حِصن",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#0b2545",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
