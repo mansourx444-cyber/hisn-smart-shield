@@ -1,0 +1,14 @@
+# «حِصن» — نشر بنقرة واحدة على Render (خطة مجانية)
+services:
+  - type: web
+    name: hisn-smart-shield
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /api/config
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"

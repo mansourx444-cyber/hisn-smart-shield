@@ -20,6 +20,7 @@
     .v .tag{background:#1db58433;color:#8ee3c8}.s .tag{background:#ff453a33;color:#ffb4ac}
     .qr{background:#fff;border-radius:16px;padding:14px;width:280px;height:280px;display:grid;place-items:center}
     .qr svg{width:100%;height:100%}
+    [hidden]{display:none!important}
     .qr.wait{background:#ffffff14;color:#9fb0d0;font-size:14px;padding:24px}
     .url{direction:ltr;font-size:12.5px;color:#9fb0d0;word-break:break-all}
     .pill{font-size:13px;border-radius:999px;padding:3px 12px;background:#ffffff14}
@@ -46,6 +47,7 @@
         <span class="tag">الهاتف ٢</span><h2>☎️ هاتف المحتال</h2>
         <div class="qr wait" id="qrS">افتح هاتف الضحية أولًا، فيظهر هنا رمز مربوط به تلقائيًا</div>
         <div class="url" id="urlS"></div>
+        <div id="codeBox" hidden style="display:flex;gap:8px;align-items:center"><label for="codeIn" style="font-size:14px">رمز الربط الظاهر في هاتف الضحية:</label><input id="codeIn" inputmode="numeric" maxlength="4" placeholder="0000" style="width:90px;text-align:center;font-size:20px;letter-spacing:4px;border-radius:10px;border:1px solid #ffffff33;background:#0006;color:#fff;padding:6px"></div>
         <span class="pill" id="sState">لم يُربط بعد</span>
       </section>
     </div>
@@ -77,6 +79,12 @@
       if (!j.url) return;
       const urlV = j.url + '/';
       if (urlV !== lastV) { draw($('#qrV'), urlV); $('#urlV').textContent = urlV; lastV = urlV; }
+      if (j.hosted) { // رابط دائم: لا نعرض الغرف للعامة، فالرمز يُكتب يدويًا
+        $('#codeBox').hidden = false; $('#vState').textContent = 'بعد التفعيل يظهر رمز الربط في هاتف الضحية'; $('#sState').textContent = 'اكتب رمز الربط ليظهر الرمز';
+        const c = ($('#codeIn').value || '').replace(/\D/g, '');
+        if (/^\d{4}$/.test(c)) { const urlS = j.url + '/scammer?code=' + c; if (urlS !== lastS) { draw($('#qrS'), urlS); $('#urlS').textContent = urlS; lastS = urlS; } $('#sState').textContent = 'جاهز للمسح'; }
+        return;
+      }
       const room = (j.rooms || []).find((r) => r.user) || null;
       $('#vState').textContent = room ? '✓ مفتوح — رمز الربط ' + room.code : 'لم يُفتح بعد';
       $('#vState').className = 'pill' + (room ? ' on' : '');
@@ -88,6 +96,7 @@
       }
     }
     tick(); setInterval(tick, 2000);
+    $('#codeIn').addEventListener('input', tick);
   })();
   </script>
 </body>

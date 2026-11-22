@@ -56,6 +56,15 @@ loadPatterns();
 
 /* ------------------------------ تسجيلات المكالمات (أصوات يرفعها المستخدم) ------------------------------ */
 const CLIP_DIR = path.join(DATA_DIR, 'clips');
+// التسجيلات الصوتية المرفقة مع المشروع (voices/) تُنسخ عند أول تشغيل — مهم للاستضافة على الإنترنت
+try {
+  const SEED = path.join(__dirname, 'voices');
+  if (fs.existsSync(SEED)) {
+    fs.mkdirSync(CLIP_DIR, { recursive: true });
+    const have = new Set(fs.readdirSync(CLIP_DIR).map((f) => path.basename(f, path.extname(f))));
+    for (const f of fs.readdirSync(SEED)) if (!have.has(path.basename(f, path.extname(f)))) fs.copyFileSync(path.join(SEED, f), path.join(CLIP_DIR, f));
+  }
+} catch (e) { console.error('[voices]', e.message); }
 const CLIP_KEY = /^(bank|police|approve|remote|refuse):(dialog|cont|comply|line):\d{1,2}$/;
 const TYPE_EXT = { 'audio/mpeg': '.mp3', 'audio/mp3': '.mp3', 'audio/wav': '.wav', 'audio/x-wav': '.wav', 'audio/wave': '.wav', 'audio/mp4': '.m4a', 'audio/x-m4a': '.m4a', 'audio/aac': '.aac', 'audio/ogg': '.ogg', 'audio/webm': '.webm' };
 const clipFile = (key) => key.replace(/:/g, '_');
@@ -85,6 +94,35 @@ function send(room, role, type, data) {
   if (!res) return false;
   try { res.write(`event: ${type}\ndata: ${JSON.stringify(data || {})}\n\n`); return true; } catch { return false; }
 }
+function attachConn(room, role, conn) {
+  const old = room.sse[role]; if (old && old !== conn) try { old.end(); } catch {}
+  room.sse[role] = conn;
+  const other = role === 'user' ? 'caller' : 'user';
+  send(room, role, 'hello', { role, lang: room.lang, peer: !!room.sse[other], state: analysisState(room), inCall: room.inCall });
+  send(room, other, 'peer', { joined: true });
+}
+function detachConn(room, role, conn) {
+  if (room.sse[role] !== conn) return;
+  room.sse[role] = null; room.last = Date.now();
+  send(room, role === 'user' ? 'caller' : 'user', 'peer', { joined: false });
+}
+// اتصال استطلاع يحاكي واجهة الكتابة في البث: يخزّن الأحداث في طابور حتى يسحبها الهاتف
+function makePollConn(cid) {
+  return {
+    isPoll: true, cid, seq: 0, q: [], waiter: null, ended: false, last: Date.now(),
+    write(str) {
+      let type = 'message', data = '';
+      for (const line of String(str).split('\n')) { if (line.startsWith('event: ')) type = line.slice(7); else if (line.startsWith('data: ')) data += line.slice(6); }
+      if (!data && type === 'message') return true; // ping / retry
+      this.q.push({ seq: ++this.seq, type, data }); if (this.q.length > 300) this.q.splice(0, this.q.length - 300);
+      if (this.waiter) this.waiter();
+      return true;
+    },
+    end() { this.ended = true; if (this.waiter) this.waiter(); },
+  };
+}
+// هاتف توقف عن الاستطلاع (أُغلق/فقد الشبكة) ← نعتبره غير متصل
+setInterval(() => { for (const r of rooms.values()) for (const role of ['user', 'caller']) { const c = r.sse[role]; if (c && c.isPoll && !c.waiter && Date.now() - c.last > 30000) detachConn(r, role, c); } }, 5000).unref();
 function broadcast(room, type, data) { send(room, 'user', type, data); send(room, 'caller', type, data); }
 function pushState(room) { broadcast(room, 'analysis', { state: analysisState(room) }); }
 
@@ -226,6 +264,7 @@ async function handler(req, res) {
   const roomOf = (code) => { const r = rooms.get(String(code || '')); if (r) r.last = Date.now(); return r; };
 
   if (p === '/api/tunnel' && req.method === 'GET') {
+    if (PUBLIC_URL) return json(res, 200, { status: 'ready', url: PUBLIC_URL, hosted: true, error: null, port: PORT, rooms: [] });
     if (!isLocalAdmin(req)) return json(res, 403, { error: 'local-only' });
     const list = [...rooms.values()].sort((a, b) => b.created - a.created).slice(0, 5).map((r) => ({ code: r.code, user: !!r.sse.user, caller: !!r.sse.caller, created: r.created }));
     return json(res, 200, { ...tunnel, port: PORT, rooms: list });
@@ -280,12 +319,31 @@ async function handler(req, res) {
     if (!room) return json(res, 404, { error: 'room' });
     res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache, no-transform', Connection: 'keep-alive', 'X-Accel-Buffering': 'no' });
     res.write('retry: 2000\n\n');
-    const old = room.sse[role]; if (old) try { old.end(); } catch {}
-    room.sse[role] = res;
-    const other = role === 'user' ? 'caller' : 'user';
-    send(room, role, 'hello', { role, lang: room.lang, peer: !!room.sse[other], state: analysisState(room), inCall: room.inCall });
-    send(room, other, 'peer', { joined: true });
-    req.on('close', () => { if (room.sse[role] === res) { room.sse[role] = null; room.last = Date.now(); send(room, other, 'peer', { joined: false }); } });
+    attachConn(room, role, res);
+    req.on('close', () => detachConn(room, role, res));
+    return;
+  }
+  // بديل الاستطلاع الطويل (long polling): يعمل عبر أي وسيط/نفق يحجز البث المتدفق (مثل رابط Cloudflare السريع)
+  if (p === '/api/poll' && req.method === 'GET') {
+    const room = roomOf(url.searchParams.get('room'));
+    const role = url.searchParams.get('role') === 'caller' ? 'caller' : 'user';
+    if (!room) return json(res, 404, { error: 'room' });
+    const cid = String(url.searchParams.get('cid') || '').slice(0, 40);
+    const after = Number(url.searchParams.get('after')) || 0;
+    let pc = room.sse[role];
+    if (!pc || !pc.isPoll || pc.cid !== cid) { pc = makePollConn(cid); attachConn(room, role, pc); }
+    if (pc.ended) return json(res, 200, { gone: true, events: [] });
+    pc.last = Date.now();
+    let done = false;
+    const reply = () => {
+      if (done) return; done = true; pc.waiter = null; clearTimeout(timer);
+      pc.last = Date.now();
+      json(res, 200, { gone: !!pc.ended, events: pc.q.filter((e) => e.seq > after) });
+    };
+    const timer = setTimeout(reply, 20000);
+    if (pc.q.some((e) => e.seq > after)) return reply();
+    pc.waiter = reply;
+    req.on('close', () => { if (!done) { done = true; clearTimeout(timer); if (pc.waiter === reply) pc.waiter = null; pc.last = Date.now(); } });
     return;
   }
   if (p === '/api/signal' && req.method === 'POST') {
@@ -431,6 +489,8 @@ if (process.env.SSL_KEY && process.env.SSL_CERT) server = https.createServer({ k
 else server = http.createServer(onReq);
 /* ------------------------------ رابط آمن للهواتف (Cloudflare Tunnel) ------------------------------ */
 // عند التشغيل بـ TUNNEL=1 يفتح الخادم رابط https عامًا مؤقتًا حتى تتصل به الهواتف من أي شبكة (والميكروفون يحتاج https)
+// على الاستضافة (Render أو غيرها) الرابط العام ثابت ولا نحتاج نفقًا
+const PUBLIC_URL = (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').replace(/\/$/, '');
 const tunnel = { status: process.env.TUNNEL === '1' ? 'starting' : 'off', url: null, error: null };
 function startTunnel() {
   const { spawn } = require('child_process');
