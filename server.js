@@ -413,6 +413,13 @@ async function handler(req, res) {
     send(room, 'user', 'say', { text: String(b.text || '').slice(0, 400), id: String(b.id || ''), clip: /^\/clips\/[\w.\-]+(\?v=\d+)?$/.test(b.clip || '') ? b.clip : null });
     return json(res, 200, { ok: true });
   }
+  // صوت المحتال في الحوار المسجّل يُشغَّل أيضًا على هاتف الضحية (عرض بهاتفين منفصلين)
+  if (p === '/api/voice' && req.method === 'POST') {
+    const b = await readJson(req); const room = roomOf(b.room);
+    if (!room || !room.inCall) return json(res, 409, { error: 'nocall' });
+    send(room, 'user', 'voice', { text: String(b.text || '').slice(0, 400), clip: /^\/clips\/[\w.\-]+(\?v=\d+)?$/.test(b.clip || '') ? b.clip : null });
+    return json(res, 200, { ok: true });
+  }
   if (p === '/api/said' && req.method === 'POST') {
     const b = await readJson(req); const room = roomOf(b.room);
     if (!room) return json(res, 404, { error: 'room' });

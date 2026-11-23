@@ -54,7 +54,7 @@
       <h3>الخطوات</h3>
       <ol>
         <li><b>هاتف الضحية (آيفون):</b> افتح الكاميرا وامسح الرمز الأول ← يفتح «حِصن» في Safari. (اختياري: زر المشاركة ← «إضافة إلى الشاشة الرئيسية» ليعمل كتطبيق بملء الشاشة.)</li>
-        <li>في «حِصن» اضغط «الدخول بالهوية الرقمية» ثم «تفعيل».</li>
+        <li>يظهر هاتف الضحية: اضغط أيقونة «حِصن» ← «الدخول بالهوية الرقمية» ← «تفعيل». (الرسائل وواتساب والعواقب كلها داخل الهاتف)</li>
         <li><b>هاتف المحتال:</b> امسح الرمز الثاني ← يرتبط بهاتف الضحية تلقائيًا دون إدخال أي رمز.</li>
         <li>من هاتف المحتال: أرسل رسالة جاهزة أو اكتب رسالتك، أو ابدأ مكالمة. في «🎙️ مكالمة حرة» يتكلم أي شخص بصوته على هاتف المحتال، فيسمعه هاتف الضحية مباشرة ويحلّله «حِصن» لحظيًا.</li>
         <li>عند أول مكالمة يطلب الهاتفان إذن الميكروفون: اضغط «سماح».</li>
@@ -82,17 +82,17 @@
           myRoom = (await fetch('/api/room', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }).then((r) => r.json())).code;
           lastV = lastS = '';
         }
-        const urlV = j.url + '/?room=' + myRoom + '&app=1', urlS = j.url + '/scammer?code=' + myRoom;
+        const urlV = j.url + '/?iphone&room=' + myRoom, urlS = j.url + '/scammer?code=' + myRoom;
         if (urlV !== lastV) { draw($('#qrV'), urlV); $('#urlV').textContent = urlV; lastV = urlV; }
         if (urlS !== lastS) { draw($('#qrS'), urlS); $('#urlS').textContent = urlS; lastS = urlS; }
         const st2 = await fetch('/api/room?code=' + myRoom, { cache: 'no-store' }).then((r) => r.json()).catch(() => ({}));
-        $('#vState').textContent = st2.user ? '✓ مفتوح ومفعّل — رمز الربط ' + myRoom : 'امسح الرمز ثم «الدخول بالهوية الرقمية» ← «تفعيل»';
+        $('#vState').textContent = st2.user ? '✓ مفتوح ومفعّل — رمز الربط ' + myRoom : 'امسح الرمز ثم «حِصن» ← «الدخول بالهوية الرقمية» ← «تفعيل»';
         $('#vState').className = 'pill' + (st2.user ? ' on' : '');
         $('#sState').textContent = st2.caller ? '✓ مرتبط بهاتف الضحية' : 'جاهز للمسح';
         $('#sState').className = 'pill' + (st2.caller ? ' on' : '');
         return;
       }
-      const urlV = j.url + '/';
+      const urlV = j.url + '/?iphone';
       if (urlV !== lastV) { draw($('#qrV'), urlV); $('#urlV').textContent = urlV; lastV = urlV; }
       const room = (j.rooms || []).find((r) => r.user) || null;
       $('#vState').textContent = room ? '✓ مفتوح — رمز الربط ' + room.code : 'لم يُفتح بعد';

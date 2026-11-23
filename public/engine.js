@@ -464,6 +464,9 @@
       else if (has('cred')) title = lang === 'en' ? 'Do not enter your details' : 'لا تُدخل بياناتك';
       else if (has('fee') && urls.length) title = lang === 'en' ? 'Do not pay through this link' : 'لا تدفع عبر هذا الرابط';
       else if (urls.length) title = lang === 'en' ? 'Do not open the link' : 'لا تفتح الرابط';
+      else if (reportedBy && /transfer|safe-account/.test(reportedBy.id || '')) title = lang === 'en' ? 'Do not transfer any money' : 'لا تحوّل أي مبلغ';
+      else if (reportedBy && /remote/.test(reportedBy.id || '')) title = lang === 'en' ? 'Do not give anyone access to your phone' : 'لا تعطِ أحدًا صلاحية الدخول لهاتفك';
+      else if (reportedBy && /otp-share/.test(reportedBy.id || '')) title = lang === 'en' ? 'Do not share the code or the message' : 'لا تشارك الرمز ولا الرسالة';
       else title = lang === 'en' ? 'Do not respond to this message' : 'لا تتجاوب مع الرسالة';
     } else {
       level = 'verify';

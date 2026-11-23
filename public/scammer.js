@@ -227,7 +227,10 @@
     on('peer', (d) => { peer = !!d.joined; renderLink(); });
     on('accepted', onAccepted); on('said', onSaid); on('declined', () => endCall(false, tt('declined'))); on('signal', onSignal);
     on('analysis', (d) => { call.analysis = d.state; renderCall(); });
-    on('callEnded', () => endCall(false, call.state === 'active' && $('#sayTitle').textContent === tt('spWait') ? tt('declinedByShield') : tt('ended')));
+    on('callEnded', (d) => {
+      if (d && d.scammed && call.on) { const w = (CALLS[lang].find((c) => c.kind === d.scammed) || {}).win || tt('ended'); setSpeaking(w); toParent({ type: 'scammed', kind: d.scammed }); return endCall(false, w); } // تجاهلت الضحية التحذيرين في المكالمة الحية
+      endCall(false, call.state === 'active' && $('#sayTitle').textContent === tt('spWait') ? tt('declinedByShield') : tt('ended'));
+    });
     es.onerror = () => {
       if (es.readyState === 2) fetch('/api/room?code=' + c).then((r) => { if (r.status === 404) { linked = false; $('#linkSub').textContent = tt('bad'); renderLink(); } else setTimeout(() => pair(c), 1500); }).catch(() => setTimeout(() => pair(c), 2000));
       else { peer = false; renderLink(); }
@@ -349,6 +352,7 @@
       if (!call.on || call.state !== 'active') return;
       if (who === 's') {
         setSpeaking(tt('spS')); addLine('s', text);
+        if (!embed) post('/api/voice', { room: code, text, clip }); // هاتف الضحية يسمع صوت المحتال أيضًا
         await window.ShieldVoice.say(text, { lang, role: 'scammer', clip });
         if (!call.on || call.state !== 'active') return;
         post('/api/phrase', { room: code, text, source: clip ? 'clip' : 'demo' }); // في العرض: النص يمثّل ناتج التعرف على الكلام
@@ -365,6 +369,7 @@
         const id = Math.random().toString(36).slice(2);
         setSpeaking(tt('spV')); addLine('v', text);
         post('/api/say', { room: code, text, id, clip });
+        if (!embed) window.ShieldVoice.say(text, { lang, role: 'victim', clip }); // هاتف المحتال يسمع ردّ الضحية أيضًا
         await waitSaid(id, clip ? 65000 : 4000 + text.length * 130);
       }
       await new Promise((r) => setTimeout(r, 350));

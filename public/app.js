@@ -123,6 +123,7 @@
   let es = null; // EventSource
   const inbox = []; // في الذاكرة فقط
   const hooks = {}; // يربط وضع «آيفون» بالتطبيق
+  const embedded = new URLSearchParams(location.search).get('frame') === '0'; // داخل صفحة العرض (الهاتفان على شاشة واحدة)
   const t = (k, ...a) => { const v = T[lang][k]; return typeof v === 'function' ? v(...a) : v; };
 
   /* ------------------------------ التنقل والترجمة ------------------------------ */
@@ -227,6 +228,7 @@
     openStream('user', code, {
       hello: () => { callState.serverOk = true; renderPill(); post('/api/lang', { room: code, lang }); }, // مزامنة لغة التحليل مع لغة الهاتف
       sms: onSms, ring: onRing, say: onSay,
+      voice: (d) => { if (!embedded && callState.active && window.ShieldVoice) window.ShieldVoice.say(d.text, { lang, role: 'scammer', clip: d.clip || null }); }, // صوت المحتال على هاتف الضحية
       pattern: (d) => { const list = E.getPatterns().filter((x) => x.id !== d.pattern.id); E.setPatterns([d.pattern, ...list]); patternsChanged(d.pattern); },
       patterns: (d) => { E.setPatterns(d.patterns); patternsChanged(null); }, signal: onSignal, analysis: onAnalysis, alert: onAlert, heard: onHeard,
       callEnded: (d) => { endCallLocal(false, !!(d && d.scammed)); if (d && d.scammed && hooks.simulate) setTimeout(() => hooks.simulate(d.scammed, null), 600); },
@@ -473,7 +475,7 @@
     callState.timer = setInterval(() => { const s = Math.floor((Date.now() - callState.t0) / 1000); $('#callTimer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
   }
   function enterCallUI(role) {
-    callState.active = true; callState.role = role; callState.analysis = 'waiting'; callState.serverOk = true; callState.audioFail = 0;
+    callState.active = true; callState.live = false; callState.ignored = 0; callState.role = role; callState.analysis = 'waiting'; callState.serverOk = true; callState.audioFail = 0;
     if (window.ShieldTones) window.ShieldTones.ringStop();
     $('#ringBox').hidden = true; $('#callLive').hidden = false;
     $('#callerNotice').hidden = role !== 'caller';
@@ -533,6 +535,7 @@
   let lastCallerLine = null;
   function onHeard(d) {
     if (!settings || !settings.calls) return;
+    if (d.source === 'asr' || d.source === 'typed') callState.live = true; // مكالمة حية (كلام حقيقي أو مكتوب) وليست حوارًا مسجّلًا
     lastCallerLine = addTranscript('c', d.text);
     addTech(lastCallerLine, techLine(d), ((d.nlp || {}).intents || []).length);
     $('#transcript').scrollTop = 1e6;
@@ -565,7 +568,7 @@
     renderLatency();
     $('#alertCard').hidden = false; $('#alEnd').focus();
     $('#alertCard').dataset.speech = [a.title, a.reason, a.step].join('. ');
-    $('#alertCard').dataset.kind = { otp: 'otp', transfer: 'transfer', approval: 'approval', remote: 'remote', reported: 'transfer' }[a.type] || 'otp';
+    $('#alertCard').dataset.kind = { otp: 'otp', transfer: 'transfer', approval: 'approval', remote: 'remote' }[a.type] || (/remote/.test(a.pattern || '') ? 'remote' : /otp/.test(a.pattern || '') ? 'otp' : 'transfer');
     $('#alWhatIf').hidden = !hooks.simulate;
     vibrate([250, 100, 250, 100, 250]);
     if (hooks.alert) hooks.alert(a);
@@ -790,7 +793,11 @@ registerProcessor('pcm-tap',Tap);`;
     $('#btnDecline').addEventListener('click', declineCall);
     $('#btnEnd').addEventListener('click', () => endCallLocal(true));
     $('#alEnd').addEventListener('click', refuseAndEnd);
-    $('#alDismiss').addEventListener('click', () => { $('#alertCard').hidden = true; post('/api/said', { room: callState.room, id: 'choice', choice: 'continue' }); });
+    $('#alDismiss').addEventListener('click', () => {
+      $('#alertCard').hidden = true; post('/api/said', { room: callState.room, id: 'choice', choice: 'continue' });
+      // في المكالمة الحية: تجاهل التحذيرين ← تنجح الخدعة وتبدأ العاقبة على الهاتفين (في الحوار المسجّل يتولاها هاتف المحتال)
+      if (callState.live) { callState.ignored = (callState.ignored || 0) + 1; if (callState.ignored >= 2) post('/api/call', { room: callState.room, action: 'end', role: 'user', scammed: $('#alertCard').dataset.kind || 'otp' }); }
+    });
     $('#alListen').addEventListener('click', () => speak($('#alertCard').dataset.speech));
     $('#btnTapAudio').addEventListener('click', () => { $('#remoteAudio').play().then(() => { $('#btnTapAudio').hidden = true; }).catch(() => {}); unlockAudioCtx(); });
     $('#outageToggle').addEventListener('change', (e) => post('/api/outage', { room: callState.room, on: e.target.checked }));
