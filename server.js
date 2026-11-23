@@ -40,7 +40,7 @@ const SEED = [{
   phrases: ['حساب آمن', 'حساب امن', 'safe account'], domains: [], official: 'adpolice.gov.ae', severity: 'high', createdAt: Date.now() - 86400000 * 2,
 }, {
   id: 'seed-otp-share', orgId: 'adpolice-cbuae', org: { ar: 'شرطة أبوظبي والمصرف المركزي', en: 'Abu Dhabi Police and the Central Bank' },
-  title: { ar: 'طلب رمز التحقق أو الرسالة التي وصلتك — موظف البنك أو رجل الأمن لا يطلبها أبدًا', en: 'Asking for your code or the SMS you received — bank staff and police never ask for it' },
+  title: { ar: 'طلب مشاركة الرمز أو الرسالة التي وصلتك — لا البنك ولا شركة الاتصالات ولا الشرطة ولا أي جهة تطلبه، لا بالاتصال ولا بالرسائل', en: 'Asking you to share your code or the SMS you received — no bank, telecom, police or any authority ever asks for it, by call or message' },
   channel: 'any', description: 'المحتال يطلب الرمز أو الرقم أو OTP، أو يطلب مشاركة الرسالة التي وصلتك أو إعادة إرسالها له أو إلى بريد إلكتروني. موظف البنك لا يطلب الرقم السري ولا رمز التحقق، ورجل الأمن كذلك.',
   phrases: [
     'ترسل لي الرمز', 'ترسلي الرمز', 'ارسل لي الرمز', 'ارسلي الرمز', 'ارسل الرمز', 'ممكن الرمز', 'قول لي الرمز', 'قولي الرمز', 'عطني الرمز', 'اعطني الرمز',
@@ -49,7 +49,11 @@ const SEED = [{
     'المسج اللي وصلك', 'المسج الي وصلك', 'المسج اللي وصلتك', 'المسج الي وصلتك', 'الرساله اللي وصلتك', 'الرساله الي وصلتك', 'الرساله اللي وصلتج', 'الرساله الي وصلتج',
     'شاركني اياه', 'شاركني اياها', 'شاركها وياي', 'شاركه وياي', 'ارسلي الرساله', 'ارسل لي الرساله', 'ارسلي المسج', 'ارسل لي المسج',
     'اعاده ارسال للمسج', 'اعاده ارسال للرساله', 'سوي اعاده ارسال', 'سويلها اعاده ارسال', 'سوي لها اعاده ارسال', 'سويله اعاده ارسال', 'فورورد', 'على هذا الايميل',
-    'send me the code', 'tell me the code', 'share the code', 'give me the otp', 'send me the otp', 'forward the message', 'forward the sms', 'the message you received', 'the sms you received', 'to this email',
+    'شاركني الرمز', 'شاركنا الرمز', 'تشاركني الرمز', 'تشاركنا الرمز', 'شاركني الكود', 'شاركنا الكود', 'تشاركني الكود', 'شاركني رمز', 'تشاركني رمز',
+    'ابعت الرمز', 'ابعت الكود', 'ابعتلي الرمز', 'ابعتلي الكود', 'ابعث الرمز', 'ابعث الكود', 'ابعثلي الرمز', 'دز الرمز', 'دز الكود', 'دزلي الرمز', 'دزلي الكود',
+    'عطني الكود', 'عطنا الكود', 'عطنا الرمز', 'ارسل الكود', 'ارسلي الكود', 'ارسل لي الكود', 'ارسل لنا الرمز', 'ارسلوا الرمز',
+    'الرمز على الايميل', 'الرمز على البريد', 'الرمز على بريد', 'الرمز على ايميل', 'الكود على الايميل', 'الكود على البريد', 'الرمز بالايميل', 'الرمز بالبريد', 'الرمز عبر البريد', 'رمز التحقق عبر البريد', 'الرمز برساله', 'الرمز في رساله', 'الرمز على الواتساب', 'الرمز على واتساب', 'رد على هذه الرساله بالرمز', 'رد بالرمز',
+    'send me the code', 'tell me the code', 'share your code', 'email the code', 'reply with the code', 'send the code to', 'share the code', 'give me the otp', 'send me the otp', 'forward the message', 'forward the sms', 'the message you received', 'the sms you received', 'to this email',
   ], domains: [], official: 'adpolice.gov.ae', severity: 'high', createdAt: Date.now() - 86400000,
 }, {
   id: 'seed-police-transfer', orgId: 'adpolice', org: { ar: 'شرطة أبوظبي', en: 'Abu Dhabi Police' },

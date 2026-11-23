@@ -232,7 +232,7 @@
     }
     for (const pt of PATTERNS) {
       if (pt.channel && !['call', 'any'].includes(pt.channel)) continue;
-      if (pt.phrases.some((ph) => n.includes(norm(ph)))) { found.add('reported'); found.reportedBy = pt; }
+      if (pt.phrases.some((ph) => phraseHit(n, ph))) { found.add('reported'); found.reportedBy = pt; }
     }
     const entity = findEntity(n) || findEntity(ctxText);
     const rep_ = found.has('reported') && found.size > 1 ? found.reportedBy : null;
@@ -445,7 +445,7 @@
       const org = pt.org[lang] || pt.org.ar;
       const hitDomain = urls.find((u) => pt.domains.some((d) => u.host === d || u.host.endsWith('.' + d)));
       const hitPred = !hitDomain && urls.find((u) => (pt.predicted || []).some((d) => u.host === d || u.host.endsWith('.' + d)));
-      const hitPhrase = pt.phrases.some((ph) => ph && n.includes(norm(ph)));
+      const hitPhrase = pt.phrases.some((ph) => ph && phraseHit(n, ph));
       if (hitDomain || hitPhrase) { add('reported', 3, org, pt.title[lang] || pt.title.ar); reportedBy = pt; }
       else if (hitPred) { add('predicted', 3, org, hitPred.host); reportedBy = pt; }
     }
@@ -535,6 +535,13 @@
    * 7) ممارسات تنشرها الجهات + التنبؤ بالنطاقات المنتحلة
    * ------------------------------------------------------------------ */
   let PATTERNS = [];
+  // عبارة من ممارسات الجهات: تُحتسب فقط إذا لم يسبقها نفي قريب («لا ترسل الرمز…» تحذير وليس طلبًا)
+  const NEG_BEFORE = /(^|\s)(لا|لن|ما|مو|ليس|لم|ابدا|never|not|dont|don't|do not)(\s+\S+){0,2}\s*$/;
+  function phraseHit(n, ph) {
+    const p = norm(ph); if (!p) return false;
+    for (let i = n.indexOf(p); i >= 0; i = n.indexOf(p, i + 1)) if (!NEG_BEFORE.test(n.slice(Math.max(0, i - 30), i))) return true;
+    return false;
+  }
   function setPatterns(list) {
     PATTERNS = (list || []).map((p) => ({
       ...p,
