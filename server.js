@@ -38,12 +38,42 @@ const SEED = [{
   title: { ar: 'انتحال صفة الشرطة وطلب التحويل إلى «حساب آمن»', en: 'Police impersonation asking for a “safe account” transfer' },
   channel: 'call', description: 'يتصل المحتال مدّعيًا أنه محقق، ويخوّف الضحية من تورط حسابها، ثم يطلب تحويل الرصيد إلى «حساب آمن».',
   phrases: ['حساب آمن', 'حساب امن', 'safe account'], domains: [], official: 'adpolice.gov.ae', severity: 'high', createdAt: Date.now() - 86400000 * 2,
+}, {
+  id: 'seed-otp-share', orgId: 'adpolice-cbuae', org: { ar: 'شرطة أبوظبي والمصرف المركزي', en: 'Abu Dhabi Police and the Central Bank' },
+  title: { ar: 'طلب رمز التحقق أو الرسالة التي وصلتك — موظف البنك أو رجل الأمن لا يطلبها أبدًا', en: 'Asking for your code or the SMS you received — bank staff and police never ask for it' },
+  channel: 'any', description: 'المحتال يطلب الرمز أو الرقم أو OTP، أو يطلب مشاركة الرسالة التي وصلتك أو إعادة إرسالها له أو إلى بريد إلكتروني. موظف البنك لا يطلب الرقم السري ولا رمز التحقق، ورجل الأمن كذلك.',
+  phrases: [
+    'ترسل لي الرمز', 'ترسلي الرمز', 'ارسل لي الرمز', 'ارسلي الرمز', 'ارسل الرمز', 'ممكن الرمز', 'قول لي الرمز', 'قولي الرمز', 'عطني الرمز', 'اعطني الرمز',
+    'ترسل لي الرقم', 'ارسل لي الرقم', 'ارسلي الرقم', 'عطني الرقم اللي', 'عطني الرقم الي', 'الرقم اللي وصلك', 'الرقم الي وصلك',
+    'ترسل لي otp', 'ارسل لي otp', 'ارسلي otp', 'عطني otp', 'رمز otp', 'otp اللي', 'otp الي',
+    'المسج اللي وصلك', 'المسج الي وصلك', 'المسج اللي وصلتك', 'المسج الي وصلتك', 'الرساله اللي وصلتك', 'الرساله الي وصلتك', 'الرساله اللي وصلتج', 'الرساله الي وصلتج',
+    'شاركني اياه', 'شاركني اياها', 'شاركها وياي', 'شاركه وياي', 'ارسلي الرساله', 'ارسل لي الرساله', 'ارسلي المسج', 'ارسل لي المسج',
+    'اعاده ارسال للمسج', 'اعاده ارسال للرساله', 'سوي اعاده ارسال', 'سويلها اعاده ارسال', 'سوي لها اعاده ارسال', 'سويله اعاده ارسال', 'فورورد', 'على هذا الايميل',
+    'send me the code', 'tell me the code', 'share the code', 'give me the otp', 'send me the otp', 'forward the message', 'forward the sms', 'the message you received', 'the sms you received', 'to this email',
+  ], domains: [], official: 'adpolice.gov.ae', severity: 'high', createdAt: Date.now() - 86400000,
+}, {
+  id: 'seed-police-transfer', orgId: 'adpolice', org: { ar: 'شرطة أبوظبي', en: 'Abu Dhabi Police' },
+  title: { ar: 'انتحال صفة رجل الأمن وطلب تحويل أموال — رجل الأمن لا يطلب أي تحويل', en: 'Police impersonation asking for a money transfer — police never ask you to transfer money' },
+  channel: 'any', description: 'يدّعي المتصل أنه من الشرطة أو جهة أمنية ويطلب تحويل مبلغ أو دفع غرامة أو كفالة عبر الهاتف. رجل الأمن لا يطلب أي تحويل أموال.',
+  phrases: ['حول المبلغ', 'تحول المبلغ', 'تحويل المبلغ', 'حول رصيدك', 'تحول رصيدك', 'حول الفلوس', 'تحول الفلوس', 'حوله لحساب', 'حولها لحساب', 'حول لنا', 'حول لي',
+    'ادفع الغرامه الحين', 'سدد الغرامه الحين', 'ادفع الكفاله', 'تدفع الكفاله', 'transfer the amount', 'transfer your balance', 'pay the fine now'],
+  domains: [], official: 'adpolice.gov.ae', severity: 'high', createdAt: Date.now() - 3600000 * 20,
+}, {
+  id: 'seed-telecom-remote', orgId: 'tdra', org: { ar: 'هيئة تنظيم الاتصالات والحكومة الرقمية', en: 'TDRA' },
+  title: { ar: 'دعم فني يطلب صلاحية الدخول لهاتفك — الدعم الفني لا يطلبها، راجع أقرب مركز خدمة عملاء', en: 'Tech support asking for access to your phone — real support never does; visit the nearest customer service centre' },
+  channel: 'any', description: 'يتصل المحتال باسم شركة الاتصالات أو الدعم الفني ويطلب تثبيت برنامج تحكم عن بعد أو صلاحية الوصول لهاتفك. شركات الاتصالات لا تطلب ذلك، بل تقول لك: راجع أقرب مركز خدمة للعملاء.',
+  phrases: ['anydesk', 'teamviewer', 'quicksupport', 'rustdesk', 'صلاحيه الدخول', 'صلاحيه الوصول', 'صلاحيه اكسس', 'عطني صلاحيه', 'اعطني صلاحيه', 'عطني اكسس', 'اعطني اكسس',
+    'الوصول لهاتفك', 'الوصول لجهازك', 'الدخول لهاتفك', 'الدخول لجهازك', 'الدخول على جهازك', 'الدخول على هاتفك', 'التحكم بجهازك', 'التحكم في جهازك', 'التحكم بهاتفك', 'نتحكم بجهازك',
+    'مشاركه الشاشه', 'شارك الشاشه', 'remote access', 'screen sharing', 'share your screen', 'access to your phone'],
+  domains: [], official: 'tdra.gov.ae', severity: 'high', createdAt: Date.now() - 3600000 * 6,
 }];
 let patterns = [];
 let partnerTokens = new Map(); // token -> orgId (ذاكرة فقط)
 const hits = {};
 function loadPatterns() {
   try { patterns = JSON.parse(fs.readFileSync(PAT_FILE, 'utf8')); } catch { patterns = SEED.slice(); }
+  // الممارسات الأساسية تُضاف دائمًا إذا لم تكن موجودة (حتى مع ملف ممارسات قديم)، وتُحدَّث لآخر نسخة
+  for (const sp of SEED) { const i = patterns.findIndex((x) => x.id === sp.id); if (i < 0) patterns.push(sp); else patterns[i] = { ...sp, createdAt: patterns[i].createdAt || sp.createdAt }; }
   applyPatterns();
 }
 function savePatterns() {
