@@ -12,6 +12,8 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const engine = require('./public/engine.js');
+const learn = require('./public/learn.js');
+const LSEED = require('./learn-seed.js');
 
 const PORT = Number(process.env.PORT) || 3000;
 const KEY = process.env.OPENAI_API_KEY || '';
@@ -207,6 +209,38 @@ function closeStt(room) {
   if (ws) try { ws.close(); } catch {}
 }
 
+/* ------------------------------ التعلّم الآلي المستمر ------------------------------ */
+// شبكة عصبية خفيفة تتدرّب من: ممارسات الجهات + قرارات المحرك الواثقة + نتائج المكالمات. تُحفظ الأوزان فقط، لا النصوص.
+const MODEL_FILE = path.join(DATA_DIR, 'model.json');
+const mlStats = { sources: { seed: 0, authority: 0, rules: 0, outcome: 0 }, holdout: null, startedAt: Date.now() };
+let model = null;
+function holdoutAcc() { let ok = 0; for (const [t, y] of LSEED.HOLDOUT) if ((learn.predict(model, t) >= 0.5) === !!y) ok++; return Math.round(ok / LSEED.HOLDOUT.length * 100); }
+function initModel() {
+  try { const o = JSON.parse(fs.readFileSync(MODEL_FILE, 'utf8')); if (o.seedVersion === LSEED.VERSION) { model = learn.importModel(o); if (o.sources) Object.assign(mlStats.sources, o.sources); } } catch {}
+  if (!model) {
+    model = learn.createModel(42); model.seedVersion = LSEED.VERSION;
+    const ex = [...LSEED.POS.map((t) => [t, 1]), ...LSEED.NEG.map((t) => [t, 0])];
+    learn.fit(model, ex, 40, 0.1); mlStats.sources.seed = ex.length; saveModel(true);
+  }
+  mlStats.holdout = holdoutAcc();
+  engine.setMl((t) => learn.predict(model, t));
+  log('[ml] model ready — examples', model.seen, '| held-out accuracy', mlStats.holdout + '%');
+}
+let saveT = null;
+function saveModel(now) {
+  const w = () => { try { fs.mkdirSync(DATA_DIR, { recursive: true }); fs.writeFileSync(MODEL_FILE, JSON.stringify({ ...learn.exportModel(model, true), sources: mlStats.sources })); } catch (e) { log('[ml] save failed', e.message); } };
+  if (now) return w(); clearTimeout(saveT); saveT = setTimeout(w, 3000);
+}
+function learnFrom(text, label, source) {
+  if (!model || !text || String(text).trim().length < 6) return;
+  learn.train(model, String(text).slice(0, 400), label, { steps: 3, lr: 0.06 });
+  // إعادة تذكير بأمثلة الأساس حتى لا ينسى النموذج ما تعلّمه (replay)
+  for (let k = 0; k < 4; k++) { const pos = Math.random() < 0.5, arr = pos ? LSEED.POS : LSEED.NEG; learn.train(model, arr[Math.floor(Math.random() * arr.length)], pos ? 1 : 0, { steps: 1, lr: 0.03 }); model.seen--; model.version--; pos ? model.pos-- : model.neg--; }
+  mlStats.sources[source] = (mlStats.sources[source] || 0) + 1;
+  if (model.version % 10 === 0) mlStats.holdout = holdoutAcc();
+  saveModel();
+}
+
 /* ------------------------------ فحص العبارات ------------------------------ */
 function handlePhrase(room, text, source) {
   if (!room.inCall || room.outage || !text.trim()) return;
@@ -214,6 +248,8 @@ function handlePhrase(room, text, source) {
   const { alerts, nlp } = engine.analyzeUtterance(text, room.ctx, room.lang);
   room.ctx.push(text); if (room.ctx.length > 6) room.ctx.shift();
   send(room, 'user', 'heard', { text, source, nlp, ms: Date.now() - t0 }); // يُعرض لحظيًا ولا يُحفظ
+  // التعلّم من قرارات المحرك الواثقة (لا يتعلّم من تنبيهات النموذج وحده تجنبًا لتأكيد أخطائه)
+  if (alerts.some((a) => a.type !== 'ml')) learnFrom(text, 1, 'rules'); else if (nlp.protective) learnFrom(text, 0, 'rules');
   for (const a of alerts) {
     const last = room.alerted[a.type];
     if (last && last.text === text && Date.now() - last.t < REALERT_MS) continue; // لا نكرر التنبيه لنفس الجملة فقط
@@ -226,6 +262,8 @@ function handlePhrase(room, text, source) {
 
 function endCall(room, by, scammed) {
   if (!room.inCall && !room.ringing) return;
+  // نتيجة المكالمة: تجاهلت الضحية التحذير ونجحت الخدعة ← آخر ما قاله المحتال مثال احتيال مؤكد
+  if (scammed) for (const t of room.ctx.slice(-2)) if (learn.predict(model, t) >= 0.4 || engine.analyzeUtterance(t, [], room.lang).alerts.length) learnFrom(t, 1, 'outcome');
   room.inCall = false; room.ringing = false;
   closeStt(room);
   room.ctx = []; room.alerted = {}; room.outage = false; room.sttState = 'idle';
@@ -439,6 +477,11 @@ async function handler(req, res) {
     return json(res, 200, { state: analysisState(room) });
   }
   // بوابة الجهات (طرف ثالث): الدخول بالهوية الرقمية (محاكاة) ثم نشر الممارسات
+  if (p === '/api/model' && req.method === 'GET') {
+    const meta = { version: model.version, seen: model.seen, pos: model.pos, neg: model.neg, sources: mlStats.sources, holdout: mlStats.holdout, trainedAt: model.trainedAt, arch: 'char n-grams (3–5) + words → hashing 4096 → dense 16 (ReLU) → sigmoid' };
+    if (url.searchParams.get('meta') === '1' || Number(url.searchParams.get('v')) === model.version) return json(res, 200, { ...meta, same: Number(url.searchParams.get('v')) === model.version });
+    return json(res, 200, { ...learn.exportModel(model), ...meta });
+  }
   if (p === '/api/patterns' && req.method === 'GET') return json(res, 200, { patterns: patterns.map(withPred), hits });
   if (p === '/api/partner/login' && req.method === 'POST') {
     const b = await readJson(req);
@@ -471,6 +514,7 @@ async function handler(req, res) {
     };
     if (!pat.title.ar || (!pat.phrases.length && !pat.domains.length)) return json(res, 400, { error: 'fields' });
     patterns.unshift(pat); if (patterns.length > 200) patterns.pop();
+    for (const ph of pat.phrases || []) for (let k = 0; k < 2; k++) learnFrom(ph, 1, 'authority'); // الجهة تعلّم النموذج الأسلوب الجديد
     savePatterns(); applyPatterns();
     broadcastAll('pattern', { pattern: withPred(pat) });
     log('[patterns] published by', orgId);
@@ -492,6 +536,7 @@ async function handler(req, res) {
     if (!room) return json(res, 404, { error: 'room' });
     const msg = { id: crypto.randomUUID(), channel: b.channel === 'wa' ? 'wa' : 'sms', from: String(b.from || 'SMS').slice(0, 40), fromLabel: String(b.fromLabel || '').slice(0, 60), text: String(b.text || '').slice(0, 1200), at: Date.now() };
     const delivered = send(room, 'user', 'sms', msg);
+    try { const r = engine.analyzeMessage(msg.text, room.lang, msg.from); if (r.level === 'danger' && !(r.reasons.length === 1 && r.ml)) learnFrom(msg.text, 1, 'rules'); } catch {}
     log('[sms] relayed', room.code, delivered ? 'delivered' : 'offline');
     return json(res, 200, { delivered });
   }
@@ -557,4 +602,5 @@ function startTunnel() {
 }
 if (process.env.TUNNEL === '1') startTunnel();
 
+initModel();
 server.listen(PORT, () => log(`الدرع الذكي يعمل على المنفذ ${PORT} — التفريغ اللحظي: ${KEY ? STT_MODEL + ' (' + STT_API + ')' : 'متوقف (وضع العرض بعبارات تمثيلية)'}`));

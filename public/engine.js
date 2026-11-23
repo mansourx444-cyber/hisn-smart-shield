@@ -156,6 +156,26 @@
     }
     return false;
   }
+  /* طلب «إعادة إرسال» الرمز أو الرسالة التي ستصل للضحية — يُفهم من المعنى لا من عبارة محددة:
+     (ما سيصل: رمز/كود/OTP/الأرقام/المسج…) + (طلب إرسال/تحويل/كتابة) + (وجهة: بريدي/واتسابي/رقمي/حقي/الرابط…)
+     البنك والجهات لا تطلب أبدًا إعادة إرسال الرمز؛ الرمز تحقق خاص بالعميل. */
+  const RELAY_CODE = /(رمز|كود|otp|(^|\s)او ?تي ?بي|اوتيبي|(^|\s)pin(\s|$)|(^|\s)code|(^|\s)(ال)?ارقام)/;
+  const RELAY_SOFT = /((ال)?رساله|(ال)?مسج|sms|message|text)/;
+  const RELAY_ARRIVE = /(وصلك|وصلتك|وصلتج|يوصلك|بيوصلك|بتوصلك|توصلك|راح يوصلك|يجيك|بيجيك|بتجيك|تجيك|جاك|جتك|جاتك|ينرسل لك|بينرسل لك|you('ll| will)? (get|receive)|you (got|received)|we (will )?send you|(رساله|مسج)\s+فيها\s+(ارقام|رقم|رمز|كود))/;
+  const RELAY_ACT = /(^|\s)(ارسل\S*|ترسل\S*|ارسلي\S*|طرش\S*|تطرش\S*|حول(ه|ها|يه|يها|لي|يلي)|تحول(ه|ها|يه)|فورورد\S*|فوروود\S*|ابعت\S*|تبعت\S*|ابعث\S*|تبعث\S*|دز\S*|تدز\S*|اكتب\S*|تكتب\S*|حط(ه|ها|يه|يها)?|تحط(ه|ها)?|دخل(ه|ها)|عطني|اعطني|عطنا|عطيني|تعطيني|انسخ\S*|الصق\S*|اعاده ارسال|forward\S*|send|share|type|enter|paste|text)(?=\s|$)/g;
+  const RELAY_DEST = /(بريد|ايميل|email|(^|\s)mail|واتس|whatsapp|(^|\s)رقمي|رقم\s*(هاتفي|تلفوني|تليفوني|جوالي)|تليفوني|تلفوني|هاتفي|جوالي|موبايلي|(^|\s)حقي|(^|\s)لي(\s|$)|(^|\s)لنا(\s|$)|الخاص|(^|\s)هنا|الرابط|اللينك|(^|\s)link|my (number|phone|email|whatsapp|inbox)|(^|\s)me(\s|$)|this (number|email|link))/;
+  const RELAY_NEG = /(^|\s)(لا|لن|ما|مو|مب|ابدا|ليس|لم|never|not|dont|don't|do not)(\s|$)/;
+  function detectRelay(n) {
+    const code = RELAY_CODE.test(n), arrive = RELAY_ARRIVE.test(n);
+    if (!(code || (RELAY_SOFT.test(n) && arrive))) return false;
+    if (!(RELAY_DEST.test(n) || arrive)) return false;
+    RELAY_ACT.lastIndex = 0; let m;
+    while ((m = RELAY_ACT.exec(n))) {
+      const before = n.slice(0, m.index).trim().split(/\s+/).slice(-3).join(' ');
+      if (!RELAY_NEG.test(' ' + before + ' ')) return true;
+    }
+    return false;
+  }
   function detectTransfer(seg, tk, uttText, ctxText) {
     if (isProtective(seg, tk)) return false;
     const all = uttText + ' ' + ctxText;
@@ -223,6 +243,7 @@
     const ctxHasObj = segments(ctxText).some((s) => hasOtpObj(s, tokens(s))) || segs.some((s) => hasOtpObj(s, tokens(s)));
     const uttProtective = segs.some((s) => isProtective(s, tokens(s)));
     const found = new Set();
+    if (detectRelay(n) || (ctxHasObj && detectRelay(ctxText + ' . ' + n) && RELAY_ACT.test(n))) found.add('otp'); // «بيوصلك OTP، طرشه حقي على الواتساب»
     for (const seg of segs) {
       const tk = tokens(seg);
       if (detectOtp(seg, tk, ctxHasObj, uttProtective)) found.add('otp');
@@ -234,6 +255,9 @@
       if (pt.channel && !['call', 'any'].includes(pt.channel)) continue;
       if (pt.phrases.some((ph) => phraseHit(n, ph))) { found.add('reported'); found.reportedBy = pt; }
     }
+    let mlP = null;
+    if (ML) { try { mlP = ML(text); } catch { mlP = null; } }
+    if (mlP !== null && mlP >= ML_TH && found.size === 0 && !uttProtective && ML_SENSITIVE.test(n) && mlHasRequest(n)) found.add('ml');
     const entity = findEntity(n) || findEntity(ctxText);
     const rep_ = found.has('reported') && found.size > 1 ? found.reportedBy : null;
     if (rep_) found.delete('reported'); // دمج تحذير الجهة مع التنبيه الأساسي في بطاقة واحدة
@@ -241,6 +265,10 @@
       if (type === 'reported') {
         const pt = found.reportedBy, org = pt.org[lang] || pt.org.ar, tl = pt.title[lang] || pt.title.ar;
         return { type, title: lang === 'en' ? 'Known scam pattern' : 'أسلوب احتيال معروف', reason: lang === 'en' ? `${org} warned about this: “${tl}”.` : `حذّرت ${org} من هذا الأسلوب: «${tl}».`, step: callStep(entity, lang), pattern: pt.id };
+      }
+      if (type === 'ml') {
+        const pc = Math.round(mlP * 100);
+        return { type, kind: mlKind(n), title: lang === 'en' ? 'This sounds like a scam' : 'كلام يشبه أساليب الاحتيال', reason: lang === 'en' ? `HISN's learning model found it ${pc}% similar to scam tactics it has learned.` : `وجد نموذج التعلّم في «حِصن» تشابهًا بنسبة ${pc}٪ مع أساليب احتيال تعلّمها.`, step: callStep(entity, lang), ml: mlP };
       }
       const [title, reason] = CALL_TEXT[type][lang];
       const extra = rep_ ? (lang === 'en' ? ` ${rep_.org.en || rep_.org.ar} has warned about this method.` : ` وقد حذّرت ${rep_.org.ar} من هذا الأسلوب.`) : '';
@@ -258,7 +286,7 @@
       else if (inSet(QWORD, tk)) tag = 'req';
       if (tag && cues.length < 8 && !cues.some((c) => c.w === tk)) cues.push({ w: tk, tag });
     }
-    const nlp = { tokens: tokens(n).length, segments: segs.length, cues, intents: alerts.map((x) => x.type), protective: uttProtective, entity: entity ? entity[lang] : null, context: (context || []).length };
+    const nlp = { ml: mlP === null ? null : Math.round(mlP * 100), tokens: tokens(n).length, segments: segs.length, cues, intents: alerts.map((x) => x.type), protective: uttProtective, entity: entity ? entity[lang] : null, context: (context || []).length };
     return { alerts, nlp };
   }
 
@@ -366,6 +394,7 @@
     tld: { ar: (t) => `امتداد الموقع (.${t}) شائع في روابط الاحتيال.`, en: (t) => `The domain ending (.${t}) is common in scam links.` },
     http: { ar: () => 'الرابط غير مشفّر (http).', en: () => 'The link is not encrypted (http).' },
     otp: { ar: () => 'الرسالة تطلب مشاركة رمز تحقق.', en: () => 'The message asks you to share a verification code.' },
+    ml: { ar: (pc) => `نموذج التعلّم في «حِصن» وجد تشابهًا بنسبة ${pc}٪ مع رسائل احتيال تعلّمها.`, en: (pc) => `HISN's learning model found it ${pc}% similar to scam messages it has learned.` },
     cred: { ar: () => 'الرسالة تطلب إدخال بيانات بطاقتك أو حسابك.', en: () => 'The message asks for your card or account details.' },
     fee: { ar: (u) => u ? 'الرسالة تطلب دفع رسوم بشكل عاجل.' : 'الرسالة تطلب دفع رسوم أو مبلغ.', en: (u) => u ? 'The message demands an urgent payment.' : 'The message asks you to pay a fee or amount.' },
     urgent: { ar: () => 'الرسالة تضغط عليك بمهلة قصيرة أو بتهديد بإيقاف الخدمة.', en: () => 'The message pressures you with a deadline or a suspension threat.' },
@@ -431,7 +460,7 @@
       if (!hasOtpObj(s, tk) || isProtective(s, tk)) return false;
       return tk.some((t, i) => (inSet(REQ, t) || MSG_OTP_REQ.test(t)) && !negatedAt(tk, i));
     });
-    if (otpReq) add('otp', 3);
+    if (otpReq || detectRelay(n)) add('otp', 3);
     const urgent = URGENT_MSG.test(n);
     if (CRED.test(n) && !segs.every((s) => isProtective(s, tokens(s)))) add('cred', 3);
     const fee = FEE.test(n) && !segs.every((s) => isProtective(s, tokens(s)));
@@ -450,6 +479,9 @@
       else if (hitPred) { add('predicted', 3, org, hitPred.host); reportedBy = pt; }
     }
 
+    let mlP = null;
+    if (ML) { try { mlP = ML(text); } catch { mlP = null; } }
+    if (mlP !== null && mlP >= ML_TH && ML_SENSITIVE.test(n) && mlHasRequest(n) && !reasons.some((r) => r.sev >= 3)) add('ml', 3, Math.round(mlP * 100));
     const risky = reasons.filter((r) => r.key !== 'official');
     const score = risky.reduce((a, r) => a + r.sev, 0);
     const danger = risky.some((r) => r.sev >= 3) || score >= 4;
@@ -467,6 +499,7 @@
       else if (reportedBy && /transfer|safe-account/.test(reportedBy.id || '')) title = lang === 'en' ? 'Do not transfer any money' : 'لا تحوّل أي مبلغ';
       else if (reportedBy && /remote/.test(reportedBy.id || '')) title = lang === 'en' ? 'Do not give anyone access to your phone' : 'لا تعطِ أحدًا صلاحية الدخول لهاتفك';
       else if (reportedBy && /otp-share/.test(reportedBy.id || '')) title = lang === 'en' ? 'Do not share the code or the message' : 'لا تشارك الرمز ولا الرسالة';
+      else if (has('ml')) { const k = mlKind(n); title = k === 'otp' ? (lang === 'en' ? 'Do not share the code' : 'لا تشارك الرمز') : k === 'remote' ? (lang === 'en' ? 'Do not give anyone access to your phone' : 'لا تعطِ أحدًا صلاحية الدخول لهاتفك') : k === 'approval' ? (lang === 'en' ? 'Do not approve the request' : 'لا توافق على الطلب') : (lang === 'en' ? 'Do not transfer any money' : 'لا تحوّل أي مبلغ'); }
       else title = lang === 'en' ? 'Do not respond to this message' : 'لا تتجاوب مع الرسالة';
     } else {
       level = 'verify';
@@ -528,13 +561,25 @@
       : (ask === 'otp' ? 'قد يستخدم المحتال الرمز للدخول إلى حسابك.' : (ask === 'cred' || ask === 'fee') ? 'قد يطلب هذا الموقع بيانات بطاقتك.' : 'قد يحاول هذا الموقع سرقة بياناتك.');
 
     const matchedPattern = reportedBy ? reportedBy.id : null;
-    return { kind, matchedPattern, level, risk, title, summary, consequence, reasons: reasons.map((r) => r.txt), step, urls: urls.map((u) => u.host), links: urls.map((u) => u.raw) };
+    return { ml: mlP === null ? null : Math.round(mlP * 100), kind, matchedPattern, level, risk, title, summary, consequence, reasons: reasons.map((r) => r.txt), step, urls: urls.map((u) => u.host), links: urls.map((u) => u.raw) };
   }
 
   /* ------------------------------------------------------------------ *
    * 7) ممارسات تنشرها الجهات + التنبؤ بالنطاقات المنتحلة
    * ------------------------------------------------------------------ */
   let PATTERNS = [];
+  // طبقة التعلّم الآلي (شبكة عصبية من learn.js): تُعطي احتمال أن النص احتيالي، وتلتقط صياغات جديدة
+  let ML = null; const ML_TH = 0.9;
+  function setMl(fn) { ML = typeof fn === 'function' ? fn : null; }
+  // بوابة أمان: لا ينبّه النموذج وحده إلا إذا ذكر النص شيئًا حساسًا (رمز، مال، حساب، بيانات، رابط، تطبيق، صلاحية…)
+  const ML_SENSITIVE = /(رمز|كود|otp|او ?تي ?بي|(^|\s)(ال)?ارقام|رقم\s*(ال)?سري|كلمه\s*(ال)?(مرور|سر)|باسورد|بطاق|مبلغ|فلوس|درهم|حساب|رصيد|تحويل|(^|\s)حول|ادفع|سدد|رسوم|غرام|كفال|تطبيق|برنامج|صلاحي|اكسس|تحكم|الشاشه|anydesk|وافق|موافق|اشعار|uae ?pass|الهويه|بيانات|رابط|لينك|(^|\s)(code|otp|pin|password|card|money|transfer|pay|fee|access|install|app|approve|link|details|account)(\s|$))/;
+  // النموذج لا ينبّه وحده إلا على «طلب» (أرسل، حوّل، ثبّت، وافق، ادفع…) وليس على وصف أو ادعاء
+  function mlHasRequest(n) {
+    const tk = tokens(n); RELAY_ACT.lastIndex = 0;
+    return tk.some((t) => inSet(REQ, t) || inSet(PAY_STRONG, t) || inSet(PAY_WEAK, t) || inSet(APPROVE, t) || INSTALL.test(t) || inSet(DO_VERB, t)) || RELAY_ACT.test(n)
+      || /(^|\s)(ابيك|ابغاك|نبيك|نبغاك|ابيج|ممكن|لو سمحت|بليز|فعل|تفعل|فعله|شغل|تشغل|اكد|تاكد|اكدلي|تاكدلي|قيد|تقيد|خلص|تخلص|تراها لنا|please|can you|could you|you need to|you must|activate|verify|confirm)(\s|$)/.test(n);
+  }
+  function mlKind(n) { return /(رمز|كود|otp|او ?تي ?بي|ارقام|سري|code|pin|password)/.test(n) ? 'otp' : /(تطبيق|برنامج|صلاحي|اكسس|تحكم|شاشه|anydesk|install|access)/.test(n) ? 'remote' : /(وافق|موافق|اشعار|uae ?pass|approve)/.test(n) ? 'approval' : 'transfer'; }
   // عبارة من ممارسات الجهات: تُحتسب فقط إذا لم يسبقها نفي قريب («لا ترسل الرمز…» تحذير وليس طلبًا)
   const NEG_BEFORE = /(^|\s)(لا|لن|ما|مو|ليس|لم|ابدا|never|not|dont|don't|do not)(\s+\S+){0,2}\s*$/;
   function phraseHit(n, ph) {
@@ -604,5 +649,5 @@
     });
   }
 
-  return { analyzeMessage, analyzeUtterance, extractUrls, linkReport, senderClaim: (f, t) => { const e = senderClaim(f, norm(t || '')); return e ? e : null; }, norm, ENTITIES, setPatterns, predictDomains, getPatterns: () => PATTERNS };
+  return { setMl, analyzeMessage, analyzeUtterance, extractUrls, linkReport, senderClaim: (f, t) => { const e = senderClaim(f, norm(t || '')); return e ? e : null; }, norm, ENTITIES, setPatterns, predictDomains, getPatterns: () => PATTERNS };
 });

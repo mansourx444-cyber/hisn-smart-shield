@@ -66,6 +66,17 @@
       <div class="try"><input id="tIn" value="بنك النخلة: حسابك موقوف، حدّث بياناتك خلال 24 ساعة http://nakhla-bank-secure.xyz/login"><button type="button" class="s-btn" id="tGo">افحص</button></div>
       <div class="res" id="tRes"></div>
     </section>
+    <section class="st" id="ml">
+      <h2><span class="n">🧠</span>التعلّم الآلي المستمر: «حِصن» يصبح أذكى مع كل عملية</h2>
+      <p class="d">إلى جانب المحرك القائم على القواعد، يعمل في «حِصن» نموذج تعلّم آلي (شبكة عصبية خفيفة) يتعلّم «التشابه» مع أساليب الاحتيال، فيلتقط صياغات جديدة لم تُكتب لها قاعدة. يتدرّب باستمرار، ويُحفظ منه الأوزان فقط، ولا تُحفظ أي نصوص.</p>
+      <div class="flow"><span>النص</span><i>←</i><span>تطبيع عربي</span><i>←</i><span>مقاطع حروف + كلمات</span><i>←</i><span>شبكة عصبية (16 خلية)</span><i>←</i><span>احتمال احتيال</span><i>←</i><span>بوابة أمان: طلب + شيء حساس</span><i>←</i><span>تنبيه</span></div>
+      <div class="legend" style="margin:10px 0 6px;gap:10px;display:flex;flex-wrap:wrap"><span class="ok" id="mlSeen">—</span><span>أمثلة تعلّم منها</span><span class="ok" id="mlAcc">—</span><span>دقة على صياغات جديدة لم يرها</span><span class="ok" id="mlVer">—</span><span>نسخة النموذج</span></div>
+      <table><thead><tr><th>مصدر التعلّم</th><th>كيف يتعلّم منه</th><th>عدد الأمثلة</th></tr></thead><tbody><tr><td>📚 التدريب الأولي</td><td>أمثلة احتيال وأمثلة سليمة وتحذيرية بالعربية واللهجة والإنجليزية</td><td id="ml_seed">—</td></tr><tr><td>🏛️ ممارسات الجهات</td><td>كل أسلوب تنشره جهة في البوابة يدرّب النموذج فورًا</td><td id="ml_authority">—</td></tr><tr><td>⚙️ قرارات المحرك الواثقة</td><td>ما يكشفه المحرك بثقة يعلّمه للنموذج، فيعمّم على صياغات مشابهة</td><td id="ml_rules">—</td></tr><tr><td>📞 نتائج المكالمات</td><td>إذا تجاهلت الضحية التحذير ونجحت الخدعة، يصبح كلام المحتال مثالًا مؤكدًا</td><td id="ml_outcome">—</td></tr></tbody></table>
+      <h2 style="margin-top:12px;font-size:14.5px">جرّب النموذج: اكتب جملة بصياغتك</h2>
+      <div class="try"><input id="mlIn" value="بخصوص بطاقتك، ابيك تأكد لي آخر أربعة أرقام والرقم اللي ورا"><button type="button" class="s-btn" id="mlGo">احسب</button></div>
+      <div class="res" id="mlRes"></div>
+      <p class="d" style="margin-top:8px;font-size:12.5px">للدقة: هذه شبكة عصبية خفيفة تعمل على الهاتف وتتعلم باستمرار. في النسخة الإنتاجية تُدرَّب نماذج لغوية عميقة (مثل AraBERT) على بيانات احتيال حقيقية من الجهات الشريكة، مع تعلّم موحّد (Federated Learning) يبقي بيانات المستخدم على جهازه.</p>
+    </section>
   </main>
   <script src="engine.js"></script>
   <script>
@@ -167,6 +178,29 @@
     document.getElementById('tGo').addEventListener('click', run);
     document.getElementById('tIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
     fetch('/api/patterns').then((r) => r.json()).then((j) => window.ShieldEngine.setPatterns(j.patterns || [])).catch(() => {}).then(run);
+  })();
+  </script>
+  <script src="learn.js"></script>
+  <script>
+  (() => {
+    let M = null;
+    const $ = (q) => document.querySelector(q);
+    async function refresh() {
+      try {
+        const o = await fetch('/api/model', { cache: 'no-store' }).then((r) => r.json());
+        M = window.ShieldLearn.importModel(o) || M; if (M) window.ShieldEngine.setMl((t) => window.ShieldLearn.predict(M, t));
+        $('#mlSeen').textContent = o.seen; $('#mlAcc').textContent = (o.holdout != null ? o.holdout + '%' : '—'); $('#mlVer').textContent = 'v' + o.version;
+        for (const k of ['seed', 'authority', 'rules', 'outcome']) { const el = $('#ml_' + k); if (el) el.textContent = (o.sources || {})[k] || 0; }
+      } catch {}
+    }
+    function score() {
+      if (!M) return; const t = $('#mlIn').value.trim(); if (!t) return;
+      const p = Math.round(window.ShieldLearn.predict(M, t) * 100);
+      const r = window.ShieldEngine.analyzeMessage(t, 'ar', '');
+      $('#mlRes').innerHTML = '🧠 الشبكة العصبية: <b style="color:' + (p >= 90 ? '#ff8a80' : p >= 50 ? '#ffd27a' : '#8ee3c8') + '">احتمال احتيال ' + p + '٪</b> &nbsp;·&nbsp; ⚙️ القرار النهائي (القواعد + الشبكة): ' + (r.level === 'danger' ? '<b style="color:#ff8a80">⚠️ ' + r.title + '</b>' : '<b style="color:#8ee3c8">لا تنبيه</b>');
+    }
+    $('#mlGo').addEventListener('click', score); $('#mlIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') score(); });
+    refresh().then(score); setInterval(refresh, 15000);
   })();
   </script>
 </body>

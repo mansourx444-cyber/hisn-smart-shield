@@ -65,6 +65,17 @@
       <div class="try"><input id="tIn" value="Nakhla Bank: your account is suspended, update your details within 24 hours http://nakhla-bank-secure.xyz/login"><button type="button" class="s-btn" id="tGo">Check</button></div>
       <div class="res" id="tRes"></div>
     </section>
+    <section class="st" id="ml">
+      <h2><span class="n">🧠</span>Continuous machine learning: HISN gets smarter with every operation</h2>
+      <p class="d">Alongside the rule-based engine, HISN runs a machine-learning model (a lightweight neural network) that learns similarity to scam tactics, so it catches new phrasings no rule was written for. It trains continuously; only its weights are stored, never any text.</p>
+      <div class="flow"><span>Text</span><i>→</i><span>Arabic normalisation</span><i>→</i><span>Char n-grams + words</span><i>→</i><span>Neural network (16 units)</span><i>→</i><span>Scam probability</span><i>→</i><span>Safety gate: request + sensitive item</span><i>→</i><span>Alert</span></div>
+      <div class="legend" style="margin:10px 0 6px;gap:10px;display:flex;flex-wrap:wrap"><span class="ok" id="mlSeen">—</span><span>Examples learned</span><span class="ok" id="mlAcc">—</span><span>Accuracy on unseen phrasings</span><span class="ok" id="mlVer">—</span><span>Model version</span></div>
+      <table><thead><tr><th>Learning source</th><th>How it learns from it</th><th>Examples</th></tr></thead><tbody><tr><td>📚 Initial training</td><td>Scam, benign and warning examples in Arabic, Gulf dialect and English</td><td id="ml_seed">—</td></tr><tr><td>🏛️ Authority practices</td><td>Every tactic an authority publishes trains the model instantly</td><td id="ml_authority">—</td></tr><tr><td>⚙️ Confident engine decisions</td><td>What the engine detects with confidence teaches the model to generalise to similar phrasings</td><td id="ml_rules">—</td></tr><tr><td>📞 Call outcomes</td><td>If the victim ignores the warning and the scam succeeds, the caller’s words become a confirmed example</td><td id="ml_outcome">—</td></tr></tbody></table>
+      <h2 style="margin-top:12px;font-size:14.5px">Try the model: type a sentence in your own words</h2>
+      <div class="try"><input id="mlIn" value="To cancel the transaction we need the code that just arrived from the bank"><button type="button" class="s-btn" id="mlGo">Score</button></div>
+      <div class="res" id="mlRes"></div>
+      <p class="d" style="margin-top:8px;font-size:12.5px">To be precise: this is a lightweight neural network that runs on the phone and keeps learning. In production, deep language models (e.g. AraBERT) would be trained on real scam data from partner authorities, with federated learning keeping user data on the device.</p>
+    </section>
   </main>
   <script src="engine.js"></script>
   <script>
@@ -166,6 +177,29 @@
     document.getElementById('tGo').addEventListener('click', run);
     document.getElementById('tIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
     fetch('/api/patterns').then((r) => r.json()).then((j) => window.ShieldEngine.setPatterns(j.patterns || [])).catch(() => {}).then(run);
+  })();
+  </script>
+  <script src="learn.js"></script>
+  <script>
+  (() => {
+    let M = null;
+    const $ = (q) => document.querySelector(q);
+    async function refresh() {
+      try {
+        const o = await fetch('/api/model', { cache: 'no-store' }).then((r) => r.json());
+        M = window.ShieldLearn.importModel(o) || M; if (M) window.ShieldEngine.setMl((t) => window.ShieldLearn.predict(M, t));
+        $('#mlSeen').textContent = o.seen; $('#mlAcc').textContent = (o.holdout != null ? o.holdout + '%' : '—'); $('#mlVer').textContent = 'v' + o.version;
+        for (const k of ['seed', 'authority', 'rules', 'outcome']) { const el = $('#ml_' + k); if (el) el.textContent = (o.sources || {})[k] || 0; }
+      } catch {}
+    }
+    function score() {
+      if (!M) return; const t = $('#mlIn').value.trim(); if (!t) return;
+      const p = Math.round(window.ShieldLearn.predict(M, t) * 100);
+      const r = window.ShieldEngine.analyzeMessage(t, 'en', '');
+      $('#mlRes').innerHTML = '🧠 Neural network: <b style="color:' + (p >= 90 ? '#ff8a80' : p >= 50 ? '#ffd27a' : '#8ee3c8') + '">' + p + '% scam probability</b> &nbsp;·&nbsp; ⚙️ Final decision (rules + network): ' + (r.level === 'danger' ? '<b style="color:#ff8a80">⚠️ ' + r.title + '</b>' : '<b style="color:#8ee3c8">no alert</b>');
+    }
+    $('#mlGo').addEventListener('click', score); $('#mlIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') score(); });
+    refresh().then(score); setInterval(refresh, 15000);
   })();
   </script>
 </body>

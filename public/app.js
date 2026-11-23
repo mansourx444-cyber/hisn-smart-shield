@@ -124,6 +124,18 @@
   const inbox = []; // في الذاكرة فقط
   const hooks = {}; // يربط وضع «آيفون» بالتطبيق
   const embedded = new URLSearchParams(location.search).get('frame') === '0'; // داخل صفحة العرض (الهاتفان على شاشة واحدة)
+  // نموذج التعلّم الآلي: يُحمَّل من الخادم ويُحدَّث كلما تعلّم شيئًا جديدًا، ويعمل على الهاتف نفسه
+  let mlModel = null, mlVer = -1;
+  async function loadModel() {
+    if (!window.ShieldLearn) return;
+    try {
+      const o = await fetch('/api/model?v=' + mlVer, { cache: 'no-store' }).then((r) => r.json());
+      if (o.same) return;
+      const m = window.ShieldLearn.importModel(o); if (!m) return;
+      mlModel = m; mlVer = o.version; window.ShieldEngine.setMl((t) => window.ShieldLearn.predict(mlModel, t));
+    } catch {}
+  }
+  loadModel(); setInterval(loadModel, 45000);
   const t = (k, ...a) => { const v = T[lang][k]; return typeof v === 'function' ? v(...a) : v; };
 
   /* ------------------------------ التنقل والترجمة ------------------------------ */
@@ -514,18 +526,18 @@
   // التقنية المستخدمة في كل سطر من الحوار
   const TL = {
     ar: { asr: '🎙️ صوت حي ← تعرف على الكلام (ASR) ← معالجة اللغة (NLP)', typed: '⌨️ نص مكتوب ← معالجة اللغة (NLP)', clip: '🔊 صوت المتصل ← تحويل الكلام إلى نص (ASR) ← معالجة اللغة (NLP)', demo: '🔊 صوت المتصل ← تحويل الكلام إلى نص (ASR) ← معالجة اللغة (NLP)',
-      intent: { otp: 'طلب رمز تحقق', transfer: 'طلب تحويل أموال', approval: 'طلب موافقة على إشعار', remote: 'طلب تثبيت برنامج تحكم', reported: 'أسلوب نشرته جهة' },
+      intent: { otp: 'طلب رمز تحقق', transfer: 'طلب تحويل أموال', approval: 'طلب موافقة على إشعار', remote: 'طلب تثبيت برنامج تحكم', reported: 'أسلوب نشرته جهة', ml: 'تشابه مع أساليب احتيال (تعلّم آلي)' }, mlp: (p) => `🧠 الشبكة العصبية: احتمال احتيال ${p}٪`,
       int: (x) => `🎯 تصنيف النية: ${x} ← ⚠️ تنبيه`, prot: '🛡️ فهم السياق: نصيحة/نفي — ليست طلبا', none: '✓ لا يوجد طلب حساس — استمرار الفحص بصمت', ent: (e) => `🏷️ استخراج الكيانات (NER): يدعي ${e}`, ms: (m) => `⏱ ${m} ملث`,
       victim: '🔒 كلامك لا يرسل لـ«حصن» ولا يحلل — يحلل كلام المتصل فقط (خصوصية)' },
     en: { asr: '🎙️ Live voice → speech recognition (ASR) → NLP', typed: '⌨️ Typed text → NLP', clip: '🔊 Caller voice → speech-to-text (ASR) → NLP', demo: '🔊 Caller voice → speech-to-text (ASR) → NLP',
-      intent: { otp: 'asks for a code', transfer: 'asks for a transfer', approval: 'asks to approve', remote: 'asks to install remote app', reported: 'reported practice' },
+      intent: { otp: 'asks for a code', transfer: 'asks for a transfer', approval: 'asks to approve', remote: 'asks to install remote app', reported: 'reported practice', ml: 'similar to learned scams (ML)' }, mlp: (p) => `🧠 Neural model: scam probability ${p}%`,
       int: (x) => `🎯 Intent: ${x} → ⚠️ alert`, prot: '🛡️ Context: advice/negation — not a request', none: '✓ No sensitive request — silent monitoring', ent: (e) => `🏷️ NER: claims to be ${e}`, ms: (m) => `⏱ ${m} ms`,
       victim: '🔒 Your words are not sent to HISN or analysed — only the caller is analysed (privacy)' },
   };
   function techLine(d) {
     const L = TL[lang] || TL.ar, n = d.nlp || {}, ints = n.intents || [];
     const res = ints.length ? L.int(ints.map((x) => L.intent[x] || x).join('، ')) : n.protective ? L.prot : L.none;
-    return [L[d.source] || L.demo, n.entity ? L.ent(n.entity) : '', res + (d.ms != null ? '  ' + L.ms(Math.max(1, d.ms)) : '')].filter(Boolean);
+    return [L[d.source] || L.demo, n.entity ? L.ent(n.entity) : '', n.ml != null ? L.mlp(n.ml) : '', res + (d.ms != null ? '  ' + L.ms(Math.max(1, d.ms)) : '')].filter(Boolean);
   }
   function addTech(lineEl, parts, bad) {
     const w = document.createElement('div'); w.className = 'tl-tech' + (bad ? ' bad' : '');
@@ -568,7 +580,7 @@
     renderLatency();
     $('#alertCard').hidden = false; $('#alEnd').focus();
     $('#alertCard').dataset.speech = [a.title, a.reason, a.step].join('. ');
-    $('#alertCard').dataset.kind = { otp: 'otp', transfer: 'transfer', approval: 'approval', remote: 'remote' }[a.type] || (/remote/.test(a.pattern || '') ? 'remote' : /otp/.test(a.pattern || '') ? 'otp' : 'transfer');
+    $('#alertCard').dataset.kind = { otp: 'otp', transfer: 'transfer', approval: 'approval', remote: 'remote' }[a.type] || a.kind || (/remote/.test(a.pattern || '') ? 'remote' : /otp/.test(a.pattern || '') ? 'otp' : 'transfer');
     $('#alWhatIf').hidden = !hooks.simulate;
     vibrate([250, 100, 250, 100, 250]);
     if (hooks.alert) hooks.alert(a);

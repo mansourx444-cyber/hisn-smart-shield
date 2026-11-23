@@ -15,6 +15,8 @@
 | الاختيار | السبب |
 |---|---|
 | **محرك عربي قائم على القواعد ومعالجة اللغة** (`public/engine.js`) بدل نموذج مدرَّب | لا توجد بيانات عربية موسومة كافية لاحتيال الإمارات؛ القواعد قابلة للتفسير (يشرح **لماذا** اشتبه)، وتعمل **على الجهاز** دون إرسال الرسائل لأي خادم، وفورية (أجزاء من الثانية)، و54 اختبارًا تضمن سلوكها |
+| **تعلّم آلي مستمر: شبكة عصبية خفيفة** (`public/learn.js`) فوق المحرك | تتعلّم «التشابه» فتلتقط صياغات جديدة لم تُكتب لها قاعدة (دقة 94٪ على صياغات لم ترها). تتدرّب باستمرار من ممارسات الجهات، وقرارات المحرك الواثقة، ونتائج المكالمات. تُحفظ الأوزان فقط بلا نصوص. لا تنبّه وحدها إلا على **طلب** يتعلق **بشيء حساس** (بوابة أمان ضد الإنذارات الكاذبة) |
+| **فهم معنى «إعادة إرسال الرمز»** | يجمع ثلاثة عناصر من المعنى: ما سيصل للضحية (رمز/كود/OTP/الأرقام/المسج) + طلب الإرسال (طرش/حوّل/ابعت/فورورد…) + الوجهة (بريدي/واتسابي/رقمي/الرابط)، مع فهم النفي |
 | **فهم النفي والسياق** | «لا تشارك الرمز» تحذير و«عطني الرمز» احتيال؛ الفلاتر بالكلمات المفتاحية تخلط بينهما |
 | **مسافة التحرير (Levenshtein) + فحوص النطاق** | كشف الروابط المنتحلة (أخطاء إملائية، نطاق فرعي، أرقام بدل حروف، Punycode) دون قوائم سوداء تتأخر دائمًا |
 | **بوابة الجهات** | تعوّض محدودية القواعد: الجهة تضيف الأسلوب الجديد فيعمل فورًا بلا تحديث للتطبيق |
@@ -34,7 +36,7 @@
 
 **ما تُرك عمدًا:** تطبيق أصلي، ربط فعلي مع UAE PASS والبنوك وشركات الاتصالات، قاعدة بيانات وصلاحيات حقيقية لبوابة الجهات، خادم TURN للصوت بين الشبكات المختلفة.
 
-**بوقت أكبر سنفعل:** تدريب مصنّف عربي على بيانات احتيال حقيقية من الجهات الشريكة (مع الإبقاء على الشرح)، تطبيق أندرويد أصلي (`NotificationListenerService`) ثم iOS (Message Filter Extension)، فحص المكالمات بالشراكة مع شركات الاتصالات، وتحليل الصوت لكشف الأصوات المولّدة.
+**بوقت أكبر سنفعل:** ترقية الشبكة الخفيفة إلى نموذج لغوي عميق (مثل AraBERT) مع تعلّم موحّد (Federated Learning) يبقي البيانات على الجهاز، وتدريب مصنّف عربي على بيانات احتيال حقيقية من الجهات الشريكة (مع الإبقاء على الشرح)، تطبيق أندرويد أصلي (`NotificationListenerService`) ثم iOS (Message Filter Extension)، فحص المكالمات بالشراكة مع شركات الاتصالات، وتحليل الصوت لكشف الأصوات المولّدة.
 
 ## How to build and run
 
@@ -52,7 +54,7 @@ Live demo: https://hisn-smart-shield.onrender.com (two QR codes: victim phone + 
 
 **Solution.** HISN is an on-device AI assistant that steps in *at the moment of risk* — before a link opens and during a live call (the call keeps going). It explains what the risk is, why it is suspicious and the safe next step; the user decides. Authorities (police, banks, TDRA) publish new scam patterns through a portal and every device gets them instantly.
 
-**Technical choices.** A rule-based Arabic NLP engine (normalisation, dialect, intent, negation and context) instead of a trained model: no labelled UAE scam corpus exists, rules are explainable and run on the device with millisecond latency, and 54 tests pin the behaviour. Link analysis uses 13 checks (official-domain match, entity/domain mismatch, entity-as-subdomain, digit-for-letter, Levenshtein look-alikes, Punycode, IP, @, shorteners, risky TLDs, HTTP, phishing paths, authority intel). WebRTC carries call audio peer-to-peer; speech-to-text uses the browser Web Speech API or optionally `gpt-4o-transcribe`; an optional LLM (`gpt-4o-mini`) gives a second opinion only. Zero-dependency Node.js server that relays and never stores.
+**Technical choices.** A continuously-learning lightweight neural network (`public/learn.js`: char 3–5-grams + words → hashing 4096 → dense 16 ReLU → sigmoid, int8-quantised to ~86 KB for phones) sits on top of the rules and catches new phrasings (94% on unseen phrasings); it keeps training from authority-published practices, confident engine decisions and call outcomes, stores weights only, and may alert on its own only for a *request* involving a *sensitive item*. Underneath, a rule-based Arabic NLP engine (normalisation, dialect, intent, negation and context) instead of a trained model: no labelled UAE scam corpus exists, rules are explainable and run on the device with millisecond latency, and 54 tests pin the behaviour. Link analysis uses 13 checks (official-domain match, entity/domain mismatch, entity-as-subdomain, digit-for-letter, Levenshtein look-alikes, Punycode, IP, @, shorteners, risky TLDs, HTTP, phishing paths, authority intel). WebRTC carries call audio peer-to-peer; speech-to-text uses the browser Web Speech API or optionally `gpt-4o-transcribe`; an optional LLM (`gpt-4o-mini`) gives a second opinion only. Zero-dependency Node.js server that relays and never stores.
 
 **Privacy design.** Messages are analysed on the phone; the server relays without storing; call audio and transcripts are not saved; logs contain events only; no access to the user's files.
 
