@@ -9,3 +9,4 @@
 | ٥ | [منهجية 4D](05-4D.md) | Define · Design · Develop · Deploy |
 | ٦ | [النشر والوصول](06-deploy.md) | الرابط الدائم، الرابط المؤقت، التشغيل المحلي، قائمة التحقق |
 | — | [محاضر الاجتماعات](meetings/) | [قالب المحضر](meetings/TEMPLATE.md) |
+| — | [العرض التقديمي (PDF)](submission/HISN-Presentation-AR-EN.pdf) · [وصف المشروع (PDF)](submission/HISN-Project-Description-AR-EN.pdf) | عربي ثم إنجليزي |

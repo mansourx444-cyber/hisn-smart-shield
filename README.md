@@ -4,6 +4,64 @@
 
 تطبيق ويب للجوال يُفتح من رمز QR، بلا حساب، ومن دون أي مكتبات خارجية (Node.js 22 فقط).
 
+## المشكلة والحل
+
+**المشكلة:** المحتال لا يخترق الهاتف، بل يخدع صاحبه: رسالة برابط يشبه موقع البنك، أو مكالمة باسم البنك أو الشرطة أو شركة الاتصالات تطلب رمز التحقق أو تحويل المال أو صلاحية الدخول للهاتف. الحلول الحالية إما تحذّر بعد فوات الأوان، أو تحظر بلا شرح فيتجاهلها المستخدم، وأغلبها لا يفهم العربية ولا اللهجة المحلية.
+
+**الحل:** «حِصن» مساعد ذكي يعمل على الهاتف ويتدخل **في لحظة الخطر نفسها**: قبل فتح الرابط، وأثناء المكالمة والمكالمة مستمرة. يشرح بلغة بسيطة ما الخطر ولماذا اشتبه وما الخطوة الآمنة، والقرار يبقى للمستخدم. وتنشر الجهات (الشرطة، البنوك، هيئة الاتصالات) أساليب الاحتيال الجديدة عبر بوابة خاصة فتصل لكل الأجهزة فورًا.
+
+## الاختيارات التقنية وأسبابها
+
+| الاختيار | السبب |
+|---|---|
+| **محرك عربي قائم على القواعد ومعالجة اللغة** (`public/engine.js`) بدل نموذج مدرَّب | لا توجد بيانات عربية موسومة كافية لاحتيال الإمارات؛ القواعد قابلة للتفسير (يشرح **لماذا** اشتبه)، وتعمل **على الجهاز** دون إرسال الرسائل لأي خادم، وفورية (أجزاء من الثانية)، و54 اختبارًا تضمن سلوكها |
+| **فهم النفي والسياق** | «لا تشارك الرمز» تحذير و«عطني الرمز» احتيال؛ الفلاتر بالكلمات المفتاحية تخلط بينهما |
+| **مسافة التحرير (Levenshtein) + فحوص النطاق** | كشف الروابط المنتحلة (أخطاء إملائية، نطاق فرعي، أرقام بدل حروف، Punycode) دون قوائم سوداء تتأخر دائمًا |
+| **بوابة الجهات** | تعوّض محدودية القواعد: الجهة تضيف الأسلوب الجديد فيعمل فورًا بلا تحديث للتطبيق |
+| **WebRTC** للمكالمة | صوت مباشر بين الهاتفين؛ الخادم يمرّر الإشارات فقط |
+| **التعرّف على الكلام في المتصفح** (Web Speech API)، واختياريًا `gpt-4o-transcribe` على الخادم | يعمل بلا مفاتيح في العرض، ويمكن تفعيل تفريغ أدق بمفتاح |
+| **نموذج لغوي اختياري** (`gpt-4o-mini`) | «رأي ثانٍ» وشرح مبسط فقط؛ القرار الأساسي يبقى للمحرك القابل للتفسير |
+| **Node.js بلا مكتبات خارجية** | تشغيل بأمر واحد، لا ثغرات من اعتماديات، يسهل على المحكّمين تشغيله |
+| **تطبيق ويب يُفتح من QR** | يجربه أي شخص فورًا بلا تثبيت |
+
+## المقايضات وما تُرك وما سنفعله بوقت أكبر
+
+**مقايضات قبلناها:**
+- القواعد أدق في الحالات المعروفة وأضعف أمام صياغة جديدة تمامًا؛ عوّضنا ذلك ببوابة الجهات وبالتحليل المركّب (الجهة + الطلب + القناة).
+- تطبيق الويب لا يصل للمكالمات والرسائل العادية (قيود iOS وAndroid)، فالعرض يستخدم مكالمة ورسائل داخل التطبيق.
+- الخادم يحفظ في الذاكرة فقط (خصوصية أعلى، لكن لا سجل دائم)، والاستضافة المجانية تنام بعد ١٥ دقيقة.
+- الهوية الرقمية (UAE PASS) محاكاة.
+
+**ما تُرك عمدًا:** تطبيق أصلي، ربط فعلي مع UAE PASS والبنوك وشركات الاتصالات، قاعدة بيانات وصلاحيات حقيقية لبوابة الجهات، خادم TURN للصوت بين الشبكات المختلفة.
+
+**بوقت أكبر سنفعل:** تدريب مصنّف عربي على بيانات احتيال حقيقية من الجهات الشريكة (مع الإبقاء على الشرح)، تطبيق أندرويد أصلي (`NotificationListenerService`) ثم iOS (Message Filter Extension)، فحص المكالمات بالشراكة مع شركات الاتصالات، وتحليل الصوت لكشف الأصوات المولّدة.
+
+## How to build and run
+
+```bash
+git clone https://github.com/mansourx444-cyber/hisn-smart-shield.git
+cd hisn-smart-shield
+node server.js            # Node.js 22, no npm install needed → http://localhost:3000
+npm test                  # 54 engine tests
+```
+Live demo: https://hisn-smart-shield.onrender.com (two QR codes: victim phone + scammer phone). One-screen demo: `/demo`.
+
+## English summary
+
+**Problem.** Scammers don't hack phones, they trick people: SMS with look-alike bank links, or calls "from the bank / police / telecom" asking for the OTP, a money transfer, or remote access. Existing tools warn too late or block without explanation, and rarely understand Arabic or the Emirati dialect.
+
+**Solution.** HISN is an on-device AI assistant that steps in *at the moment of risk* — before a link opens and during a live call (the call keeps going). It explains what the risk is, why it is suspicious and the safe next step; the user decides. Authorities (police, banks, TDRA) publish new scam patterns through a portal and every device gets them instantly.
+
+**Technical choices.** A rule-based Arabic NLP engine (normalisation, dialect, intent, negation and context) instead of a trained model: no labelled UAE scam corpus exists, rules are explainable and run on the device with millisecond latency, and 54 tests pin the behaviour. Link analysis uses 13 checks (official-domain match, entity/domain mismatch, entity-as-subdomain, digit-for-letter, Levenshtein look-alikes, Punycode, IP, @, shorteners, risky TLDs, HTTP, phishing paths, authority intel). WebRTC carries call audio peer-to-peer; speech-to-text uses the browser Web Speech API or optionally `gpt-4o-transcribe`; an optional LLM (`gpt-4o-mini`) gives a second opinion only. Zero-dependency Node.js server that relays and never stores.
+
+**Privacy design.** Messages are analysed on the phone; the server relays without storing; call audio and transcripts are not saved; logs contain events only; no access to the user's files.
+
+**Trade-offs / left out / next.** Rules miss brand-new phrasings (mitigated by the authority portal); a web app cannot read real calls/SMS (demo uses in-app calls/messages); in-memory server; simulated UAE PASS. Next: train an explainable Arabic classifier on partner data, native Android/iOS, telecom-level call screening, synthetic-voice detection.
+
+**Third-party code.** `public/qrcode.js` — QR Code Generator by Kazuhiko Arase (MIT). Fonts: Noto Kufi Arabic, Inter (SIL OFL).
+
+**Presentation & technical documentation (PDF, Arabic + English):** [HISN-Presentation-AR-EN.pdf](docs/submission/HISN-Presentation-AR-EN.pdf) · [HISN-Project-Description-AR-EN.pdf](docs/submission/HISN-Project-Description-AR-EN.pdf) · [docs/](docs/)
+
 ## 🌐 جرّبه الآن
 - **الرابط الدائم:** بعد النشر على Render (انظر [docs/06-deploy.md](docs/06-deploy.md)) — الصفحة الرئيسية فيها رمزا QR لتجربة الهاتفين مباشرة، و`/demo` لتجربة كاملة في صفحة واحدة.
 - **محليًا:** `node server.js` ثم `http://localhost:3000/demo` (Node.js 22 فقط، بدون مكتبات).
