@@ -15,7 +15,7 @@
   /* ------------------------------ النصوص ------------------------------ */
   const L = {
     ar: {
-      apps: { messages: 'الرسائل', phone: 'الهاتف', browser: 'المتصفح', camera: 'الكاميرا', photos: 'الصور', weather: 'الطقس', clock: 'الساعة', calendar: 'التقويم', maps: 'الخرائط', notes: 'الملاحظات', settings: 'الإعدادات', store: 'المتجر', bank: 'بنك النخلة', delivery: 'التوصيل', mail: 'البريد', whatsapp: 'واتساب', shield: 'حِصن' },
+      apps: { messages: 'الرسائل', phone: 'الهاتف', browser: 'المتصفح', camera: 'الكاميرا', photos: 'الصور', weather: 'الطقس', clock: 'الساعة', calendar: 'التقويم', maps: 'الخرائط', notes: 'الملاحظات', settings: 'الإعدادات', store: 'المتجر', bank: 'بنك النخلة', delivery: 'التوصيل', mail: 'البريد', social: 'تواصل', whatsapp: 'واتساب', shield: 'حِصن' },
       chats: 'الدردشات', simTag: 'محاكاة توعوية — ماذا لو تجاهلت التحذير',
       now: 'الآن', textMsgStamp: 'رسالة نصية', today: 'اليوم', yesterday: 'أمس', notContact: 'المرسل ليس في قائمة جهات الاتصال.', reportJunk: 'الإبلاغ عن رسالة غير مرغوب فيها', edit: 'تعديل', search: 'بحث', back: 'الرسائل', textMsg: 'رسالة نصية', shieldTag: 'حِصن', details: 'التفاصيل', checked: 'فحصها الدرع',
       weatherCity: 'أبوظبي', weatherDesc: 'مشمس', days: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
@@ -30,7 +30,7 @@
       ],
     },
     en: {
-      apps: { messages: 'Messages', phone: 'Phone', browser: 'Browser', camera: 'Camera', photos: 'Photos', weather: 'Weather', clock: 'Clock', calendar: 'Calendar', maps: 'Maps', notes: 'Notes', settings: 'Settings', store: 'Store', bank: 'Nakhla Bank', delivery: 'Delivery', mail: 'Mail', whatsapp: 'WhatsApp', shield: 'HISN' },
+      apps: { messages: 'Messages', phone: 'Phone', browser: 'Browser', camera: 'Camera', photos: 'Photos', weather: 'Weather', clock: 'Clock', calendar: 'Calendar', maps: 'Maps', notes: 'Notes', settings: 'Settings', store: 'Store', bank: 'Nakhla Bank', delivery: 'Delivery', mail: 'Mail', social: 'Social', whatsapp: 'WhatsApp', shield: 'HISN' },
       chats: 'Chats', simTag: 'Awareness simulation — what if you ignored the warning',
       now: 'now', textMsgStamp: 'Text Message', today: 'Today', yesterday: 'Yesterday', notContact: 'The sender is not in your contact list.', reportJunk: 'Report Junk', edit: 'Edit', search: 'Search', back: 'Messages', textMsg: 'Text Message', shieldTag: 'HISN', details: 'Details', checked: 'Checked by Shield',
       weatherCity: 'Abu Dhabi', weatherDesc: 'Sunny', days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -65,6 +65,7 @@
     store: ['linear-gradient(#ff7aa2,#e8326a)', `<svg viewBox="0 0 60 60"><path ${W} d="M17 23h26l-2 22H19z"/><path d="M24 25v-4a6 6 0 0 1 12 0v4" stroke="#fff" stroke-width="3" fill="none"/></svg>`],
     bank: ['linear-gradient(#7c7ff5,#4c4fd6)', `<svg viewBox="0 0 60 60"><path ${W} d="M30 12L12 22h36z"/><path d="M16 25h4v15h-4zM25 25h4v15h-4zM31 25h4v15h-4zM40 25h4v15h-4z" fill="#fff"/><rect x="12" y="42" width="36" height="4" fill="#fff"/></svg>`],
     delivery: ['linear-gradient(#ffb347,#f07d00)', `<svg viewBox="0 0 60 60"><path ${W} d="M30 12l17 8v20l-17 8-17-8V20z"/><path d="M13 20l17 8 17-8M30 28v20" stroke="#f07d00" stroke-width="2.5" fill="none"/></svg>`],
+    social: ['linear-gradient(135deg,#feda75,#fa7e1e 30%,#d62976 60%,#962fbf 85%,#4f5bd5)', `<svg viewBox="0 0 60 60"><rect x="14" y="14" width="32" height="32" rx="10" fill="none" stroke="#fff" stroke-width="4"/><circle cx="30" cy="30" r="7.5" fill="none" stroke="#fff" stroke-width="4"/><circle cx="39.5" cy="20.5" r="2.4" fill="#fff"/></svg>`],
     mail: ['linear-gradient(#5ac8fa,#1a7cf5)', `<svg viewBox="0 0 60 60"><rect x="11" y="18" width="38" height="25" rx="4" ${W}/><path d="M12 20l18 13 18-13" stroke="#1a7cf5" stroke-width="2.5" fill="none"/></svg>`],
     whatsapp: ['linear-gradient(#5cf28a,#1ebe5a)', `<svg viewBox="0 0 60 60"><path ${W} d="M30 11a19 19 0 0 0-16.4 28.6L11 49l9.7-2.5A19 19 0 1 0 30 11z"/><path fill="#1ebe5a" d="M23.5 21.5c.6-.6 1.6-.6 2 .1l2 3.2c.3.5.2 1.2-.2 1.6l-1.2 1.2c1.3 2.6 3.4 4.7 6 6l1.2-1.2c.4-.4 1.1-.5 1.6-.2l3.2 2c.7.4.8 1.4.1 2l-1.6 1.6c-1 1-2.5 1.3-3.8.8-5-2-9-6-11-11-.5-1.3-.2-2.8.8-3.8z"/></svg>`],
     shield: ['linear-gradient(#13284d,#0b1730)', `<img src="icon.svg" alt="" style="width:84%;height:84%">`],
@@ -124,26 +125,27 @@
 
   /* ------------------------------ التنقل ------------------------------ */
   let view = 'home';
+  const MSGV = { messages: 'sms', wa: 'wa', mail: 'mail', social: 'social' }; // تطبيقات الرسائل: نصية، واتساب، بريد، تواصل اجتماعي
   function openView(name) {
     if (view === name) return;
     document.querySelectorAll('.ip-view').forEach((v) => v.classList.remove('active', 'opening'));
-    if (name === 'messages' || name === 'wa') { curApp = name === 'wa' ? 'wa' : 'sms'; document.getElementById('ipMsgs').classList.toggle('wa', curApp === 'wa'); openThread = null; document.getElementById('mThread').hidden = true; }
-    const v = document.getElementById({ home: 'ipHome', messages: 'ipMsgs', wa: 'ipMsgs', app: 'ipApp' }[name]);
+    if (MSGV[name]) { curApp = MSGV[name]; ['wa', 'mail', 'social'].forEach((c) => document.getElementById('ipMsgs').classList.toggle(c, curApp === c)); openThread = null; document.getElementById('mThread').hidden = true; }
+    const v = document.getElementById({ home: 'ipHome', messages: 'ipMsgs', wa: 'ipMsgs', mail: 'ipMsgs', social: 'ipMsgs', app: 'ipApp' }[name]);
     v.classList.add('active'); if (name !== 'home') v.classList.add('opening');
     view = name;
     document.getElementById('ipBanners').textContent = '';
     screen.classList.toggle('dark-status', name !== 'messages');
-    if (name === 'messages' || name === 'wa') renderMsgs();
+    if (MSGV[name]) renderMsgs();
   }
   let curApp = 'sms';
   document.getElementById('ipHomebar').addEventListener('click', () => { openView('home'); closeThread(); });
 
   /* ------------------------------ الشاشة الرئيسية ------------------------------ */
-  const GRID = ['whatsapp', 'calendar', 'photos', 'camera', 'mail', 'clock', 'maps', 'weather', 'notes', 'store', 'bank', 'delivery'];
+  const GRID = ['whatsapp', 'social', 'mail', 'camera', 'photos', 'calendar', 'clock', 'maps', 'weather', 'store', 'bank', 'delivery'];
   const DOCK = ['phone', 'messages', 'browser', 'shield'];
   let unread = 0;
   function appTile(id, label) {
-    const b = el(`<button type="button" class="ip-app-tile" data-app="${id}">${iconHTML(id)}${label ? `<span class="ip-label">${tx().apps[id]}</span>` : ''}${id === 'messages' || id === 'whatsapp' ? '<span class="ip-badge" hidden></span>' : ''}</button>`);
+    const b = el(`<button type="button" class="ip-app-tile" data-app="${id}">${iconHTML(id)}${label ? `<span class="ip-label">${tx().apps[id]}</span>` : ''}${['messages', 'whatsapp', 'mail', 'social'].includes(id) ? '<span class="ip-badge" hidden></span>' : ''}</button>`);
     b.addEventListener('click', () => launch(id, b));
     return b;
   }
@@ -161,12 +163,13 @@
   function launch(id, btn) {
     if (id === 'messages') return openView('messages');
     if (id === 'whatsapp') return openView('wa');
+    if (id === 'mail' || id === 'social') return openView(id);
     if (id === 'shield') return openView('app');
     btn.classList.remove('bounce'); void btn.offsetWidth; btn.classList.add('bounce'); // تطبيقات وهمية
   }
   function updateBadge() {
     document.querySelectorAll('.ip-app-tile').forEach((tile) => {
-      const app = tile.dataset.app === 'messages' ? 'sms' : tile.dataset.app === 'whatsapp' ? 'wa' : null;
+      const app = { messages: 'sms', whatsapp: 'wa', mail: 'mail', social: 'social' }[tile.dataset.app] || null;
       const b = tile.querySelector('.ip-badge'); if (!b || !app) return;
       const n = threads.filter((t) => (t.app || 'sms') === app).reduce((a, t) => a + t.unread, 0);
       b.hidden = !n; b.textContent = n;
@@ -198,7 +201,7 @@
     const T = tx();
     const list = document.getElementById('mList');
     const sorted = threads.filter((t) => (t.app || 'sms') === curApp).sort((a, b) => b.msgs[b.msgs.length - 1].at - a.msgs[a.msgs.length - 1].at);
-    list.innerHTML = `<div class="m-top"><span class="m-edit">${T.edit}</span><span class="m-compose">✎</span></div><h1 class="m-title">${curApp === 'wa' ? T.chats : T.apps.messages}</h1><div class="m-search">⌕ ${T.search}</div><ul class="m-rows"></ul>`;
+    list.innerHTML = `<div class="m-top"><span class="m-edit">${T.edit}</span><span class="m-compose">✎</span></div><h1 class="m-title">${curApp === 'wa' ? T.chats : curApp === 'mail' ? T.apps.mail : curApp === 'social' ? T.apps.social : T.apps.messages}</h1><div class="m-search">⌕ ${T.search}</div><ul class="m-rows"></ul>`;
     const ul = list.querySelector('.m-rows');
     for (const th of sorted) {
       const last = th.msgs[th.msgs.length - 1];
@@ -270,7 +273,8 @@
 
   /* ------------------------------ الربط بالتطبيق ------------------------------ */
   S.hooks.sms = (item) => {
-    const app = item.channel === 'wa' ? 'wa' : 'sms';
+    if (item.channel === 'qr') return qrScan(item);
+    const app = { wa: 'wa', mail: 'mail', social: 'social' }[item.channel] || 'sms';
     let th = threads.find((x) => x.name === item.from && (x.app || 'sms') === app);
     if (!th) { th = { app, name: item.from, color: '#8e8e93', unknown: true, unread: 0, msgs: [] }; threads.push(th); }
     if (item.fromLabel) th.label = item.fromLabel;
@@ -278,17 +282,34 @@
     const vv = S.verdict(item);
     toParent({ type: 'sms-received', from: item.from, label: item.fromLabel || '', channel: app, danger: S.isDanger(item), hosts: vv ? vv.urls : [], reasons: vv ? vv.reasons.slice(0, 3) : [], title: vv ? vv.title : '', pattern: vv ? vv.matchedPattern : null, level: vv ? vv.level : 'off', links: window.ShieldEngine && window.ShieldEngine.linkReport ? window.ShieldEngine.linkReport(item.text || '', lang) : [] });
     th.msgs.push({ dir: 'in', text: item.text, at: item.at || Date.now(), item });
-    const vname = app === 'wa' ? 'wa' : 'messages';
+    const vname = app === 'sms' ? 'messages' : app;
     const reading = view === vname && curApp === app && openThread === th;
     if (!reading) { th.unread++; unread++; updateBadge(); }
     if (view === vname && curApp === app) renderMsgs();
-    if (!reading) banner({ icon: app === 'wa' ? 'whatsapp' : 'messages', app: app === 'wa' ? tx().apps.whatsapp : tx().apps.messages, title: item.from, body: item.text, onTap: () => { openView(vname); showThread(th); } });
+    const bIcon = { sms: 'messages', wa: 'whatsapp', mail: 'mail', social: 'social' }[app];
+    if (!reading) banner({ icon: bIcon, app: tx().apps[bIcon], title: item.from, body: item.text, onTap: () => { openView(vname); showThread(th); } });
   };
+  // مسح رمز QR من ملصق في مكان عام (الكاميرا) ← «حِصن» يفحص الرابط قبل فتحه
+  function qrSvg(u) { try { const q = window.qrcode(0, 'M'); q.addData(u); q.make(); return q.createSvgTag({ cellSize: 4, margin: 1, scalable: true }); } catch { return ''; } }
+  function qrScan(item) {
+    openView('home'); chime();
+    const url = (window.ShieldEngine.extractUrls(item.text)[0] || {}).raw || '';
+    let host = url; try { host = new URL(/^https?:/.test(url) ? url : 'http://' + url).hostname; } catch {}
+    const cells = Array.from({ length: 121 }, (_, i) => { const r = Math.floor(i / 11), c = i % 11; const finder = (r < 3 && c < 3) || (r < 3 && c > 7) || (r > 7 && c < 3); return `<i class="${finder || ((i * 7 + r * 3) % 5 < 2) ? 'on' : ''}"></i>`; }).join('');
+    const cam = el(`<div class="qrcam"><div class="qr-top">${tx().apps.camera}</div><div class="qr-poster"><b></b><div class="qr-code">${qrSvg(url) || cells}</div><small>${lang === 'ar' ? 'امسح للتبرع' : 'Scan to donate'}</small></div><div class="qr-frame"></div><button type="button" class="qr-chip" hidden>🔗 <span></span></button><button type="button" class="qr-x">✕</button></div>`);
+    cam.querySelector('.qr-poster b').textContent = item.text.replace(/https?:\/\/\S+/g, '').replace(/[—:]\s*$/, '').trim();
+    cam.querySelector('.qr-chip span').textContent = (lang === 'ar' ? 'افتح ' : 'Open ') + host;
+    screen.appendChild(cam);
+    setTimeout(() => { const c = cam.querySelector('.qr-chip'); c.hidden = false; }, 1600);
+    cam.querySelector('.qr-chip').addEventListener('click', () => { cam.remove(); S.openLink(url, item.text); });
+    cam.querySelector('.qr-x').addEventListener('click', () => cam.remove());
+    toParent({ type: 'sms-received', from: item.from, channel: 'qr', danger: S.isDanger(item) });
+  }
   S.hooks.notify = (item, title, body) => {
     toParent({ type: 'danger', kind: 'sms' });
     setTimeout(() => {
       banner({ icon: 'shield', app: tx().apps.shield, title: '⛔ ' + title, body, danger: true, ttl: 14000, onTap: () => S.openItem(item) });
-      if (view === 'messages' || view === 'wa') renderMsgs();
+      if (MSGV[view]) renderMsgs();
     }, 700);
   };
   S.hooks.nlp = (d) => toParent({ type: 'nlp', text: d.text, nlp: d.nlp, ms: d.ms, source: d.source });
@@ -420,11 +441,47 @@
     await sleep(700);
     for (const [k, a] of steps) await bk.debit(X.tx[k], a);
   }
+  // حالات تحدي الهاكثون: نصوص العواقب الإضافية
+  (function extendSim() {
+    const ADD = {
+      ar: {
+        loginSim: { bankTitle: 'بنك النخلة الوطني', socTitle: 'بنك النخلة Rewards', verify: 'تحقق من الهوية', bankAlert: '⚠️ رصدنا محاولة دخول غير معتادة. سجّل دخولك للتحقق.', socAlert: '🎉 مبروك! سجّل دخولك بحساب التواصل لاستلام الجائزة.', user: 'اسم المستخدم أو البريد', pass: 'كلمة المرور', btn: 'تسجيل الدخول', ok: '✓ تم التحقق من حسابك بنجاح',
+          banners: { mail: [['mail', 'البريد', 'تنبيه أمني', 'تم تغيير كلمة مرور حسابك من جهاز غير معروف'], ['bank', 'بنك النخلة', 'تسجيل دخول جديد', 'دخول إلى حسابك من جهاز جديد خارج الدولة'], ['messages', 'الرسائل', 'سارة', 'وصلتني رسالة غريبة من بريدك فيها رابط… هل هذا أنت؟']],
+            social: [['social', 'تواصل', 'تم تغيير البريد المرتبط', 'لم يعد بإمكانك الدخول إلى حسابك'], ['social', 'تواصل', 'منشور جديد من حسابك', '«ربحت iPhone! ادخل الرابط واستلم جائزتك» — أُرسل لـ 1,240 متابعًا'], ['whatsapp', 'واتساب', 'خالد', 'هل فعلًا ربحت؟ دخلت الرابط اللي نزلته وطلب بياناتي…']] } },
+        appSim: { gameName: 'سباق الصحراء', bankName: 'بنك النخله', notStore: 'من خارج المتجر الرسمي — مطوّر غير معروف', downloading: 'جارٍ التحميل…', installed: '✓ تم التثبيت', wants: 'يطلب الوصول إلى', perms: ['🎙️ الميكروفون', '📷 الكاميرا', '👥 جهات الاتصال'], allow: 'السماح', deny: 'عدم السماح',
+          exfil: 'التطبيق يرسل بياناتك في الخلفية إلى خادم مجهول', rows: [['👥', 'جهات الاتصال (312 جهة)'], ['📷', 'صور من الكاميرا كل 30 ثانية'], ['🎙️', 'تسجيلات صوتية من الميكروفون']], to: '← 185.22.1.9 (خارج الدولة)',
+          spam: ['messages', 'الرسائل', 'أم سعيد', 'وصلني منك رابط لعبة غريب… انتبه حسابك مخترق؟'], bankLogin: 'سجّل دخولك لتفعيل التطبيق الجديد', act: 'تفعيل', activating: 'جارٍ تفعيل التطبيق…' },
+        charity: { name: '💚 جمعية الخير', sub: 'تبرّع لإغاثة الأسر المحتاجة', notSecure: 'غير آمن', amt: 'اختر مبلغ التبرع', donate: 'تبرّع الآن', ok: '💚 شكرًا لتبرعك! تم استلام 250 درهم' },
+        steps: { login: ['فتحت رابطًا في رسالة بدت رسمية، فوصلت إلى صفحة دخول مزيفة', 'أدخلت اسم المستخدم وكلمة المرور، فوصلت مباشرة للمحتال', 'دخل المحتال إلى حسابك وغيّر كلمة المرور واستخدمه لخداع معارفك'], app: ['حمّلت تطبيقًا من رابط خارج المتجر الرسمي', 'منحته أذونات لا يحتاجها', 'سرق التطبيق بياناتك وأرسلها لجهة غير موثوقة'], boss: ['اتصل بك صوت يشبه صوت مديرك (مولَّد بالذكاء الاصطناعي)', 'طلب تحويلًا عاجلًا وسريًا ثم رمز التحقق', 'حوّلت المبلغ وأعطيت الرمز دون التحقق عبر قناة أخرى'] },
+        stepsBy: { social: ['رأيت حسابًا ينتحل علامة تجارية موثوقة ويعلن مسابقة', 'ضغطت الرابط وسجّلت دخولك بحساب التواصل وأدخلت بياناتك', 'سُرق حسابك، واستُخدم لنشر الخدعة نفسها لمتابعيك'], game: ['حمّلت لعبة «مجانية» من رابط خارج المتجر', 'منحتها الوصول للميكروفون والكاميرا وجهات الاتصال — أذونات لا تحتاجها لعبة', 'جمعت اللعبة بياناتك وشاركتها مع أطراف خارجية غير موثوقة'], bankapp: ['حمّلت تطبيقًا ينتحل اسم بنكك وشعاره من رابط في رسالة', 'سجّلت دخولك فيه باسم المستخدم وكلمة المرور', 'استخدم المحتال بياناتك لاختراق حسابك البنكي وسحب رصيدك'], charity: ['مسحت رمز QR للتبرع من ملصق في مكان عام', 'فتح الرمز صفحة دفع مزيفة بلا قفل أمان (http) تشبه موقع جمعية خيرية', 'أدخلت بيانات بطاقتك فحُوّل المبلغ لحساب احتيالي وانكشفت بياناتك المالية'] },
+        loss: { login: 'اختراق حسابك وفقدان السيطرة عليه', app: 'تسريب جهات اتصالك وصورك وتسجيلاتك', boss: 'خسارة 18,640.25 درهم' },
+        lossBy: { social: 'سرقة حسابك واستخدامه لخداع متابعيك', bankapp: 'خسارة 18,640.25 درهم', charity: 'خسارة 18,640.25 درهم وانكشاف بيانات بطاقتك' },
+        protectTxt: { login: 'لا تنقر على الروابط المشبوهة أو تمسح رموز QR غير موثوقة، ولا تزوّد الغرباء بمعلوماتك. «حِصن» يذكّرك بتفعيل المصادقة متعددة العوامل والتحديثات التلقائية، ويبلّغ فورًا عن أي رسالة مشبوهة.', app: 'حمّل التطبيقات من المتجر الرسمي فقط، وراجع الأذونات قبل الموافقة.', boss: 'تحقّق دائمًا قبل أي تحويل أو مشاركة معلومة: اتصل بالشخص على رقمه المعروف (قناة أخرى موثوقة). لا تستجب للطلبات العاجلة والسرية، وانتبه للرسائل «المثالية» أكثر من اللازم والشعارات الرسمية فقد تكون مصمّمة لخداعك. فعّل المصادقة الثنائية وحدّث إعدادات الأمان باستمرار.' },
+        protectBy: { social: 'العلامات التجارية الحقيقية لا تطلب تسجيل الدخول بحسابك عبر رابط لاستلام جائزة. تحقق من الحساب الموثّق عبر الموقع الرسمي، ولا تُدخل بياناتك.', game: 'لعبة لا تحتاج الميكروفون والكاميرا وجهات الاتصال. حمّل من المتجر الرسمي فقط، وارفض أي إذن غير ضروري.', bankapp: 'التطبيق البنكي الرسمي يُحمَّل فقط من App Store أو Google Play باسم البنك الموثّق. البنك لا يرسل روابط لتحميل تطبيقه، وموظفوه لا يطلبون كلمة المرور أو الرقم السري أو CVV أبدًا.', charity: 'قبل أي تبرع أو دفع: تأكد من رمز القفل وأن الموقع يستخدم HTTPS، لا تمسح رموز QR من مصادر مجهولة في الأماكن العامة، فعّل المصادقة الثنائية لعمليات الدفع، وتبرّع فقط عبر المواقع الرسمية الموثّقة للجهات الخيرية.' },
+      },
+      en: {
+        loginSim: { bankTitle: 'Nakhla National Bank', socTitle: 'Nakhla Bank Rewards', verify: 'Identity check', bankAlert: '⚠️ Unusual sign-in detected. Sign in to verify.', socAlert: '🎉 Congratulations! Sign in with your social account to claim your prize.', user: 'Username or email', pass: 'Password', btn: 'Sign in', ok: '✓ Your account has been verified',
+          banners: { mail: [['mail', 'Mail', 'Security alert', 'Your password was changed from an unknown device'], ['bank', 'Nakhla Bank', 'New sign-in', 'Your account was accessed from a new device abroad'], ['messages', 'Messages', 'Sara', 'I got a strange email from you with a link… is that you?']],
+            social: [['social', 'Social', 'Linked email changed', 'You can no longer sign in to your account'], ['social', 'Social', 'New post from your account', '“I won an iPhone! Open the link to claim yours” — sent to 1,240 followers'], ['whatsapp', 'WhatsApp', 'Khalid', 'Did you really win? I opened your link and it asked for my details…']] } },
+        appSim: { gameName: 'Desert Race', bankName: 'Nakhla Bnak', notStore: 'Outside the official store — unknown developer', downloading: 'Downloading…', installed: '✓ Installed', wants: 'wants access to', perms: ['🎙️ Microphone', '📷 Camera', '👥 Contacts'], allow: 'Allow', deny: 'Don’t allow',
+          exfil: 'The app is sending your data in the background to an unknown server', rows: [['👥', 'Contacts (312)'], ['📷', 'Camera photos every 30 seconds'], ['🎙️', 'Microphone recordings']], to: '→ 185.22.1.9 (abroad)',
+          spam: ['messages', 'Messages', 'Um Saeed', 'I got a weird game link from you… is your account hacked?'], bankLogin: 'Sign in to activate the new app', act: 'Activate', activating: 'Activating the app…' },
+        charity: { name: '💚 Al Khair Charity', sub: 'Donate to help families in need', notSecure: 'Not secure', amt: 'Choose an amount', donate: 'Donate now', ok: '💚 Thank you! AED 250 received' },
+        steps: { login: ['You opened a link in an official-looking message and reached a fake login page', 'You typed your username and password — straight to the scammer', 'The scammer took over your account, changed the password and used it to fool your contacts'], app: ['You installed an app from a link outside the official store', 'You granted permissions it does not need', 'The app stole your data and sent it to untrusted parties'], boss: ['A voice that sounded like your manager (AI-generated) called you', 'It asked for an urgent, confidential transfer, then the verification code', 'You transferred the money and gave the code without checking through another channel'] },
+        stepsBy: { social: ['You saw an account impersonating a trusted brand announcing a contest', 'You tapped the link, signed in with your social account and entered your details', 'Your account was stolen and used to spread the same scam to your followers'], game: ['You installed a “free” game from a link outside the store', 'You gave it the microphone, camera and contacts — permissions no game needs', 'The game collected your data and shared it with untrusted third parties'], bankapp: ['You installed an app impersonating your bank’s name and logo from a link in a message', 'You signed in with your username and password', 'The scammer used them to break into your bank account and drain it'], charity: ['You scanned a donation QR code on a poster in a public place', 'It opened a fake payment page without a padlock (http) that looked like a charity', 'You entered your card details; the money went to a fraud account and your card data was exposed'] },
+        loss: { login: 'Your account taken over', app: 'Your contacts, photos and recordings leaked', boss: 'Loss of AED 18,640.25' },
+        lossBy: { social: 'Your account stolen and used to scam your followers', bankapp: 'Loss of AED 18,640.25', charity: 'Loss of AED 18,640.25 and your card data exposed' },
+        protectTxt: { login: 'Don’t click suspicious links or scan untrusted QR codes, and don’t give personal information to strangers. HISN reminds you to turn on multi-factor authentication and automatic updates, and reports any suspicious message instantly.', app: 'Install apps only from the official store and review permissions before allowing them.', boss: 'Always verify before any transfer or sharing information: call the person back on the number you know (another trusted channel). Don’t respond to urgent, confidential requests, and beware of “perfect” messages and official logos — they may be designed to fool you. Turn on two-factor authentication and keep security settings updated.' },
+        protectBy: { social: 'Real brands never ask you to sign in with your account through a link to claim a prize. Check the verified account on the official site and never enter your details.', game: 'A game does not need your microphone, camera and contacts. Install only from the official store and deny unnecessary permissions.', bankapp: 'The official banking app comes only from the App Store or Google Play under the verified bank name. Banks never send links to download their app, and staff never ask for your password, PIN or CVV.', charity: 'Before any donation or payment: check for the padlock and HTTPS, don’t scan QR codes from unknown sources in public places, turn on two-factor authentication for payments, and donate only through the charity’s official, verified sites.' },
+      },
+    };
+    for (const l of ['ar', 'en']) { const X = SIM[l], A = ADD[l]; for (const k of ['steps', 'stepsBy', 'loss', 'protectTxt', 'protectBy']) X[k] = Object.assign(X[k] || {}, A[k]); X.lossBy = A.lossBy; X.loginSim = A.loginSim; X.appSim = A.appSim; X.charity = A.charity; }
+  })();
   const SCRIPTS = {
     async payment(v) {
       const X = sx(), host = (v && v.urls && v.urls[0]) || 'secure-pay.example';
       const src = ((v && (v.text || '')) + ' ' + ((v && v.summary) || '')).toLowerCase();
-      const tpl = /مخالف|غرام|مرور|traffic|fine|violation|impound/.test(src) ? 'fine' : /بطاق|card|تحديث|update|بيانات/.test(src) && !/شحن|توصيل|طرد|parcel|delivery/.test(src) ? 'card' : 'delivery';
+      const tpl = /تبرع|تبرّع|جمعيه|جمعية|خيري|donat|charity/.test(src) ? 'charity' : /مخالف|غرام|مرور|traffic|fine|violation|impound/.test(src) ? 'fine' : /بطاق|card|تحديث|update|بيانات/.test(src) && !/شحن|توصيل|طرد|parcel|delivery/.test(src) ? 'card' : 'delivery';
       curTpl = tpl;
       const bar = (h) => `<div class="br-bar"><span class="br-lock">🔒</span><span class="br-host">${h}</span></div>`;
       const cardForm = (extra) => `<label>${X.card}</label><div class="br-in" id="fCard"></div><div class="br-row"><div><label>${X.exp}</label><div class="br-in" id="fExp"></div></div><div><label>${X.cvv}</label><div class="br-in" id="fCvv"></div></div></div>${extra || ''}
@@ -440,6 +497,15 @@
       };
       const success = async (n, txt) => { const ok = el(`<div class="br-ok">${txt}</div>`); n.querySelector('.br-page').appendChild(ok); ok.scrollIntoView({ block: 'end' }); await sleep(2200); };
 
+      if (tpl === 'charity') {
+        const C = X.charity;
+        const n = simShow(`<div class="br card"><div class="br-bar insecure"><span class="br-lock">⚠️ ${C.notSecure}</span><span class="br-host">http://${host}</span></div><div class="bank-head" style="background:#1f8f4e"><span class="gov-ic">💚</span><div><b>${C.name}</b><small>${C.sub}</small></div></div><div class="br-page">
+          <h3>${C.amt}</h3><div class="br-row"><div class="br-in">100</div><div class="br-in" style="outline:2px solid #1f8f4e">250</div><div class="br-in">500</div></div>${cardForm()}<button type="button" class="br-pay bank" id="bDon" style="background:#1f8f4e">${C.donate}</button><div class="br-wait" hidden><span class="spin"></span>${X.verifying}</div></div></div>`);
+        await sleep(800); await typeCard(n); await otpStep(n, '#bDon');
+        await success(n, C.ok);
+        await drain([['intl', 9800], ['gift', 5000], ['shop', 3840.25]]);
+        return;
+      }
       if (tpl === 'fine') {
         const F = X.fine;
         const n = simShow(`<div class="br fine">${bar(host)}<div class="gov-head"><span class="gov-ic">${F.icon}</span><div><b>${F.title}</b><small>${F.sub}</small></div></div><div class="br-page">
@@ -491,6 +557,42 @@
       for (const b of [X.newDevice, X.phoneChanged, X.beneAdded]) { banner({ icon: 'bank', app: X.bankName, title: X.bankName, body: b, danger: true, ttl: 3800 }); await sleep(1500); }
       await drain([['bene', 9000], ['bene', 9640.25]]);
     },
+    async login(v) {
+      const X = sx(), G = X.loginSim, host = (v && v.urls && v.urls[0]) || 'secure-login.example';
+      const src = ((v && v.text) || '') + ' ' + ((v && v.summary) || '');
+      const soc = /تواصل|مسابق|جائز|contest|prize|social|rewards/i.test(src); curTpl = soc ? 'social' : null;
+      const n = simShow(`<div class="br card"><div class="br-bar"><span class="br-lock">🔒</span><span class="br-host">${host}</span></div><div class="bank-head"${soc ? ' style="background:linear-gradient(90deg,#d62976,#962fbf)"' : ''}><span class="gov-ic">${soc ? '📣' : '🏦'}</span><div><b>${soc ? G.socTitle : G.bankTitle}</b><small>${G.verify}</small></div></div><div class="br-page">
+        <div class="br-alert">${soc ? G.socAlert : G.bankAlert}</div><label>${G.user}</label><div class="br-in" id="lu"></div><label>${G.pass}</label><div class="br-in" id="lp"></div><button type="button" class="br-pay bank" id="lb">${G.btn}</button><div class="br-wait" hidden><span class="spin"></span>${X.verifying}</div></div></div>`);
+      await sleep(700); await typeInto(n.querySelector('#lu'), soc ? 'maryam_uae' : 'maryam.a@mail.ae', 70); await typeInto(n.querySelector('#lp'), '••••••••••', 90);
+      n.querySelector('#lb').classList.add('press'); await sleep(500); n.querySelector('.br-wait').hidden = false; await sleep(1500);
+      const ok = el(`<div class="br-ok">${G.ok}</div>`); n.querySelector('.br-page').appendChild(ok); await sleep(1600);
+      for (const b of G.banners[soc ? 'social' : 'mail']) { banner({ icon: b[0], app: b[1], title: b[2], body: b[3], danger: true, ttl: 3800 }); await sleep(2000); }
+      await sleep(600);
+    },
+    async app(v) {
+      const X = sx(), A = X.appSim, host = (v && v.urls && v.urls[0]) || 'download.example';
+      const src = ((v && v.text) || '') + ' ' + ((v && v.summary) || '');
+      const bankish = /بنك|bank|مصرف/i.test(src); curTpl = bankish ? 'bankapp' : 'game';
+      const n = simShow(`<div class="br card"><div class="br-bar"><span class="br-lock">🔒</span><span class="br-host">${host}</span></div><div class="br-page"><div class="dl-card"><div class="dl-ic">${bankish ? '🏦' : '🎮'}</div><b>${bankish ? A.bankName : A.gameName}</b><small>${A.notStore}</small><div class="dl-prog"><i></i></div><div class="dl-st">${A.downloading}</div></div><div id="appStage"></div></div></div>`);
+      const bar = n.querySelector('.dl-prog i'); for (let i = 0; i <= 20; i++) { bar.style.width = (i * 5) + '%'; await sleep(70); }
+      n.querySelector('.dl-st').textContent = A.installed; await sleep(700);
+      const stage = n.querySelector('#appStage');
+      if (!bankish) {
+        for (const pm of A.perms) {
+          const d = el(`<div class="perm"><b>«${A.gameName}» ${A.wants}</b><p>${pm}</p><div class="perm-b"><span>${A.deny}</span><span class="allow">${A.allow}</span></div></div>`); stage.appendChild(d); d.scrollIntoView({ block: 'end' });
+          await sleep(900); d.querySelector('.allow').classList.add('press'); await sleep(450); d.classList.add('done');
+        }
+        const ex = el(`<div class="exfil"><b>⚠️ ${A.exfil}</b>${A.rows.map((r) => `<div class="ex-row"><span>${r[0]} ${r[1]}</span><small>${A.to}</small><div class="dl-prog"><i></i></div></div>`).join('')}</div>`); stage.appendChild(ex); ex.scrollIntoView({ block: 'end' });
+        const bars = ex.querySelectorAll('.dl-prog i'); for (let i = 0; i <= 20; i++) { bars.forEach((b, k) => { b.style.width = Math.min(100, i * (5 + k)) + '%'; }); await sleep(90); }
+        await sleep(500); banner({ icon: A.spam[0], app: A.spam[1], title: A.spam[2], body: A.spam[3], danger: true, ttl: 4500 }); await sleep(2600);
+        return;
+      }
+      const f = el(`<div class="perm bankapp"><b>🏦 ${A.bankName}</b><p>${A.bankLogin}</p><label>${X.loginSim.user}</label><div class="br-in" id="au"></div><label>${X.loginSim.pass}</label><div class="br-in" id="ap"></div><button type="button" class="br-pay bank" id="ab">${A.act}</button><div class="br-wait" hidden><span class="spin"></span>${A.activating}</div></div>`); stage.appendChild(f); f.scrollIntoView({ block: 'end' });
+      await sleep(600); await typeInto(f.querySelector('#au'), 'maryam.a', 80); await typeInto(f.querySelector('#ap'), '••••••••', 90);
+      f.querySelector('#ab').classList.add('press'); await sleep(400); f.querySelector('.br-wait').hidden = false; await sleep(1600);
+      await drain([['bene', 9800], ['intl', 5000], ['gift', 3840.25]]);
+    },
+    async boss() { curTpl = null; await SCRIPTS.transfer(); },
     async transfer() {
       const X = sx();
       await drain([['safe', BAL]]);
@@ -578,10 +680,10 @@
     try { await SCRIPTS[kind](v); } catch (e) { console.error(e); }
     const X = sx();
     const sum = el(`<div class="sim-sum"><h2>${X.title}</h2><div class="sim-loss"><small>${X.lossLbl}</small><b></b></div><ol></ol><div class="sim-protect"><b>${X.protect}</b><p></p></div><button type="button" class="sim-reset">${X.reset}</button></div>`);
-    sum.querySelector('.sim-loss b').textContent = X.loss[kind];
-    const stepsList = kind === 'payment' && X.stepsBy[curTpl] ? X.stepsBy[curTpl] : X.steps[kind];
+    sum.querySelector('.sim-loss b').textContent = (X.lossBy && X.lossBy[curTpl]) || X.loss[kind];
+    const stepsList = X.stepsBy[curTpl] || X.steps[kind];
     stepsList.forEach((st) => { const li = document.createElement('li'); li.textContent = st; sum.querySelector('ol').appendChild(li); });
-    sum.querySelector('.sim-protect p').textContent = kind === 'payment' && X.protectBy[curTpl] ? X.protectBy[curTpl] : X.protectTxt[kind];
+    sum.querySelector('.sim-protect p').textContent = X.protectBy[curTpl] || X.protectTxt[kind];
     curTpl = null;
     sum.querySelector('.sim-reset').addEventListener('click', () => { simLayer.remove(); simLayer = null; document.getElementById('ipBanners').textContent = ''; toParent({ type: 'restored' }); });
     simLayer.appendChild(sum);

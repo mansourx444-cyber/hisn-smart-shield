@@ -274,6 +274,11 @@
       const extra = rep_ ? (lang === 'en' ? ` ${rep_.org.en || rep_.org.ar} has warned about this method.` : ` وقد حذّرت ${rep_.org.ar} من هذا الأسلوب.`) : '';
       return { type, title, reason: reason + extra, step: callStep(entity, lang), pattern: rep_ ? rep_.id : undefined };
     });
+    // صوت مألوف يطلب مالًا أو رمزًا بشكل عاجل: قد يكون مقلَّدًا بالذكاء الاصطناعي (Deepfake)
+    const KNOWN = /(مديرك|مديري|(^|\s)المدير|ابو\s+\S+\s+مديرك|ابوك|امك|اخوك|اختك|ولدك|بنتك|عمك|خالك|صديقك|ربعك|زميلك|(^|\s)انا\s+(ابوك|اخوك|مديرك|عمك|خالك)|your (boss|manager|dad|father|mom|mother|brother|sister|son|daughter|friend|uncle)|(^|\s)it'?s (me|your))/;
+    if (alerts.some((a) => a.type === 'transfer' || a.type === 'otp') && KNOWN.test(n + ' ' + ctxText)) {
+      for (const a of alerts) if (a.type === 'transfer' || a.type === 'otp') { a.voiceClone = true; a.reason += lang === 'en' ? ' The voice may be AI-cloned to sound like someone you know: hang up and call them back on the number you already have.' : ' قد يكون الصوت مقلَّدًا بالذكاء الاصطناعي ليشبه شخصًا تعرفه: أنهِ المكالمة واتصل به على رقمه المعروف لديك.'; }
+    }
     // شرح خطوات معالجة اللغة الطبيعية (للعرض)
     const cues = [];
     for (const seg of segs) for (const tk of tokens(seg)) {
@@ -395,7 +400,10 @@
     http: { ar: () => 'الرابط غير مشفّر (http).', en: () => 'The link is not encrypted (http).' },
     otp: { ar: () => 'الرسالة تطلب مشاركة رمز تحقق.', en: () => 'The message asks you to share a verification code.' },
     ml: { ar: (pc) => `نموذج التعلّم في «حِصن» وجد تشابهًا بنسبة ${pc}٪ مع رسائل احتيال تعلّمها.`, en: (pc) => `HISN's learning model found it ${pc}% similar to scam messages it has learned.` },
-    cred: { ar: () => 'الرسالة تطلب إدخال بيانات بطاقتك أو حسابك.', en: () => 'The message asks for your card or account details.' },
+    cred: { ar: () => 'الرسالة تطلب إدخال بيانات بطاقتك أو حسابك أو كلمة المرور أو الرقم السري — موظفو البنوك لا يطلبونها أبدًا.', en: () => 'The message asks for your card, account, password or PIN details — bank staff never ask for these.' },
+    login: { ar: () => 'تطلب تسجيل الدخول عبر رابط في رسالة — صفحة دخول مزيفة لسرقة اسم المستخدم وكلمة المرور.', en: () => 'It asks you to sign in through a link in a message — a fake login page to steal your username and password.' },
+    apk: { ar: () => 'رابط لتحميل تطبيق من خارج المتجر الرسمي — التطبيقات الآمنة تُحمَّل من App Store أو Google Play فقط، وقد ينتحل التطبيق اسم جهة معروفة أو يطلب أذونات لا يحتاجها.', en: () => 'A link to download an app outside the official store — safe apps come only from the App Store or Google Play; it may impersonate a known brand or ask for permissions it does not need.' },
+    donate: { ar: () => 'طلب تبرع عبر رابط غير رسمي — تبرّع فقط عبر المواقع والتطبيقات الرسمية الموثّقة للجهات الخيرية.', en: () => 'A donation request through an unofficial link — donate only via the official, verified sites and apps of charities.' },
     fee: { ar: (u) => u ? 'الرسالة تطلب دفع رسوم بشكل عاجل.' : 'الرسالة تطلب دفع رسوم أو مبلغ.', en: (u) => u ? 'The message demands an urgent payment.' : 'The message asks you to pay a fee or amount.' },
     urgent: { ar: () => 'الرسالة تضغط عليك بمهلة قصيرة أو بتهديد بإيقاف الخدمة.', en: () => 'The message pressures you with a deadline or a suspension threat.' },
     prize: { ar: () => 'الرسالة تعدك بجائزة أو مبلغ لم تطلبه.', en: () => 'The message promises a prize or money you did not ask for.' },
@@ -412,7 +420,12 @@
 
   const FEE = /(رسوم|ادفع|دفع|سداد|سدد|غرامه|مخالفه|\bfee|\bpay|payment|fine\b)/;
   const URGENT_MSG = /(خلال|فورا|عاجل|الان|اليوم|24|48|ساعه|سيتم|ايقاف|تعليق|توقيف|اغلاق|اخر فرصه|تنتهي|urgent|immediately|within|suspend|expire|last chance|today|blocked|locked)/;
-  const CRED = /(بيانات\s*(ال)?بطاق|رقم\s*(ال)?بطاق|cvv|cvc|كلمه\s*(ال)?(مرور|سر)|الرقم السري|تحديث\s*(ال)?بيانات|حدث بياناتك|card (number|details)|update your (details|info|account)|verify your (account|identity)|login details|password)/;
+  const CRED = /(بيانات\s*(ال)?بطاق|رقم\s*(ال)?بطاق|cvv|cvc|كلمه\s*(ال)?(مرور|سر)|الرقم السري|تحديث\s*(ال)?بيانات|حدث بياناتك|ccv|رقم\s*(ال)?امان|رمز\s*(ال)?امان|(ال)?رقم\s*(ال)?سري\s*(لل|ل)?(صراف|بطاقه)|رمز\s*(ال)?صراف|رقم\s*التعريف\s*الشخصي|بيانات\s*(ال)?دخول|اسم\s*المستخدم|card (number|details)|update your (details|info|account)|verify your (account|identity)|login details|password|atm pin|security code)/;
+  // طلب تسجيل الدخول عبر رابط (تصيّد بيانات الدخول) — يُحتسب فقط مع وجود رابط
+  const LOGIN_ASK = /(سجل\s*دخولك|سجلي\s*دخولك|قم\s*بتسجيل\s*(ال)?دخول|يرجى\s*تسجيل\s*(ال)?دخول|تسجيل\s*(ال)?دخول\s*(لل|ل)?(تحقق|تاكيد|تفعيل)|سجل\s*الدخول|ادخل\s*(بحسابك|بياناتك|حسابك)|بحساب\s*(ال)?تواصل|sign in to|log ?in to|login to|sign in with|log in with|verify your account)/;
+  // تحميل تطبيق من خارج المتجر الرسمي (لعبة أو تطبيق بنكي مزيف)
+  const APP_DL = /(حمل|حمّل|نزل|ثبت|تحميل|تنزيل|install|download)\S*\s+(\S+\s+){0,3}(تطبيق|التطبيق|لعبه|اللعبه|الاصدار|app|game|apk)|(تطبيق|لعبه)\s+(\S+\s+){0,3}(جديد|مجان)/;
+  const DONATE = /(تبرع|تبرّع|جمعيه|خيري|خيريه|اغاثه|زكاه|صدقه|donat|charity|relief)/;
   const PRIZE = /(ربحت|فزت|جايزه|جائزه|مبروك|سحب|won\b|winner|prize|congratulations|reward|gift card)/;
   const LURE = /(وظيف|وظائف|رواتب|راتب|دخل يومي|ربح يومي|ارباح|استثمار|مضمون|عمل من المنزل|job|salary|salaries|investment|profit|earn|work from home)/;
   const GROUP = /(مجموعه|قروب|جروب|group|join|انضم|انضمام)/;
@@ -463,6 +476,12 @@
     if (otpReq || detectRelay(n)) add('otp', 3);
     const urgent = URGENT_MSG.test(n);
     if (CRED.test(n) && !segs.every((s) => isProtective(s, tokens(s)))) add('cred', 3);
+    const loginAsk = urls.length && LOGIN_ASK.test(n) && !urls.every((u) => officialEntityOf(u.host));
+    if (loginAsk) add('login', 3);
+    const appDl = urls.some((u) => /\.apk(\b|$)|apk|\/download|\/app\b|\/game/.test(u.raw.toLowerCase()) && !/apps\.apple\.com|play\.google\.com/.test(u.host)) && (APP_DL.test(n) || urls.some((u) => /\.apk/.test(u.raw.toLowerCase())));
+    if (appDl) add('apk', 3);
+    const donate = DONATE.test(n) && urls.length && !urls.every((u) => officialEntityOf(u.host));
+    if (donate) add('donate', 2);
     const fee = FEE.test(n) && !segs.every((s) => isProtective(s, tokens(s)));
     if (fee) add('fee', urls.length && !officialOf ? 3 : 2, urgent);
     if (urgent && (fee || otpReq || reasons.length)) add('urgent', 2);
@@ -492,6 +511,9 @@
       level = 'danger';
       const has = (k) => risky.some((r) => r.key === k);
       if (has('lure') && urls.length) title = lang === 'en' ? 'Do not join this group' : 'لا تنضم لهذه المجموعة';
+      else if (has('cred') && !urls.length && /(cvv|ccv|امان|صراف|بطاق|التعريف الشخصي|pin)/.test(n)) title = lang === 'en' ? 'Do not share your card details' : 'لا تشارك بيانات بطاقتك';
+      else if (has('apk')) title = lang === 'en' ? 'Do not install this app' : 'لا تحمّل هذا التطبيق';
+      else if (has('login')) title = lang === 'en' ? 'Do not sign in through this link' : 'لا تسجّل دخولك عبر هذا الرابط';
       else if (has('otp')) title = lang === 'en' ? 'Do not share the code' : 'لا تشارك الرمز';
       else if (has('cred')) title = lang === 'en' ? 'Do not enter your details' : 'لا تُدخل بياناتك';
       else if (has('fee') && urls.length) title = lang === 'en' ? 'Do not pay through this link' : 'لا تدفع عبر هذا الرابط';
@@ -554,8 +576,8 @@
     const rep_ = risky.find((r) => r.key === 'reported' || r.key === 'predicted');
     if (rep_ && !summary.includes(rep_.txt)) summary = rep_.txt + ' ' + summary;
     const sev3 = risky.filter((r) => r.sev >= 3).length;
-    const risk = !danger ? 'low' : ((ask && (domainIssue || hiddenIssue)) || sev3 >= 2 ? 'high' : 'medium');
-    const kind = has('lure') || urls.some((u) => /whatsapp|wa\.me/.test(u.host)) ? 'whatsapp' : ask === 'otp' ? 'otp' : 'payment';
+    const risk = !danger ? 'low' : ((ask && (domainIssue || hiddenIssue)) || sev3 >= 2 || risky.some((r) => r.key === 'apk' || r.key === 'login') ? 'high' : 'medium');
+    const kind = reasons.some((r) => r.key === 'apk') ? 'app' : reasons.some((r) => r.key === 'login') ? 'login' : has('lure') || urls.some((u) => /whatsapp|wa\.me/.test(u.host)) ? 'whatsapp' : ask === 'otp' ? 'otp' : 'payment';
     const consequence = kind === 'whatsapp' ? (lang === 'en' ? 'Joining may let scammers take over your WhatsApp account.' : 'الانضمام قد يمكّن المحتالين من سرقة حسابك في واتساب.') : lang === 'en'
       ? (ask === 'otp' ? 'A scammer could use the code to get into your account.' : (ask === 'cred' || ask === 'fee') ? 'This site may ask for your card details.' : 'This site may try to steal your details.')
       : (ask === 'otp' ? 'قد يستخدم المحتال الرمز للدخول إلى حسابك.' : (ask === 'cred' || ask === 'fee') ? 'قد يطلب هذا الموقع بيانات بطاقتك.' : 'قد يحاول هذا الموقع سرقة بياناتك.');

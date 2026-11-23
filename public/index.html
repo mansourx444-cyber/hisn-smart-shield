@@ -59,6 +59,7 @@
         <div><b id="stThreats">0</b><small data-i18n="stThreats"></small></div>
         <div><b id="stCalls">0</b><small data-i18n="stCalls"></small></div>
       </div>
+      <div class="card secure" id="secCard"><h3 data-i18n="secTitle"></h3><ul class="sec-list"><li><span aria-hidden="true">🔐</span><span data-i18n="secMfa"></span><b>✓</b></li><li><span aria-hidden="true">🔄</span><span data-i18n="secUpd"></span><b>✓</b></li><li><span aria-hidden="true">🚩</span><span data-i18n="secRep"></span><b id="secRepN">✓</b></li></ul><small data-i18n="secNote"></small></div>
       <span id="statusBox" hidden></span><span id="statusTitle" hidden></span>
       <div class="pair"><span data-i18n="pairCode"></span><b id="pairCode">----</b></div>
       <h2 data-i18n="recent"></h2>
@@ -184,6 +185,7 @@
       <ul id="lwMore" class="res-more"></ul>
       <p id="lwSafe" class="safe"></p>
       <button id="lwBack" class="btn-primary" type="button" data-i18n="goBack"></button>
+      <button id="lwReport" class="btn-ghost" type="button" data-i18n="report"></button>
       <button id="lwGo" class="btn-ghost" type="button"></button>
     </div>
   </div>
@@ -209,6 +211,7 @@
   <script src="live.js"></script>
   <script src="engine.js"></script>
   <script src="learn.js"></script>
+  <script src="qrcode.js"></script>
   <script src="tones.js"></script>
   <script src="voice.js"></script>
   <script src="app.js"></script>

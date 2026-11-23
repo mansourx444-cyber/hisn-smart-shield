@@ -267,3 +267,40 @@ body.iphone.embed>.ip-screen{position:fixed;inset:0;width:100vw;height:100vh;bor
 .bm-pics span{width:62px;height:62px;border-radius:8px;display:grid;place-items:center;font-size:26px;filter:blur(2.5px)}
 /* نص فقاعات واتساب الصادرة داكن على الخلفية الخضراء */
 .wa-chat .bub.out{color:#111}
+
+/* ------------------------------ حالات تحدي الهاكثون ------------------------------ */
+.ip-msgs.mail .m-top,.ip-msgs.mail .t-back{color:#1a7cf5}
+.ip-msgs.mail .m-dot{background:#1a7cf5}
+.ip-msgs.social .m-top,.ip-msgs.social .t-back{color:#c13584}
+.ip-msgs.social .m-dot{background:#c13584}
+.ip-msgs.social .t-body{background:#fafafa}
+/* كاميرا: مسح رمز QR من ملصق */
+.qrcam{position:absolute;inset:0;z-index:60;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;animation:qrIn .25s ease-out}
+@keyframes qrIn{from{opacity:0}to{opacity:1}}
+.qr-top{position:absolute;top:54px;font-size:14px;font-weight:600;color:#ffd60a}
+.qr-poster{width:72%;background:linear-gradient(#fff,#eaf7ee);color:#14532d;border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 10px 30px #0008;transform:rotate(-2deg)}
+.qr-poster b{font-size:13px;text-align:center;line-height:1.5}
+.qr-poster small{font-size:11px;color:#166534}
+.qr-code{display:grid;grid-template-columns:repeat(11,1fr);width:130px;height:130px;background:#fff;padding:4px;border-radius:6px}.qr-code svg{width:100%;height:100%;grid-column:1/-1;grid-row:1/-1}
+.qr-code i{background:#fff}.qr-code i.on{background:#111}
+.qr-frame{position:absolute;width:62%;aspect-ratio:1;border:3px solid #ffd60a;border-radius:18px;top:28%;pointer-events:none;animation:qrPulse 1.2s ease-in-out infinite}
+@keyframes qrPulse{50%{transform:scale(.96);opacity:.7}}
+.qr-chip{position:absolute;bottom:120px;background:#ffd60a;color:#111;border:0;border-radius:999px;padding:10px 18px;font:inherit;font-size:13.5px;font-weight:700;box-shadow:0 6px 18px #0007;cursor:pointer;animation:qrIn .3s}
+.qr-x{position:absolute;top:50px;inset-inline-end:18px;background:#ffffff26;color:#fff;border:0;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer}
+/* شريط عنوان غير آمن (http) */
+.br-bar.insecure{background:#fdecea}.br-bar.insecure .br-lock{color:#b42318;font-weight:700;font-size:11px}
+/* تحميل تطبيق + أذونات + تسريب بيانات */
+.dl-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px;border:1px solid #e5e5ea;border-radius:14px;background:#fff;text-align:center}
+.dl-ic{font-size:44px;line-height:1}
+.dl-card small{color:#b42318;font-size:11.5px}
+.dl-prog{width:100%;height:6px;border-radius:3px;background:#e5e5ea;overflow:hidden}.dl-prog i{display:block;height:100%;width:0;background:#0a84ff;transition:width .08s}
+.dl-st{font-size:12px;color:#555}
+.perm{margin-top:12px;background:#f2f2f7;border-radius:14px;padding:14px;text-align:center;box-shadow:0 6px 18px #0002;animation:qrIn .25s}
+.perm b{display:block;font-size:13.5px}.perm p{margin:6px 0 10px;font-size:15px;font-weight:600}
+.perm-b{display:flex;border-top:1px solid #d1d1d6}.perm-b span{flex:1;padding:9px 0;color:#0a84ff;font-size:14px}.perm-b span.allow{font-weight:700;border-inline-start:1px solid #d1d1d6}
+.perm-b span.press{background:#d1d1d6}
+.perm.done{opacity:.45;transform:scale(.97)}
+.perm.bankapp{text-align:start}.perm.bankapp label{font-size:12px;color:#555}
+.exfil{margin-top:12px;background:#fdecea;border:1px solid #f5c2bd;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.exfil b{color:#b42318;font-size:13px}
+.ex-row span{font-size:12.5px;font-weight:600}.ex-row small{display:block;color:#b42318;font-size:11px;margin-bottom:3px}.ex-row .dl-prog i{background:#b42318}

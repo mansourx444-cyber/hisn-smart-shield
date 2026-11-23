@@ -175,3 +175,11 @@ textarea:focus,.code-input:focus,.inp:focus{border-color:var(--navy);outline:0}
 .tl-tech i{font-style:normal;font-size:.68rem;line-height:1.35;color:#0a5bd3}
 .tl.v .tl-tech i{color:#5b6476}
 .tl-tech.bad i:last-child{color:#c4001a;font-weight:700}
+/* بطاقة حماية الحسابات (المصادقة متعددة العوامل، التحديثات، البلاغ الفوري) */
+.card.secure{padding:12px 14px}
+.card.secure h3{margin:0 0 6px;font-size:14px}
+.sec-list{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:6px}
+.sec-list li{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.sec-list li span:nth-child(2){flex:1}
+.sec-list b{color:var(--ok,#1a9e5c);font-size:12px;white-space:nowrap}
+.card.secure small{color:var(--muted,#6b7280);font-size:11px;line-height:1.5;display:block}

@@ -212,6 +212,7 @@ function closeStt(room) {
 /* ------------------------------ التعلّم الآلي المستمر ------------------------------ */
 // شبكة عصبية خفيفة تتدرّب من: ممارسات الجهات + قرارات المحرك الواثقة + نتائج المكالمات. تُحفظ الأوزان فقط، لا النصوص.
 const MODEL_FILE = path.join(DATA_DIR, 'model.json');
+const reports = { total: 0, auto: 0, manual: 0, hosts: {} };
 const mlStats = { sources: { seed: 0, authority: 0, rules: 0, outcome: 0 }, holdout: null, startedAt: Date.now() };
 let model = null;
 function holdoutAcc() { let ok = 0; for (const [t, y] of LSEED.HOLDOUT) if ((learn.predict(model, t) >= 0.5) === !!y) ok++; return Math.round(ok / LSEED.HOLDOUT.length * 100); }
@@ -477,6 +478,16 @@ async function handler(req, res) {
     return json(res, 200, { state: analysisState(room) });
   }
   // بوابة الجهات (طرف ثالث): الدخول بالهوية الرقمية (محاكاة) ثم نشر الممارسات
+  // البلاغ الفوري عن رسالة مشبوهة: يدوي (يعلّم النموذج) أو تلقائي (نطاقات فقط). لا تُخزَّن نصوص ولا بيانات شخصية
+  if (p === '/api/report' && req.method === 'POST') {
+    const b = await readJson(req);
+    reports.total++; if (b.auto) reports.auto++; else reports.manual++;
+    for (const h of (Array.isArray(b.hosts) ? b.hosts : []).slice(0, 5)) { const k = String(h).toLowerCase().slice(0, 80); reports.hosts[k] = (reports.hosts[k] || 0) + 1; }
+    if (!b.auto && b.text) learnFrom(String(b.text), 1, 'report');
+    log('[report]', b.auto ? 'auto' : 'manual', b.channel || '');
+    return json(res, 200, { ok: true, total: reports.total });
+  }
+  if (p === '/api/reports' && req.method === 'GET') return json(res, 200, { total: reports.total, auto: reports.auto, manual: reports.manual, topHosts: Object.entries(reports.hosts).sort((a, b) => b[1] - a[1]).slice(0, 10) });
   if (p === '/api/model' && req.method === 'GET') {
     const meta = { version: model.version, seen: model.seen, pos: model.pos, neg: model.neg, sources: mlStats.sources, holdout: mlStats.holdout, trainedAt: model.trainedAt, arch: 'char n-grams (3–5) + words → hashing 4096 → dense 16 (ReLU) → sigmoid' };
     if (url.searchParams.get('meta') === '1' || Number(url.searchParams.get('v')) === model.version) return json(res, 200, { ...meta, same: Number(url.searchParams.get('v')) === model.version });
@@ -534,7 +545,7 @@ async function handler(req, res) {
   if (p === '/api/sms' && req.method === 'POST') {
     const b = await readJson(req); const room = roomOf(b.room);
     if (!room) return json(res, 404, { error: 'room' });
-    const msg = { id: crypto.randomUUID(), channel: b.channel === 'wa' ? 'wa' : 'sms', from: String(b.from || 'SMS').slice(0, 40), fromLabel: String(b.fromLabel || '').slice(0, 60), text: String(b.text || '').slice(0, 1200), at: Date.now() };
+    const msg = { id: crypto.randomUUID(), channel: ['wa', 'mail', 'social', 'qr'].includes(b.channel) ? b.channel : 'sms', from: String(b.from || 'SMS').slice(0, 40), fromLabel: String(b.fromLabel || '').slice(0, 60), text: String(b.text || '').slice(0, 1200), at: Date.now() };
     const delivered = send(room, 'user', 'sms', msg);
     try { const r = engine.analyzeMessage(msg.text, room.lang, msg.from); if (r.level === 'danger' && !(r.reasons.length === 1 && r.ml)) learnFrom(msg.text, 1, 'rules'); } catch {}
     log('[sms] relayed', room.code, delivered ? 'delivered' : 'offline');
@@ -556,7 +567,7 @@ async function handler(req, res) {
       log('[call] accepted', room.code);
     } else if (act === 'decline') {
       room.ringing = false; send(room, 'caller', 'declined', {});
-    } else if (act === 'end') endCall(room, b.role === 'caller' ? 'caller' : 'user', ['otp', 'transfer', 'approval', 'remote'].includes(b.scammed) ? b.scammed : null);
+    } else if (act === 'end') endCall(room, b.role === 'caller' ? 'caller' : 'user', ['otp', 'transfer', 'approval', 'remote', 'boss'].includes(b.scammed) ? b.scammed : null);
     return json(res, 200, { ok: true });
   }
   // المساعد الذكي (اختياري): رأي ثانٍ من نموذج لغوي يشرح الخطر بلغة بسيطة. لا يُحفظ النص.

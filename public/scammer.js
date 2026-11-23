@@ -19,7 +19,7 @@
     ar: {
       title: 'المحتال', freeSms: '✍️ اكتب رسالتك بنفسك', freeSmsD: 'اكتب أي رسالة أو رابط احتيال من خيالك وشاهد «حِصن» يحلّلها.', senderPh: 'اسم أو رقم المرسل', textPh: 'نص الرسالة…', chSms: 'رسالة نصية', chWa: 'واتساب', freeCall: '🎙️ مكالمة حرة — تكلّم أنت بدور المحتال', freeCallD: 'بعد رد الضحية اضغط الميكروفون وتكلّم بنفسك، أو اكتب الجملة. يتحول صوتك إلى نص فعليًا ويحلّله «حِصن».', numPh: 'رقم المتصل', labelPh: 'يظهر للضحية باسم', micOn: '🔴 أستمع… تكلّم الآن', micOff: 'اضغط الميكروفون وتكلّم', micNA: 'التعرف على الكلام غير مدعوم في هذا المتصفح — استخدم Edge أو Chrome، أو اكتب الجملة', micDenied: 'لم يُسمح بالميكروفون', typePh: 'أو اكتب جملة المحتال…', freeTitle: 'مكالمة حرة', warn: '⚠ محاكاة لأغراض التوعية والتدريب فقط. الروابط وهمية ولا تعمل.', lang: 'English',
       linked: 'متصل بهاتف الضحية', waiting: 'بانتظار هاتف الضحية…', enterCode: 'أدخل رمز الربط من هاتف الضحية', offline: 'الرمز صحيح لكن هاتف الضحية غير مفتوح', bad: 'رمز غير صحيح',
-      tabSms: 'رسائل احتيال', tabCalls: 'مكالمات احتيال', from: 'من', sms: 'رسالة نصية', wa: 'واتساب', send: 'أرسل إلى الضحية', sent: '✓ وصلت إلى هاتف الضحية', notDelivered: 'لم تصل — هاتف الضحية غير متصل',
+      tabSms: 'رسائل احتيال', tabCalls: 'مكالمات احتيال', from: 'من', sms: 'رسالة نصية', wa: 'واتساب', mail: 'بريد إلكتروني', social: 'تواصل اجتماعي', qr: 'رمز QR في مكان عام', send: 'أرسل إلى الضحية', sent: '✓ وصلت إلى هاتف الضحية', notDelivered: 'لم تصل — هاتف الضحية غير متصل',
       call: 'اتصل بالضحية', victim: 'الضحية — مريم', ringing: 'يرن…', connecting: 'جارٍ الاتصال…', declined: 'رُفضت المكالمة', ended: 'انتهت المكالمة', busy: 'الضحية في مكالمة',
       say: 'المكالمة', spS: '🎙️ المحتال يتكلم…', spV: '🗣️ الضحية تتكلم…', spWait: '⏸ الدرع نبّه الضحية — بانتظار قرارها…', spDone: 'انتهى الحوار', you: 'المحتال', victimL: 'مريم (الضحية)', declinedByShield: '🛡️ الضحية أنهت المكالمة بعد تنبيه الدرع', mic: 'ميكروفون حقيقي', outage: 'محاكاة انقطاع التحليل', phrasesN: (n) => `${n} عبارات`,
       pillActive: '🛡️ «حِصن» يحلّل المكالمة لحظيًا', pillDemo: '🛡️ تُحلَّل لحظيًا (عبارات تمثيلية)', pillPaused: '⚠️ الفحص متوقف', pillWait: 'بانتظار الرد',
@@ -27,7 +27,7 @@
     en: {
       title: 'The Scammer', freeSms: '✍️ Write your own message', freeSmsD: 'Type any scam message or link and watch HISN analyse it.', senderPh: 'Sender name or number', textPh: 'Message text…', chSms: 'Text message', chWa: 'WhatsApp', freeCall: '🎙️ Free call — you play the scammer', freeCallD: 'After the victim answers, press the mic and speak, or type. Your voice is really transcribed and analysed by HISN.', numPh: 'Caller number', labelPh: 'Shown to victim as', micOn: '🔴 Listening… speak now', micOff: 'Press the mic and speak', micNA: 'Speech recognition is not supported here — use Edge or Chrome, or type', micDenied: 'Microphone not allowed', typePh: 'Or type the scammer’s sentence…', freeTitle: 'Free call', warn: '⚠ Simulation for awareness and training only. Links are fake and do not work.', lang: 'العربية',
       linked: 'Connected to the victim phone', waiting: 'Waiting for the victim phone…', enterCode: 'Enter the pairing code from the victim phone', offline: 'Code is valid but the victim phone is not open', bad: 'Wrong code',
-      tabSms: 'Scam messages', tabCalls: 'Scam calls', from: 'From', sms: 'Text message', wa: 'WhatsApp', send: 'Send to victim', sent: '✓ Delivered to the victim phone', notDelivered: 'Not delivered — victim phone offline',
+      tabSms: 'Scam messages', tabCalls: 'Scam calls', from: 'From', sms: 'Text message', wa: 'WhatsApp', mail: 'Email', social: 'Social media', qr: 'QR code in a public place', send: 'Send to victim', sent: '✓ Delivered to the victim phone', notDelivered: 'Not delivered — victim phone offline',
       call: 'Call the victim', victim: 'Victim', ringing: 'Ringing…', connecting: 'Connecting…', declined: 'Call declined', ended: 'Call ended', busy: 'Victim is in a call',
       say: 'Call', spS: '🎙️ The scammer is speaking…', spV: '🗣️ The victim is speaking…', spWait: '⏸ The Shield warned the victim — waiting for her decision…', spDone: 'Dialogue finished', you: 'Scammer', victimL: 'Victim', declinedByShield: '🛡️ The victim hung up after the Shield warning', mic: 'Real microphone', outage: 'Simulate analysis outage', phrasesN: (n) => `${n} phrases`,
       pillActive: '🛡️ This call is analysed in real time', pillDemo: '🛡️ Analysed in real time (sample phrases)', pillPaused: '⚠️ Analysis stopped', pillWait: 'Waiting for answer',
@@ -35,6 +35,13 @@
   };
   const SMS = {
     ar: [
+      { id: 'phish', ch: 1, ico: '📧', bg: '#0a84ff', channel: 'mail', title: 'تحدي ١: بريد تصيّد وصفحة دخول مزيفة', from: 'security@nakhlabank-verify.com', fromLabel: 'بنك النخلة الوطني — قسم الأمن', text: 'تنبيه أمني: رصدنا محاولة دخول غير معتادة إلى حسابك. لحماية حسابك يرجى تسجيل الدخول للتحقق من هويتك خلال 24 ساعة وإلا سيتم إيقاف الحساب: https://nakhlabank-verify.com/login' },
+      { id: 'game', ch: 2, ico: '🎮', bg: '#ff375f', title: 'تحدي ٢: لعبة تطلب أذونات زائدة', from: 'GameZone', text: 'لعبة «سباق الصحراء» الجديدة مجانًا لفترة محدودة! حمّلها الحين من الرابط المباشر بدون متجر: https://desert-race-free.top/download/game.apk' },
+      { id: 'bankapp', ch: 3, ico: '🏦', bg: '#5e5ce6', title: 'تحدي ٣: تطبيق بنكي مزيف', from: 'NakhlaBank', text: 'بنك النخلة: الإصدار الحالي من تطبيقنا متوقف. حمّل التطبيق الجديد وسجّل دخولك لتفعيله: https://nakhla-bank-app.com/download/NakhlaBank.apk' },
+      { id: 'qrdonate', ch: 4, ico: '🔳', bg: '#30d158', channel: 'qr', title: 'تحدي ٤: رمز QR تبرع مزيف (ملصق في مكان عام)', from: 'ملصق في مركز تجاري', text: 'تبرّع الآن لإغاثة الأسر المحتاجة — جمعية الخير — امسح الرمز وادفع بالبطاقة: http://alkhair-charity-donate.org/pay' },
+      { id: 'bossmsg', ch: 5, ico: '👔', bg: '#8e8e93', channel: 'wa', title: 'تحدي ٥: رسالة متابعة «من المدير» بشعار رسمي', from: '0507788123', fromLabel: 'أبو خالد — المدير', text: '🏢 الإدارة المالية — طلب دفعة عاجلة: حوّل 9,500 درهم اليوم لحساب المورد AE07 0331 2345 6789 0123 456 وأرسل لي رمز التأكيد اللي يوصلك. الموضوع سري وعاجل.' },
+      { id: 'brand', ch: 6, ico: '📣', bg: '#bf5af2', channel: 'social', title: 'تحدي ٦: حساب ينتحل علامة تجارية بمسابقة', from: 'nakhla.rewards.official', fromLabel: 'بنك النخلة Rewards ✔︎', text: '🎉 مسابقة الذكرى العاشرة لبنك النخلة! أنت من الفائزين بجهاز iPhone. لاستلام الجائزة سجّل دخولك بحساب التواصل وأدخل بياناتك هنا: https://nakhla-rewards-contest.com/claim' },
+      { id: 'cvv', ico: '🔢', bg: '#ff9f0a', title: 'طلب الرقم السري للصراف و CVV', from: '024144257', fromLabel: 'بنك النخلة الوطني', text: 'عزيزي العميل، لتفعيل الحماية الجديدة لبطاقتك أرسل لنا رقم البطاقة والرقم السري للصراف ورقم الأمان CVV.' },
       { id: 'delivery', ico: '📦', bg: '#ff9f0a', title: 'رسوم توصيل مزيفة', from: 'EmiratesPost', text: 'بريد الإمارات: شحنتك معلّقة لعدم دفع رسوم التوصيل 7.50 درهم. ادفع خلال 24 ساعة حتى لا تُعاد الشحنة: https://emiratespost-ae.example/pay' },
       { id: 'fine', ico: '🚓', bg: '#0a84ff', title: 'مخالفة مرورية مزيفة', from: 'MOI-UAE', text: 'وزارة الداخلية: لديك مخالفة مرورية غير مدفوعة بقيمة 400 درهم. ادفعها خلال 24 ساعة لتجنب حجز المركبة: https://moi-fines-uae.example/pay' },
       { id: 'card', ico: '💳', bg: '#5e5ce6', title: 'تحديث بيانات البطاقة', from: 'BlueGulf', text: 'مصرف الخليج الأزرق: تم إيقاف بطاقتك، حدّث بياناتك خلال ساعة لتجنب إغلاق الحساب: https://bluegulf-secure-update.top/login' },
@@ -46,6 +53,13 @@
       { id: 'safe', ico: '✅', bg: '#30d158', title: 'رسالة سليمة (للمقارنة)', from: 'أحمد', text: 'هلا، وصلت البيت. نتقابل بكرة الساعة 5 في المقهى؟' },
     ],
     en: [
+      { id: 'phish', ch: 1, ico: '📧', bg: '#0a84ff', channel: 'mail', title: 'Challenge 1: phishing email + fake login page', from: 'security@nakhlabank-verify.com', fromLabel: 'Nakhla National Bank — Security', text: 'Security alert: we detected an unusual sign-in attempt on your account. To protect it, please sign in to verify your identity within 24 hours or the account will be suspended: https://nakhlabank-verify.com/login' },
+      { id: 'game', ch: 2, ico: '🎮', bg: '#ff375f', title: 'Challenge 2: a game asking for excessive permissions', from: 'GameZone', text: 'The new “Desert Race” game is free for a limited time! Download it now from the direct link, no store needed: https://desert-race-free.top/download/game.apk' },
+      { id: 'bankapp', ch: 3, ico: '🏦', bg: '#5e5ce6', title: 'Challenge 3: fake banking app', from: 'NakhlaBank', text: 'Nakhla Bank: the current version of our app has stopped working. Download the new app and sign in to activate it: https://nakhla-bank-app.com/download/NakhlaBank.apk' },
+      { id: 'qrdonate', ch: 4, ico: '🔳', bg: '#30d158', channel: 'qr', title: 'Challenge 4: fake donation QR code (public poster)', from: 'Poster in a mall', text: 'Donate now to help families in need — Al Khair Charity — scan and pay by card: http://alkhair-charity-donate.org/pay' },
+      { id: 'bossmsg', ch: 5, ico: '👔', bg: '#8e8e93', channel: 'wa', title: 'Challenge 5: follow-up message “from your manager” with an official logo', from: '0507788123', fromLabel: 'Abu Khalid — Manager', text: '🏢 Finance Department — urgent payment request: transfer AED 9,500 today to the supplier account AE07 0331 2345 6789 0123 456 and send me the confirmation code you receive. Confidential and urgent.' },
+      { id: 'brand', ch: 6, ico: '📣', bg: '#bf5af2', channel: 'social', title: 'Challenge 6: account impersonating a brand with a contest', from: 'nakhla.rewards.official', fromLabel: 'Nakhla Bank Rewards ✔︎', text: '🎉 Nakhla Bank 10th anniversary contest! You are one of the iPhone winners. To claim your prize, sign in with your social account and enter your details here: https://nakhla-rewards-contest.com/claim' },
+      { id: 'cvv', ico: '🔢', bg: '#ff9f0a', title: 'Asking for the ATM PIN and CVV', from: '024144257', fromLabel: 'Nakhla National Bank', text: 'Dear customer, to activate the new protection on your card, send us your card number, ATM PIN and the CVV security number.' },
       { id: 'delivery', ico: '📦', bg: '#ff9f0a', title: 'Fake delivery fee', from: 'EmiratesPost', text: 'Emirates Post: your parcel is on hold because the 7.50 AED delivery fee is unpaid. Pay within 24 hours: https://emiratespost-ae.example/pay' },
       { id: 'fine', ico: '🚓', bg: '#0a84ff', title: 'Fake traffic fine', from: 'MOI-UAE', text: 'Ministry of Interior: you have an unpaid traffic fine of 400 AED. Pay within 24 hours to avoid vehicle impound: https://moi-fines-uae.example/pay' },
       { id: 'card', ico: '💳', bg: '#5e5ce6', title: 'Card details update', from: 'BlueGulf', text: 'Blue Gulf Bank: your card has been suspended. Update your details within one hour to avoid closure: https://bluegulf-secure-update.top/login' },
@@ -76,6 +90,10 @@
         dialog: [['s', 'مرحبا، معك الدعم الفني لشركة الاتصالات.'], ['v', 'هلا، آمر.'], ['s', 'رصدنا فيروس في جهازك وممكن يسرق بياناتك البنكية.'], ['v', 'صدق؟ شو أسوي؟'], ['s', 'نزّل تطبيق AnyDesk عشان نساعدك ونصلح الجهاز.', 1]],
         cont: [['v', 'نزلته، شو بعد؟'], ['s', 'زين، نزّل تطبيق AnyDesk إذا ما نزل، وعطني الرقم اللي يطلع لك.', 1]],
         kind: 'remote', comply: [['v', 'هذا الرقم اللي طلع لي: أربعة، خمسة، واحد، تسعة، ووافقت على الطلب.'], ['s', 'ممتاز، لا تلمس الجهاز الحين، نحن نصلحه.']], win: '✅ نسخ المحتال صور الضحية الخاصة وبدأ ابتزازها' },
+      { id: 'boss', ico: '👔', bg: '#8e8e93', num: '0507788123', label: 'أبو خالد — المدير', title: 'تحدي ٥: صوت مقلَّد للمدير يطلب تحويلًا ورمزًا', desc: 'صوت يشبه صوت مديرك (مولَّد بالذكاء الاصطناعي) يطلب بشكل عاجل تحويل مبلغ ثم رمز التحقق.',
+        dialog: [['s', 'هلا، أنا أبو خالد، مديرك. أنا في اجتماع مع العميل وما أقدر أطوّل.'], ['v', 'هلا أستاذ، آمر.'], ['s', 'عندنا دفعة متأخرة لمورد مهم، ولازم تنحل اليوم قبل لا نخسر العقد.'], ['v', 'إن شاء الله، شو المطلوب؟'], ['s', 'حوّل تسعة آلاف وخمسمية درهم الحين لحساب المورد، وبرجعها لك بكرة.', 1]],
+        cont: [['v', 'طيب، بس عادةً ما أحوّل من حسابي…'], ['s', 'ما عندي وقت أشرح، بيوصلك رمز من البنك، عطني إياه عشان أأكد التحويل. والموضوع سري.', 1]],
+        kind: 'boss', comply: [['v', 'خلاص حوّلت، والرمز هو أربعة، ثمانية، واحد، ستة.'], ['s', 'ممتاز، الله يعطيك العافية.']], win: '✅ حوّلت الضحية المبلغ وأعطت الرمز' },
     ],
     en: [
       { id: 'bank', ico: '🏦', bg: '#5e5ce6', num: '024144257', label: 'Nakhla National Bank', title: 'Fake bank officer asks for the code', desc: 'Pretends to be the bank fraud team and asks for the code “to stop a transaction”.',
@@ -94,6 +112,10 @@
         dialog: [['s', 'Hello, this is technical support from the telecom company.'], ['v', 'Hi, yes?'], ['s', 'We detected a virus on your phone that can steal your banking details.'], ['v', 'Really? What should I do?'], ['s', 'Install AnyDesk so we can help you and fix the phone.', 1]],
         cont: [['v', 'I installed it, what next?'], ['s', 'Good, install AnyDesk if it is not done and give me the number it shows.', 1]],
         kind: 'remote', comply: [['v', 'The number is four, five, one, nine, and I accepted the request.'], ['s', 'Great, don’t touch the phone now, we are fixing it.']], win: '✅ The scammer copied the victim’s private photos and started blackmail' },
+      { id: 'boss', ico: '👔', bg: '#8e8e93', num: '0507788123', label: 'Abu Khalid — Manager', title: 'Challenge 5: cloned voice of your manager asks for a transfer and a code', desc: 'A voice that sounds like your manager (AI-generated) urgently asks for a transfer, then the verification code.',
+        dialog: [['s', 'Hi, it is Abu Khalid, your manager. I am in a meeting with the client and cannot talk long.'], ['v', 'Hello sir, go ahead.'], ['s', 'We have an overdue payment to an important supplier and it must be settled today or we lose the contract.'], ['v', 'Sure, what do you need?'], ['s', 'Transfer nine thousand five hundred dirhams to the supplier account now, and I will pay you back tomorrow.', 1]],
+        cont: [['v', 'Okay, but I do not usually transfer from my own account…'], ['s', 'No time to explain. You will get a code from the bank, give it to me to confirm the transfer. Keep this confidential.', 1]],
+        kind: 'boss', comply: [['v', 'Done, I transferred it. The code is four, eight, one, six.'], ['s', 'Excellent, thank you.']], win: '✅ The victim transferred the money and gave the code' },
     ],
   };
   // نصوص المكالمات القابلة للتعديل (call-scripts-ar.txt) — تُقرأ عند فتح الصفحة
@@ -162,7 +184,7 @@
     const pane = $('#paneSms'); pane.textContent = '';
     const fc = document.createElement('div'); fc.className = 'sc-card free';
     fc.innerHTML = `<div class="sc-card-h"><span class="sc-ico" style="background:#ffd60a">✍️</span><div class="sc-card-t"><b>${tt('freeSms')}</b><small>${tt('freeSmsD')}</small></div></div>
-      <div class="row2"><input id="fFrom" dir="auto" placeholder="${tt('senderPh')}"><select id="fCh"><option value="sms">${tt('chSms')}</option><option value="wa">${tt('chWa')}</option></select></div>
+      <div class="row2"><input id="fFrom" dir="auto" placeholder="${tt('senderPh')}"><select id="fCh"><option value="sms">${tt('chSms')}</option><option value="wa">${tt('chWa')}</option><option value="mail">${tt('mail')}</option><option value="social">${tt('social')}</option><option value="qr">${tt('qr')}</option></select></div>
       <textarea id="fText" rows="3" dir="auto" placeholder="${tt('textPh')}"></textarea><button type="button" class="sc-btn" id="fSend">${tt('send')}</button><div class="sc-sent" id="fSent" hidden></div>`;
     pane.appendChild(fc);
     fc.querySelector('#fSend').addEventListener('click', async () => {
@@ -175,7 +197,7 @@
     });
     for (const s of SMS[lang]) {
       const card = document.createElement('div'); card.className = 'sc-card';
-      card.innerHTML = `<div class="sc-card-h"><span class="sc-ico" style="background:${s.bg}">${s.ico}</span><div class="sc-card-t"><b></b><small>${s.channel === 'wa' ? tt('wa') : tt('sms')} • ${tt('from')}: <bdi></bdi></small></div></div><div class="sc-bubble" dir="auto">${bubbleHTML(s.text)}</div><button type="button" class="sc-btn">${tt('send')}</button><div class="sc-sent" hidden></div>`;
+      card.innerHTML = `<div class="sc-card-h"><span class="sc-ico" style="background:${s.bg}">${s.ico}</span><div class="sc-card-t"><b></b><small>${tt(s.channel || 'sms')} • ${tt('from')}: <bdi></bdi></small></div></div><div class="sc-bubble" dir="auto">${bubbleHTML(s.text)}</div><button type="button" class="sc-btn">${tt('send')}</button><div class="sc-sent" hidden></div>`;
       card.querySelector('b').textContent = s.title; card.querySelector('bdi').textContent = s.from + (s.fromLabel ? ' — ' + s.fromLabel : '');
       const st = card.querySelector('.sc-sent');
       if (sentAt[s.id]) { st.hidden = false; st.textContent = sentAt[s.id]; }

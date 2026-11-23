@@ -32,6 +32,7 @@
       privacy: '🔒 الدرع الذكي لا يطّلع على ملفاتك الخاصة، وليس برنامج تجسس أو تتبع. دوره التصدي لمحاولات الاحتيال وحمايتك وحماية بياناتك، سواء وصلت عبر الروابط أو المكالمات أو الرسائل النصية أو البريد الإلكتروني أو وسائل التواصل الاجتماعي ومجموعات واتساب.',
       techTitle: '🧠 كيف يعمل حِصن؟ التقنيات في كل مرحلة', tech: [["🪪", "الدخول والتفعيل", "الهوية الرقمية (محاكاة): تحقق من الهوية مرة واحدة بلا كلمات مرور."], ["🔗", "الرسائل والروابط", "تحليل الروابط والنطاقات، ومقارنتها بالنطاق الرسمي للجهة، وكشف التشابه الإملائي بخوارزمية مسافة التحرير (Levenshtein)، والأحرف المضللة (Punycode)، والروابط المختصرة وعناوين IP."], ["🧠", "معالجة اللغة الطبيعية (NLP)", "تطبيع النص العربي واللهجة المحلية، وتقسيم العبارات، وتحليل النية (طلب رمز، دفع، موافقة، تثبيت برنامج)، وفهم النفي والسياق («عطني الرمز» ≠ «لا تشارك الرمز»)، واستخراج الجهة المنتحلة."], ["🎙️", "المكالمات", "نقل الصوت لحظيًا (WebRTC)، ثم التعرف على الكلام وتحويله إلى نص (ASR / Speech-to-Text) بنموذج لحظي، ثم تحليل كل جملة مكتملة مع سياقها بالـNLP، وتنبيه خلال ثوانٍ والمكالمة مستمرة."], ["🤖", "المساعد الذكي (LLM)", "نموذج لغوي كبير يعطي رأيًا ثانيًا ويشرح الخطر بلغة بسيطة."], ["🏛️", "استخبارات الجهات والتنبؤ", "الجهات الموثقة تنشر ممارسات الاحتيال، وحِصن يولّد النطاقات التي قد تُستخدم لانتحالها ويراقبها، ويحدّث كل الأجهزة لحظيًا."], ["🔊", "نطق النتيجة", "تحويل النص إلى كلام (TTS) لمن يفضّل الاستماع."], ["🔒", "الخصوصية", "التحليل لحظي، ولا يُحفظ الصوت ولا نص الرسائل والمكالمات."]],
       guardOn: '✓ تم تفعيل حِصن للحماية من الاحتيال', guardSub: 'حِصن يعمل تلقائيًا في الخلفية ويفحص الرسائل والروابط والمكالمات وواتساب، ولا تحتاج لفعل أي شيء. سينبّهك فقط عند الخطر.', guardOff: 'الحماية موقوفة', guardOffSub: 'شغّل خيارًا واحدًا على الأقل من الإعدادات.',
+      secTitle: '🛡️ حماية حساباتك وجهازك', secMfa: 'المصادقة متعددة العوامل: مفعّلة لحسابات البنك والبريد والتواصل', secUpd: 'التحديثات التلقائية للنظام والتطبيقات: مفعّلة', secRep: 'البلاغ الفوري عن الرسائل المشبوهة: مفعّل', secNote: 'فعّلها «حِصن» عند التفعيل (في العرض محاكاة؛ في التطبيق الأصلي تُفعَّل من إعدادات الجهاز والحسابات).', report: '🚩 بلّغ عن هذه الرسالة', reported: '✓ وصل البلاغ للجهات المختصة دون بياناتك الشخصية، وتعلّم منه «حِصن»', autoReported: 'أبلغ «حِصن» الجهات تلقائيًا عن الرابط المشبوه (دون بياناتك)',
       stMsgs: 'رسائل وروابط فُحصت', stThreats: 'تهديدات صدّها حِصن', stCalls: 'مكالمات محمية', recent: 'آخر ما فحصه حِصن', offBtn: '⏻ تعطيل حِصن', offConfirm: 'اضغط مرة أخرى لتأكيد التعطيل', activated: 'تم تفعيل حِصن للحماية من الاحتيال',
       whatIf: '⚠️ ماذا لو تجاهلت التحذير؟ (محاكاة توعوية)', patternTitle: (o) => `تحديث الحماية من ${o}`,
       protOn: 'الحماية مفعّلة', protOff: 'الحماية موقوفة — شغّل خيارًا من الإعدادات', chipLinks: 'الروابط', chipMsgs: 'الرسائل', chipCalls: 'المكالمات', chipAssist: 'المساعد الذكي',
@@ -70,6 +71,7 @@
       privacy: '🔒 Smart Shield cannot see your private files and is not spyware or a tracker. It stands between you and fraud attempts and protects your data — whether they come by link, phone call, text message, email, social media or WhatsApp groups.',
       techTitle: '🧠 How HISN works — technology at each stage', tech: [["🪪", "Sign-in & activation", "Digital identity (simulation): verify once, no passwords."], ["🔗", "Messages & links", "URL and domain analysis against the official domain, look-alike detection with edit distance (Levenshtein), deceptive characters (Punycode), shorteners and raw IPs."], ["🧠", "Natural language processing (NLP)", "Arabic & dialect normalisation, clause splitting, intent analysis (code, payment, approval, app install), negation and context understanding (“give me the code” ≠ “don’t share the code”), and impersonated-entity extraction."], ["🎙️", "Calls", "Live audio over WebRTC → speech recognition (ASR / speech-to-text) with a real-time model → NLP on every complete sentence with its context → alert within seconds while the call continues."], ["🤖", "AI assistant (LLM)", "A large language model gives a second opinion and explains the risk in plain words."], ["🏛️", "Institution intelligence & prediction", "Verified institutions publish scam practices; HISN generates and watches likely impersonation domains and updates every device instantly."], ["🔊", "Read-aloud", "Text-to-speech (TTS) for those who prefer to listen."], ["🔒", "Privacy", "Analysis is real-time; no audio or message/call text is stored."]],
       guardOn: '✓ HISN anti-fraud protection is on', guardSub: 'HISN works automatically in the background, checking messages, links, calls and WhatsApp. You don’t need to do anything — it only alerts you when there is danger.', guardOff: 'Protection is paused', guardOffSub: 'Turn on at least one option in Settings.',
+      secTitle: '🛡️ Protecting your accounts and device', secMfa: 'Multi-factor authentication: on for bank, email and social accounts', secUpd: 'Automatic system and app updates: on', secRep: 'Instant reporting of suspicious messages: on', secNote: 'Turned on by HISN at activation (simulated in the demo; the native app does this through device and account settings).', report: '🚩 Report this message', reported: '✓ Report sent to the authorities without your personal data, and HISN learned from it', autoReported: 'HISN automatically reported the suspicious link to the authorities (without your data)',
       stMsgs: 'Messages & links checked', stThreats: 'Threats stopped', stCalls: 'Calls protected', recent: 'Recently checked by HISN', offBtn: '⏻ Turn off HISN', offConfirm: 'Tap again to confirm', activated: 'HISN anti-fraud protection is on',
       whatIf: '⚠️ What if you ignore the warning? (awareness simulation)', patternTitle: (o) => `Protection update from ${o}`,
       protOn: 'Protection is on', protOff: 'Protection is off — enable an option in Settings', chipLinks: 'Links', chipMsgs: 'Messages', chipCalls: 'Calls', chipAssist: 'AI assistant',
@@ -191,6 +193,7 @@
     toast(t('appName'), t('activated'), null, null, true);
   }
   function renderHome() {
+    { const n = store.get('reports', 0) || 0; const e2 = document.getElementById('secRepN'); if (e2) e2.textContent = n ? '✓ ' + n : '✓'; }
     if (!settings) return;
     const on = OPTS.filter((k) => settings[k] && (k !== 'assist' || cfg.assist));
     $('#guard').classList.toggle('off', !on.length);
@@ -294,7 +297,7 @@
     bump('msgs');
     const v = verdictOf(item);
     if (v.matchedPattern) post('/api/hit', { id: v.matchedPattern });
-    if (v.level === 'danger') { bump('threats'); notifyDanger(item); }
+    if (v.level === 'danger') { bump('threats'); notifyDanger(item); reportIt(item.text, item.channel || 'sms', true, v.urls); }
     if (settings.assist && cfg.assist) askAssist(item.text).then((a) => {
       if (!a) return;
       item.assist = a;
@@ -355,6 +358,13 @@
     }
   }
   let toastTimer = null;
+  // البلاغ الفوري: تلقائي (النطاقات فقط) أو يدوي (نص الرسالة يُستخدم لتعليم النموذج ولا يُخزَّن)
+  function reportIt(text, channel, auto, hosts) {
+    const n = (store.get('reports', 0) || 0) + 1; store.set('reports', n);
+    const el2 = document.getElementById('secRepN'); if (el2) el2.textContent = '✓ ' + n;
+    post('/api/report', { room: code, channel, auto: !!auto, hosts: hosts || [], text: auto ? '' : String(text || '').slice(0, 600) }).catch(() => {});
+    if (!auto) toast(t('report'), t('reported'), null, null, true);
+  }
   function toast(title, body, action, onAction, ok) {
     const host = $('#toastHost'); host.textContent = '';
     const d = document.createElement('div'); d.className = 'toast' + (ok ? ' ok' : ''); d.setAttribute('role', ok ? 'status' : 'alert');
@@ -428,6 +438,7 @@
       ov.hidden = false; $('#lwBack').focus();
     };
     $('#lwBack').onclick = () => { ov.hidden = true; };
+    $('#lwReport').onclick = () => { reportIt(text, 'link', false); ov.hidden = true; };
     vibrate(120);
     stage(1);
   }
