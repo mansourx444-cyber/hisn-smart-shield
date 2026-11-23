@@ -47,7 +47,6 @@
         <span class="tag">الهاتف ٢</span><h2>☎️ هاتف المحتال</h2>
         <div class="qr wait" id="qrS">افتح هاتف الضحية أولًا، فيظهر هنا رمز مربوط به تلقائيًا</div>
         <div class="url" id="urlS"></div>
-        <div id="codeBox" hidden style="display:flex;gap:8px;align-items:center"><label for="codeIn" style="font-size:14px">رمز الربط الظاهر في هاتف الضحية:</label><input id="codeIn" inputmode="numeric" maxlength="4" placeholder="0000" style="width:90px;text-align:center;font-size:20px;letter-spacing:4px;border-radius:10px;border:1px solid #ffffff33;background:#0006;color:#fff;padding:6px"></div>
         <span class="pill" id="sState">لم يُربط بعد</span>
       </section>
     </div>
@@ -56,7 +55,7 @@
       <ol>
         <li><b>هاتف الضحية (آيفون):</b> افتح الكاميرا وامسح الرمز الأول ← يفتح «حِصن» في Safari. (اختياري: زر المشاركة ← «إضافة إلى الشاشة الرئيسية» ليعمل كتطبيق بملء الشاشة.)</li>
         <li>في «حِصن» اضغط «الدخول بالهوية الرقمية» ثم «تفعيل».</li>
-        <li><b>هاتف المحتال:</b> امسح الرمز الثاني (يظهر بعد فتح هاتف الضحية) ← يرتبط بهاتف الضحية تلقائيًا دون إدخال رمز.</li>
+        <li><b>هاتف المحتال:</b> امسح الرمز الثاني ← يرتبط بهاتف الضحية تلقائيًا دون إدخال أي رمز.</li>
         <li>من هاتف المحتال: أرسل رسالة جاهزة أو اكتب رسالتك، أو ابدأ مكالمة. في «🎙️ مكالمة حرة» يتكلم أي شخص بصوته على هاتف المحتال، فيسمعه هاتف الضحية مباشرة ويحلّله «حِصن» لحظيًا.</li>
         <li>عند أول مكالمة يطلب الهاتفان إذن الميكروفون: اضغط «سماح».</li>
       </ol>
@@ -67,24 +66,34 @@
   <script>
   (() => {
     const $ = (s) => document.querySelector(s);
-    let lastV = '', lastS = '';
+    let lastV = '', lastS = '', myRoom = '';
     const draw = (el, url) => { const q = qrcode(0, 'M'); q.addData(url); q.make(); el.classList.remove('wait'); el.innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); };
     async function tick() {
       let j; try { j = await fetch('/api/tunnel', { cache: 'no-store' }).then((r) => r.json()); } catch { $('#status').textContent = 'الخادم لا يعمل. شغّل «SmartShield-Phones».'; $('#status').className = 'status bad'; return; }
       const st = $('#status');
-      if (j.status === 'ready' && j.url) { st.className = 'status ok'; st.innerHTML = '✓ الرابط الآمن جاهز <code></code>'; st.querySelector('code').textContent = j.url; }
+      if (j.hosted) { st.className = 'status ok'; st.innerHTML = '✓ جاهز للتجربة — امسح الرمزين بهاتفين، أو جرّب على شاشة واحدة من <a href="/demo" style="color:#8ee3c8">صفحة العرض</a>'; }
+      else if (j.status === 'ready' && j.url) { st.className = 'status ok'; st.innerHTML = '✓ الرابط الآمن جاهز <code></code>'; st.querySelector('code').textContent = j.url; }
       else if (j.status === 'missing') { st.className = 'status bad'; st.textContent = 'برنامج cloudflared غير مثبت. شغّل «SmartShield-Phones» مرة أخرى ليثبته تلقائيًا.'; }
       else if (j.status === 'off') { st.className = 'status bad'; st.textContent = 'الخادم يعمل بدون رابط آمن. أغلق النظام وشغّل «SmartShield-Phones» بدل «SmartShield-Start».'; }
       else { st.className = 'status'; st.textContent = 'جارٍ تجهيز الرابط الآمن… (قد يأخذ حتى 20 ثانية)'; }
       if (!j.url) return;
-      const urlV = j.url + '/';
-      if (urlV !== lastV) { draw($('#qrV'), urlV); $('#urlV').textContent = urlV; lastV = urlV; }
-      if (j.hosted) { // رابط دائم: لا نعرض الغرف للعامة، فالرمز يُكتب يدويًا
-        $('#codeBox').hidden = false; $('#vState').textContent = 'بعد التفعيل يظهر رمز الربط في هاتف الضحية'; $('#sState').textContent = 'اكتب رمز الربط ليظهر الرمز';
-        const c = ($('#codeIn').value || '').replace(/\D/g, '');
-        if (/^\d{4}$/.test(c)) { const urlS = j.url + '/scammer?code=' + c; if (urlS !== lastS) { draw($('#qrS'), urlS); $('#urlS').textContent = urlS; lastS = urlS; } $('#sState').textContent = 'جاهز للمسح'; }
+      if (j.hosted) { // رابط دائم: كل زائر يحصل على غرفة خاصة، والرمزان مربوطان بها تلقائيًا
+        if (!myRoom || !(await fetch('/api/room?code=' + myRoom, { cache: 'no-store' })).ok) {
+          myRoom = (await fetch('/api/room', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }).then((r) => r.json())).code;
+          lastV = lastS = '';
+        }
+        const urlV = j.url + '/?room=' + myRoom + '&app=1', urlS = j.url + '/scammer?code=' + myRoom;
+        if (urlV !== lastV) { draw($('#qrV'), urlV); $('#urlV').textContent = urlV; lastV = urlV; }
+        if (urlS !== lastS) { draw($('#qrS'), urlS); $('#urlS').textContent = urlS; lastS = urlS; }
+        const st2 = await fetch('/api/room?code=' + myRoom, { cache: 'no-store' }).then((r) => r.json()).catch(() => ({}));
+        $('#vState').textContent = st2.user ? '✓ مفتوح ومفعّل — رمز الربط ' + myRoom : 'امسح الرمز ثم «الدخول بالهوية الرقمية» ← «تفعيل»';
+        $('#vState').className = 'pill' + (st2.user ? ' on' : '');
+        $('#sState').textContent = st2.caller ? '✓ مرتبط بهاتف الضحية' : 'جاهز للمسح';
+        $('#sState').className = 'pill' + (st2.caller ? ' on' : '');
         return;
       }
+      const urlV = j.url + '/';
+      if (urlV !== lastV) { draw($('#qrV'), urlV); $('#urlV').textContent = urlV; lastV = urlV; }
       const room = (j.rooms || []).find((r) => r.user) || null;
       $('#vState').textContent = room ? '✓ مفتوح — رمز الربط ' + room.code : 'لم يُفتح بعد';
       $('#vState').className = 'pill' + (room ? ' on' : '');
@@ -96,7 +105,6 @@
       }
     }
     tick(); setInterval(tick, 2000);
-    $('#codeIn').addEventListener('input', tick);
   })();
   </script>
 </body>

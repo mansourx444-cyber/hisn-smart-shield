@@ -809,6 +809,8 @@ registerProcessor('pcm-tap',Tap);`;
     $('#optAssistRow').hidden = !cfg.assist;
     applyLang();
     const q = new URLSearchParams(location.search);
+    const rq = q.get('room'); // فُتح من رمز QR مربوط بغرفة جاهزة
+    if (/^\d{4}$/.test(rq || '')) { code = rq; store.set('pair', code); }
     if (q.has('sender')) { if (q.get('sender')) { senderCode = q.get('sender'); store.set('senderPair', senderCode); } return enterSender(); }
     if (settings) { registerSW(); await connectUser(); renderHome(); show('home'); }
     else show('activate');

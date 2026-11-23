@@ -305,7 +305,7 @@ async function handler(req, res) {
     if (TURN) ice.push(TURN);
     return json(res, 200, { stt: !!KEY, assist: !!KEY, ice });
   }
-  if (p === '/api/room' && req.method === 'GET') return json(res, rooms.has(url.searchParams.get('code') || '') ? 200 : 404, {});
+  if (p === '/api/room' && req.method === 'GET') { const r = rooms.get(url.searchParams.get('code') || ''); return json(res, r ? 200 : 404, r ? { user: !!r.sse.user, caller: !!r.sse.caller } : {}); }
   if (p === '/api/room' && req.method === 'POST') {
     const body = await readJson(req);
     const code = newCode();
@@ -479,6 +479,8 @@ async function handler(req, res) {
     if (!KEY) return json(res, 200, { available: false });
     return json(res, 200, await assist(String(b.text || '').slice(0, 1500), b.lang === 'en' ? 'en' : 'ar'));
   }
+  // على الرابط الدائم: الصفحة الرئيسية بدون معاملات = صفحة تجربة الهاتفين برمزي QR
+  if ((req.method === 'GET' || req.method === 'HEAD') && PUBLIC_URL && p === '/' && !url.search) return serveStatic(req, res, '/phones');
   if (req.method === 'GET' || req.method === 'HEAD') return serveStatic(req, res, p);
   res.writeHead(405); res.end();
 }
