@@ -107,6 +107,7 @@ try {
     const existing = {}; for (const f of fs.readdirSync(CLIP_DIR)) if (!f.startsWith('.')) existing[path.basename(f, path.extname(f))] = f;
     let n = 0;
     for (const f of fs.readdirSync(SEED)) {
+      if (!/\.(mp3|wav|m4a|aac|ogg|webm)$/i.test(f)) continue;
       const base = path.basename(f, path.extname(f)), src = path.join(SEED, f), h = sha(src);
       const cur = existing[base];
       if (cur) {
