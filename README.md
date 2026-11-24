@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **الفريق** | **حِصن** — منصور · فيصل جاسم · عبدالله سليمان الظنحاني |
+| **فريق حِصن** | **قائد الفريق:** منصور صالح المنصوري · **عضو:** عبدالله سليمان الظنحاني · **عضو:** فيصل جاسم حسن جاسم |
 | **المسابقة** | SCAMSHIELD AI Hackathon — 42 أبوظبي × شرطة أبوظبي |
 | **جرّبه الآن** | **https://hisn-smart-shield.onrender.com** — رمزا QR (هاتف الضحية + هاتف المحتال)، و`/demo` للعرض الكامل في صفحة واحدة |
 | **العرض والوصف التقني** | [HISN-Presentation-AR-EN.pdf](docs/submission/HISN-Presentation-AR-EN.pdf) · [HISN-Project-Description-AR-EN.pdf](docs/submission/HISN-Project-Description-AR-EN.pdf) |
@@ -195,7 +195,7 @@ npm run scan -- urls.txt    # فحص دفعة روابط ← CSV
 | `TURN_URL` / `TURN_USER` / `TURN_PASS` | — | إذا كان الهاتفان على شبكتين وتعذّر وصل الصوت |
 | `SSL_KEY` / `SSL_CERT` | — | HTTPS محلي (الميكروفون يتطلب HTTPS) |
 
-**النشر:** `render.yaml` جاهز لـ Render (أمر التشغيل `node server.js`)، والتفاصيل في [docs/06-deploy.md](docs/06-deploy.md). وللعرض المحلي على الجوال: `cloudflared tunnel --url http://localhost:3000`.
+**النشر:** `render.yaml` جاهز لـ Render (أمر التشغيل `node server.js`)، والتفاصيل في [docs/03-deploy.md](docs/03-deploy.md). وللعرض المحلي على الجوال: `cloudflared tunnel --url http://localhost:3000`.
 
 ---
 
@@ -259,13 +259,13 @@ docs/                التوثيق والعرض والوصف التقني (docs
 render.yaml          النشر على Render
 ```
 
-📚 التوثيق: [العمليات](docs/01-processes.md) · [العمل على GitHub](docs/02-github-workflow.md) · [أسلوب العمل](docs/03-working-style.md) · [القيمة المضافة](docs/04-value-proposition.md) · [منهجية 4D](docs/05-4D.md) · [النشر](docs/06-deploy.md)
+📚 التوثيق: [العمليات](docs/01-processes.md) · [منهجية 4D](docs/02-4D.md) · [النشر](docs/03-deploy.md)
 
 ---
 
 ## English version
 
-**Team HISN:** Mansour · Faisal Jasim · Abdulla Sulaiman Aldhanhani — SCAMSHIELD AI Hackathon (42 Abu Dhabi × Abu Dhabi Police).
+**Team HISN:** Mansour Saleh Al Mansoori (team lead) · Abdulla Sulaiman Aldhanhani (member) · Faisal Jasim Hasan Jasim (member) — SCAMSHIELD AI Hackathon (42 Abu Dhabi × Abu Dhabi Police).
 **Live:** https://hisn-smart-shield.onrender.com · **Run:** `node server.js` (Node.js 22, zero dependencies) → `http://localhost:3000`
 
 **Problem.** Scammers don't hack phones, they trick people: SMS with look-alike bank links, or calls "from the bank / police / telecom" asking for the OTP, a money transfer, remote access, or a UAE PASS approval — sometimes with an AI-cloned voice of the victim's manager. Existing tools warn too late or block without explanation, and rarely understand Arabic or the Emirati dialect.
