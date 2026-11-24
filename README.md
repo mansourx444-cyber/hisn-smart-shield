@@ -33,7 +33,7 @@
 | **قائمة رسمية** | 55 جهة محلية وعالمية بنطاقاتها الرسمية (البنوك الإماراتية، تم، الهوية الرقمية، الشرطة، سالك، الهيئات، الاتصالات، البريد…)، وكل نطاق `gov.ae` موثوق، حتى لا تُصنَّف المواقع الحقيقية احتيالًا | دقة الكشف |
 | **فحص عميق** | يتتبع إعادة التوجيه والروابط المختصرة (حتى 8 خطوات، ومنها التحويل داخل الصفحة)، ويكشف الإخفاء (Cloaking) بمقارنة ما يراه هاتف بما يراه روبوت فحص، ويقرأ محتوى الصفحة (اسم العلامة، حقول كلمة المرور والبطاقة) | دقة الكشف |
 | **تقرير أدلة للشرطة** (`/evidence`) | رقم بلاغ، وطابع زمني، ودرجة وأسباب، وسلسلة التحويل، وبيانات تسجيل النطاق (RDAP/WHOIS: المسجّل وتاريخ التسجيل وبريد البلاغات)، والاستضافة (IP والمزوّد والدولة)، وبصمة الصفحة، ولقطة شاشة، وبصمة SHA-256 للتقرير، وطلب إزالة جاهز بالعربية والإنجليزية. يُطبع PDF أو يُنزَّل JSON | التفسير والتنفيذ |
-| **الرصد المبكر** | يبحث في سجلات شفافية الشهادات عن نطاقات جديدة تحمل اسم علامة محلية قبل أن يصل أي رابط منها لضحية، ويضيف عالية الخطورة لاستخبارات الجهات فيكشفها «حِصن» في الرسائل فورًا. وعمر النطاق (أقل من 7/30 يومًا) عامل خطورة | الكشف المبكر |
+| **الرصد المبكر** | مصدران: سجلات شفافية الشهادات، ومولّد نطاقات شبيهة باسم العلامة (نحو 280 اسمًا: أخطاء إملائية وكلمات تصيّد وامتدادات خطرة) يتحقق أيها مسجّل فعلًا ومتى سُجّل. يكشف النطاقات الجديدة التي تحمل اسم علامة محلية قبل أن يصل أي رابط منها لضحية، ويضيف عالية الخطورة لاستخبارات الجهات فيكشفها «حِصن» في الرسائل فورًا. وعمر النطاق (أقل من 7/30 يومًا) عامل خطورة | الكشف المبكر |
 
 **الدقة المقاسة** (`npm run eval`، عتبة 40/100، فحص سريع بلا إنترنت):
 
@@ -44,7 +44,7 @@
 
 للصراحة: المجموعتان من إعدادنا (روابط رسمية حقيقية + روابط احتيال بأنماط شائعة)، والرقم الأدق هو نتيجة المجموعة العمياء. الفحص العميق (التتبع وعمر النطاق والمحتوى) يرفع الاستدعاء أكثر.
 
-**خدمات خارجية يستخدمها الفحص العميق:** RDAP عبر rdap.org (بيانات التسجيل والاستضافة)، وcrt.sh (سجلات شفافية الشهادات)، وthum.io (لقطة الشاشة)، وDNS. الخادم لا يزور إلا http/https ويرفض العناوين الداخلية (حماية من SSRF)، ولا ينفّذ أي سكربت من الصفحات.
+**خدمات خارجية يستخدمها الفحص العميق:** RDAP من خوادم جهات التسجيل الرسمية حسب سجل IANA مع rdap.org كبديل (بيانات التسجيل والاستضافة)، وcrt.sh (سجلات شفافية الشهادات)، وthum.io (لقطة الشاشة)، وDNS. الخادم لا يزور إلا http/https ويرفض العناوين الداخلية (حماية من SSRF)، ولا ينفّذ أي سكربت من الصفحات.
 
 **لم يُنفَّذ بعد (صراحة):** مسح نتائج محركات البحث وقوائم الخرائط بحثًا عن صفحات أعمال وأرقام خدمة عملاء مزيفة يحتاج مفاتيح واجهات برمجة (مثل Google Places)، وهو ضمن المرحلة التالية؛ والمقارنة البصرية للصفحات بلقطات الشاشة.
 
@@ -101,7 +101,7 @@ Live demo: https://hisn-smart-shield.onrender.com (two QR codes: victim phone + 
 
 **Trade-offs / left out / next.** Rules miss brand-new phrasings (mitigated by the authority portal); a web app cannot read real calls/SMS (demo uses in-app calls/messages); in-memory server; simulated UAE PASS. Next: train an explainable Arabic classifier on partner data, native Android/iOS, telecom-level call screening, synthetic-voice detection.
 
-**Link detection.** `/scan` batch-scans links (score 0–100, verdict, reasons; CSV/JSON), with a curated list of 55 local and global brands and their official domains (all `gov.ae` trusted) to avoid false positives. Deep scan follows redirects and shorteners (incl. meta/JS redirects), detects cloaking (phone vs. crawler view), reads page content, and builds a police evidence report (RDAP/WHOIS registrar, creation date, abuse contact, hosting IP/org/country, page hash, screenshot, SHA-256 report hash, bilingual takedown request). Early detection searches Certificate Transparency logs (crt.sh) for newly certified domains carrying local brand names and feeds high-risk ones into the authority intel. Measured with `npm run eval`: 100% precision / 98% recall on our development set (106 links) and 100% precision / 86.7% recall on a blind set (30 links), 0% false positives on official sites. Not yet built: crawling search results and map listings for fake helplines (needs API keys), and visual page similarity.
+**Link detection.** `/scan` batch-scans links (score 0–100, verdict, reasons; CSV/JSON), with a curated list of 55 local and global brands and their official domains (all `gov.ae` trusted) to avoid false positives. Deep scan follows redirects and shorteners (incl. meta/JS redirects), detects cloaking (phone vs. crawler view), reads page content, and builds a police evidence report (RDAP/WHOIS registrar, creation date, abuse contact, hosting IP/org/country, page hash, screenshot, SHA-256 report hash, bilingual takedown request). Early detection combines two sources: Certificate Transparency logs (crt.sh) for newly certified domains carrying local brand names, and a built-in lookalike generator (~280 typo/affix/risky-TLD variants per brand) checked against DNS, with RDAP registration dates; high-risk hits feed the authority intel. Measured with `npm run eval`: 100% precision / 98% recall on our development set (106 links) and 100% precision / 86.7% recall on a blind set (30 links), 0% false positives on official sites. Not yet built: crawling search results and map listings for fake helplines (needs API keys), and visual page similarity.
 
 **Third-party code.** `public/qrcode.js` — QR Code Generator by Kazuhiko Arase (MIT). Fonts: Noto Kufi Arabic, Inter (SIL OFL).
 

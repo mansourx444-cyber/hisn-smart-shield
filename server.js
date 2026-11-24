@@ -218,7 +218,7 @@ const scanQuota = new Map(), watchCache = new Map();
 // نطاقات رصدها الكشف المبكر ← تُضاف كممارسة «متنبأ بها» حتى تُكشف في الرسائل قبل أن يبلّغ عنها أحد
 function addWatchIntel(domains, kw) {
   let pt = patterns.find((x) => x.id === 'watch-ct');
-  if (!pt) { pt = { id: 'watch-ct', orgId: 'hisn', org: { ar: 'الرصد المبكر في «حِصن»', en: 'HISN early detection' }, title: { ar: 'نطاقات جديدة تنتحل علامات محلية (رُصدت من سجلات الشهادات)', en: 'New domains impersonating local brands (from certificate logs)' }, channel: 'any', description: '', phrases: [], domains: [], predicted: [], official: '', severity: 'high', createdAt: Date.now(), watch: true }; patterns.push(pt); }
+  if (!pt) { pt = { id: 'watch-ct', orgId: 'hisn', org: { ar: 'الرصد المبكر في «حِصن»', en: 'HISN early detection' }, title: { ar: 'نطاقات جديدة تنتحل علامات محلية (رُصدت مبكرًا)', en: 'New domains impersonating local brands (early detection)' }, channel: 'any', description: '', phrases: [], domains: [], predicted: [], official: '', severity: 'high', createdAt: Date.now(), watch: true }; patterns.push(pt); }
   const before = pt.predicted.length;
   for (const d of domains) if (!pt.predicted.includes(d)) pt.predicted.push(d);
   if (pt.predicted.length > 500) pt.predicted = pt.predicted.slice(-500);
@@ -511,7 +511,7 @@ async function handler(req, res) {
     const t0 = Date.now(); const results = await scanner.scanMany(urls, { deep, lang });
     const sum = results.reduce((a, r) => { a[r.verdict] = (a[r.verdict] || 0) + 1; return a; }, {});
     log('[scan]', deep ? 'deep' : 'quick', results.length, 'urls', Date.now() - t0 + 'ms');
-    return json(res, 200, { deep, count: results.length, summary: sum, ms: Date.now() - t0, results });
+    return json(res, 200, { deep, count: results.length, summary: sum, ms: Date.now() - t0, results, ...(b.debug ? { rdapLog: scanner.rdapLog.slice(-15) } : {}) });
   }
   // الرصد المبكر: نطاقات جديدة تحمل اسم علامة محلية (من سجلات شفافية الشهادات)، وتُضاف لاستخبارات الجهات
   if (p === '/api/watch' && req.method === 'GET') {

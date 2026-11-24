@@ -59,7 +59,7 @@ async function follow(start, ua) {
     chain.push({ url: cur, status, ips: st.ips });
     const loc = res.headers.get('location');
     if (status >= 300 && status < 400 && loc) { to.done(); cur = new URL(loc, cur).href; continue; }
-    html = /html|text/.test(ctype) ? await readLimited(res, 400000) : '';
+    try { html = /html|text/.test(ctype) ? await readLimited(res, 400000) : ''; } catch { html = ''; }
     to.done();
     const meta = html.match(/<meta[^>]+http-equiv=["']?refresh["']?[^>]*content=["']?\s*\d+\s*;\s*url=([^"'>\s]+)/i);
     const js = html.length < 6000 ? html.match(/(?:window\.)?location(?:\.href)?\s*(?:=|\.replace\(|\.assign\()\s*["']([^"']+)["']/i) : null;
@@ -81,16 +81,32 @@ function pageInfo(html) {
     bytes: Buffer.byteLength(html),
   };
 }
+const rdapLog = [];
 async function getJson(url, ms) {
   const to = withTimeout(ms || 6000);
-  try { const r = await fetch(url, { signal: to.signal, headers: { accept: 'application/rdap+json, application/json' } }); if (!r.ok) return null; return await r.json(); }
-  catch { return null; } finally { to.done(); }
+  try {
+    const r = await fetch(url, { signal: to.signal, headers: { accept: 'application/rdap+json, application/json', 'user-agent': 'HISN-SmartShield/1.0 (anti-fraud research)' } });
+    if (!r.ok) { rdapLog.push(url + ' ' + r.status); return null; }
+    return await r.json();
+  } catch (e) { rdapLog.push(url + ' ' + (e.name || 'err')); return null; } finally { to.done(); if (rdapLog.length > 30) rdapLog.splice(0, 10); }
+}
+// خوادم RDAP الرسمية لكل امتداد من سجل IANA (تُحمَّل مرة وتُحفظ)، ثم rdap.org كبديل
+let dnsBoot = null, dnsBootAt = 0;
+async function rdapServers(tld) {
+  if (!dnsBoot || Date.now() - dnsBootAt > 86400000) {
+    const j = await getJson('https://data.iana.org/rdap/dns.json', 8000);
+    if (j && j.services) { dnsBoot = {}; for (const [tlds, urls] of j.services) for (const t of tlds) dnsBoot[t] = urls; dnsBootAt = Date.now(); }
+  }
+  const list = (dnsBoot && dnsBoot[tld]) || [];
+  return [...list.map((u) => u.replace(/\/?$/, '/')), 'https://rdap.org/'];
 }
 function vcardName(ent) { try { const fn = (ent.vcardArray[1] || []).find((x) => x[0] === 'fn'); return fn ? fn[3] : null; } catch { return null; } }
 function vcardEmail(ent) { try { const em = (ent.vcardArray[1] || []).find((x) => x[0] === 'email'); return em ? em[3] : null; } catch { return null; } }
 // بيانات تسجيل النطاق (RDAP — البديل الحديث لـ WHOIS)
 async function rdapDomain(domain) {
-  const j = await getJson('https://rdap.org/domain/' + encodeURIComponent(domain), 7000);
+  const tld = domain.split('.').pop();
+  let j = null;
+  for (const base of await rdapServers(tld)) { j = await getJson(base + 'domain/' + encodeURIComponent(domain), 7000); if (j) break; }
   if (!j) return null;
   const ev = (a) => ((j.events || []).find((e) => e.eventAction === a) || {}).eventDate || null;
   let registrar = null, abuse = null;
@@ -103,7 +119,8 @@ async function rdapDomain(domain) {
 }
 // الاستضافة: مالك عنوان IP ودولته
 async function rdapIp(ip) {
-  const j = await getJson('https://rdap.org/ip/' + encodeURIComponent(ip), 7000);
+  let j = null;
+  for (const base of ['https://rdap.arin.net/registry/', 'https://rdap.db.ripe.net/', 'https://rdap.org/']) { j = await getJson(base + 'ip/' + encodeURIComponent(ip), 7000); if (j) break; }
   if (!j) return null;
   let org = j.name || null, abuse = null;
   for (const e of j.entities || []) { if ((e.roles || []).includes('registrant')) org = vcardName(e) || org; if ((e.roles || []).includes('abuse')) abuse = vcardEmail(e) || abuse; for (const s of e.entities || []) if ((s.roles || []).includes('abuse')) abuse = vcardEmail(s) || abuse; }
@@ -144,28 +161,74 @@ async function scanOne(raw, opts) {
 async function scanMany(urls, opts) {
   const list = [...new Set(urls.map((u) => String(u).trim()).filter(Boolean))].slice(0, (opts && opts.deep) ? 60 : 2000);
   const out = new Array(list.length); let i = 0;
-  const workers = Array.from({ length: (opts && opts.deep) ? 6 : 1 }, async () => { while (i < list.length) { const k = i++; try { out[k] = await scanOne(list[k], opts); } catch (e) { out[k] = { url: list[k], verdict: 'error', score: null, reasons: [{ key: 'error', text: String(e.message || e) }] }; } } });
+  const workers = Array.from({ length: (opts && opts.deep) ? 6 : 1 }, async () => { while (i < list.length) { const k = i++; try { out[k] = await scanOne(list[k], opts); } catch (e) { try { out[k] = { ...(await scanOne(list[k], { ...opts, deep: false })), deepError: String(e.message || e) }; } catch { out[k] = { url: list[k], verdict: 'error', score: null, reasons: [{ key: 'error', text: String(e.message || e) }] }; } } } });
   await Promise.all(workers);
   return out;
 }
 
 // الرصد المبكر: شهادات أمان صدرت حديثًا لنطاقات تحمل اسم علامة محلية (سجلات شفافية الشهادات)
+// توليد نطاقات شبيهة باسم العلامة (أخطاء إملائية + كلمات تصيّد + امتدادات خطرة)
+function lookalikes(kw) {
+  const out = new Set();
+  const aff = ['login', 'verify', 'secure', 'update', 'online', 'pay', 'account', 'support', 'help', 'card', 'uae', 'app', 'portal', 'service', 'fines', 'reward', 'gift', 'refund'];
+  const tlds = ['com', 'net', 'top', 'xyz', 'online', 'info'];
+  for (const a of aff) for (const t of tlds) { out.add(`${kw}-${a}.${t}`); out.add(`${kw}${a}.${t}`); }
+  const typos = new Set();
+  for (let i = 0; i < kw.length; i++) typos.add(kw.slice(0, i) + kw.slice(i + 1)); // حذف حرف
+  for (let i = 0; i < kw.length - 1; i++) typos.add(kw.slice(0, i) + kw[i + 1] + kw[i] + kw.slice(i + 2)); // تبديل حرفين
+  for (let i = 0; i < kw.length; i++) typos.add(kw.slice(0, i + 1) + kw[i] + kw.slice(i + 1)); // تكرار حرف
+  const glyph = { o: '0', l: '1', i: '1', e: '3', a: '4', s: '5' };
+  for (let i = 0; i < kw.length; i++) if (glyph[kw[i]]) typos.add(kw.slice(0, i) + glyph[kw[i]] + kw.slice(i + 1));
+  typos.delete(kw);
+  for (const t of typos) if (t.length >= 3) for (const d of ['com', 'net', 'ae', 'top', 'xyz']) out.add(`${t}.${d}`);
+  for (const t of tlds) out.add(`${kw}.${t}`);
+  return [...out];
+}
+async function resolves(host, ms) {
+  return Promise.race([dns.lookup(host, { all: true }).then((r) => r.map((x) => x.address)).catch(() => []), new Promise((r) => setTimeout(() => r([]), ms))]);
+}
+async function dnsWatch(kw) {
+  const cands = lookalikes(kw); const hits = []; let i = 0;
+  await Promise.all(Array.from({ length: 30 }, async () => { while (i < cands.length) { const d = cands[i++]; const ips = await resolves(d, 3000); if (ips.length && !ips.some(privateIp)) hits.push({ domain: d, ips }); } }));
+  // تاريخ التسجيل لأول 12 نطاق فقط (لتسريع الرد)
+  await Promise.all(hits.slice(0, 12).map(async (h) => { const w = await rdapDomain(h.domain); if (w) { h.created = w.created; h.registrar = w.registrar; } }));
+  return { checked: cands.length, hits };
+}
+async function ctWatch(kw, days) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const j = await getJson(`https://crt.sh/?q=${encodeURIComponent('%' + kw + '%')}&output=json&exclude=expired`, 25000);
+    if (Array.isArray(j)) {
+      const since = Date.now() - (days || 30) * 86400000; const seen = new Map();
+      for (const c of j) {
+        const t = Date.parse(c.not_before || c.entry_timestamp || ''); if (!t || t < since) continue;
+        for (let name of String(c.name_value || '').split('\n')) {
+          name = name.replace(/^\*\./, '').toLowerCase(); if (!name.includes(kw) || seen.has(name)) continue;
+          seen.set(name, { domain: name, firstSeen: new Date(t).toISOString(), issuer: (c.issuer_name || '').replace(/.*O=([^,]+).*/, '$1'), source: 'ct' });
+        }
+      }
+      return [...seen.values()];
+    }
+  }
+  return null;
+}
+// الرصد المبكر من مصدرين: سجلات شفافية الشهادات (crt.sh) + فحص النطاقات الشبيهة المسجّلة فعلًا (DNS)
 async function watchBrand(keyword, days, lang) {
   const kw = String(keyword || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 30);
   if (kw.length < 3) return { keyword: kw, error: 'keyword', items: [] };
-  const j = await getJson(`https://crt.sh/?q=${encodeURIComponent('%' + kw + '%')}&output=json&exclude=expired`, 20000);
-  if (!Array.isArray(j)) return { keyword: kw, error: 'source', items: [] };
-  const since = Date.now() - (days || 30) * 86400000; const seen = new Map();
-  for (const c of j) {
-    const t = Date.parse(c.not_before || c.entry_timestamp || ''); if (!t || t < since) continue;
-    for (let name of String(c.name_value || '').split('\n')) {
-      name = name.replace(/^\*\./, '').toLowerCase(); if (!name.includes(kw) || seen.has(name)) continue;
-      seen.set(name, { domain: name, firstSeen: new Date(t).toISOString(), issuer: (c.issuer_name || '').replace(/.*O=([^,]+).*/, '$1') });
-    }
+  const [ct, dw] = await Promise.all([ctWatch(kw, days), dnsWatch(kw)]);
+  const all = new Map();
+  for (const x of ct || []) all.set(x.domain, x);
+  for (const h of dw.hits) {
+    const prev = all.get(h.domain);
+    all.set(h.domain, { ...(prev || { domain: h.domain, source: 'dns' }), ips: h.ips, registered: h.created || null, registrar: h.registrar || null, firstSeen: (prev && prev.firstSeen) || h.created || null });
   }
-  const items = [...seen.values()].map((x) => { const r = engine.scanUrl('https://' + x.domain, { lang, ageDays: daysSince(x.firstSeen) }); return { ...x, score: r.score, verdict: r.verdict, official: r.official, reasons: r.reasons.map((y) => y.text) }; })
-    .filter((x) => !x.official).sort((a, b) => b.score - a.score || b.firstSeen.localeCompare(a.firstSeen)).slice(0, 60);
-  return { keyword: kw, days: days || 30, checkedAt: new Date().toISOString(), total: seen.size, items };
+  const items = [...all.values()].map((x) => {
+    const age = daysSince(x.registered || x.firstSeen);
+    const r = engine.scanUrl('https://' + x.domain, { lang, ageDays: age });
+    return { ...x, ageDays: age, score: r.score, verdict: r.verdict, official: r.official, reasons: r.reasons.map((y) => y.text) };
+  }).filter((x) => !x.official && x.verdict !== 'safe')
+    .sort((a, b) => b.score - a.score || String(b.firstSeen || '').localeCompare(String(a.firstSeen || ''))).slice(0, 60);
+  return { keyword: kw, days: days || 30, checkedAt: new Date().toISOString(), sources: { ct: ct ? 'ok' : 'unavailable', dns: dw.checked }, total: all.size, items };
 }
 
-module.exports = { scanOne, scanMany, watchBrand, privateIp };
+module.exports = { rdapLog, scanOne, scanMany, watchBrand, privateIp };
