@@ -7,7 +7,7 @@
 | **فريق حِصن** | **قائد الفريق:** منصور صالح المنصوري · **عضو:** عبدالله سليمان الظنحاني · **عضو:** فيصل جاسم حسن جاسم |
 | **المسابقة** | SCAMSHIELD AI Hackathon — 42 أبوظبي × شرطة أبوظبي |
 | **جرّبه الآن** | **https://hisn-smart-shield.onrender.com** — رمزا QR (هاتف الضحية + هاتف المحتال)، و`/demo` للعرض الكامل في صفحة واحدة |
-| **العرض والوصف التقني** | [HISN-Presentation-AR-EN.pdf](docs/submission/HISN-Presentation-AR-EN.pdf) · [HISN-Project-Description-AR-EN.pdf](docs/submission/HISN-Project-Description-AR-EN.pdf) |
+| **العرض والوصف التقني** | العرض التقديمي (34 شريحة: 17 عربي + 17 إنجليزي): [PowerPoint](docs/submission/HISN-Presentation-AR-EN.pptx) · [PDF](docs/submission/HISN-Presentation-AR-EN.pdf) — [وصف المشروع (PDF)](docs/submission/HISN-Project-Description-AR-EN.pdf) · [الوصف الموجز (PDF)](docs/submission/HISN-Brief-AR-EN.pdf) |
 | **التشغيل** | `node server.js` (Node.js 22، **بلا أي مكتبات**) ← `http://localhost:3000` |
 
 > **الفكرة في سطر:** «حِصن» يواكب استشراف دولة الإمارات للحد من الجرائم الإلكترونية عبر **الربط الإلكتروني** بين المتعامل والجهات (الهوية الرقمية، بوابة الجهات، تقارير الأدلة للشرطة)، ويعمل وفق **القوانين الاتحادية** لمكافحة الجرائم الإلكترونية وحماية البيانات.
@@ -131,6 +131,28 @@
 | **نموذج لغوي اختياري** (`gpt-4o-mini`) | «رأي ثانٍ» وشرح مبسط فقط؛ القرار للمحرك القابل للتفسير |
 | **Node.js 22 بلا مكتبات خارجية** | تشغيل بأمر واحد، ولا ثغرات من اعتماديات، ويسهل على المحكّمين تشغيله |
 | **تطبيق ويب يُفتح من QR** | يجربه أي شخص فورًا بلا تثبيت |
+
+### الذكاء الاصطناعي في كل مرحلة
+
+| المرحلة | التقنية | دورها |
+|---|---|---|
+| الرسائل وواتساب | معالجة اللغة العربية (NLP) + تصنيف الهندسة الاجتماعية | رصد الاستعجال والتهديد وطلب البيانات |
+| الروابط | تشابه نصي + أحرف مضللة + استخبارات التهديد | كشف الموقع المزيف قبل فتحه |
+| المكالمات | تعرّف الكلام (ASR) + NLP + النية + الكيانات (NER) | ما يطلبه المتصل والجهة التي ينتحلها |
+| القرار | دمج المؤشرات + ذكاء قابل للتفسير (XAI) | تحذير واحد واضح مع السبب |
+| بوابة الجهات | استخراج العبارات + توليد نطاقات الانتحال | بلاغ الجهة يصبح كشفًا فوريًا |
+| السياق | نموذج لغوي كبير (اختياري) | تأكيد الحالات الملتبسة |
+
+### إرشادات الخبراء… يطبّقها «حِصن» تلقائيًا نيابة عن المستخدم
+
+| الإرشاد | ما يفعله «حِصن» تلقائيًا | المصدر |
+|---|---|---|
+| احذر اللغة العاجلة والتهديد بعواقب فورية | كشف الاستعجال والتهديد بمعالجة اللغة | CISA |
+| احذر طلب معلوماتك الشخصية والمالية | كشف طلب البطاقة أو الرمز أو كلمة المرور | CISA |
+| احذر الروابط المختصرة والأسماء الخاطئة مثل amazan.com | فحص الاختصار + التشابه + استبدال الحروف | CISA |
+| تأكد أن العنوان يبدأ بـ https وبلا أخطاء إملائية | فحص التشفير والتشابه الإملائي | صحيفة الخليج |
+| لا تشارك بياناتك المصرفية قبل التأكد من هوية المتصل | فحص المرسل + كشف طلب الرمز في المكالمة | صحيفة الخليج |
+| عند الشك أغلق الخط وتواصل مع الجهة مباشرة | زر «إنهاء المكالمة» داخل التحذير | NCSC |
 
 ### المقايضات
 
@@ -266,7 +288,7 @@ render.yaml          النشر على Render
 ## English version
 
 **Team HISN:** Mansour Saleh Al Mansoori (team lead) · Abdulla Sulaiman Aldhanhani (member) · Faisal Jasim Hasan Jasim (member) — SCAMSHIELD AI Hackathon (42 Abu Dhabi × Abu Dhabi Police).
-**Live:** https://hisn-smart-shield.onrender.com · **Run:** `node server.js` (Node.js 22, zero dependencies) → `http://localhost:3000`
+**Live:** https://hisn-smart-shield.onrender.com · **Presentation:** [PPTX](docs/submission/HISN-Presentation-AR-EN.pptx) · [PDF](docs/submission/HISN-Presentation-AR-EN.pdf) · **Run:** `node server.js` (Node.js 22, zero dependencies) → `http://localhost:3000`
 
 **Problem.** Scammers don't hack phones, they trick people: SMS with look-alike bank links, or calls "from the bank / police / telecom" asking for the OTP, a money transfer, remote access, or a UAE PASS approval — sometimes with an AI-cloned voice of the victim's manager. Existing tools warn too late or block without explanation, and rarely understand Arabic or the Emirati dialect.
 
@@ -277,6 +299,10 @@ render.yaml          النشر على Render
 **Features.** The six challenge cases; five live scam calls with Emirati voices (fake bank, fake police and "safe account", UAE PASS approval, fake tech support with remote access, cloned boss voice); Meera-impersonation detection without flagging the everyday name; `/scan` batch link scanner (0–100 score, verdict, reasons, CSV/JSON), deep scan (redirects, cloaking, page content), police evidence report (`/evidence`: RDAP registrar, creation date, abuse contact, hosting, screenshot, SHA-256, bilingual takedown request), and early detection from Certificate Transparency plus ~280 DNS-checked look-alikes per brand; a live interactive UAE attack map (`/map`, domestic vs. external origins, live call origin); and an authority portal (`/partners`).
 
 **Technical choices.** A rule-based Arabic NLP engine (normalisation, dialect, intent, negation and context; explainable, on-device, 57 tests) plus a continuously-learning lightweight neural network (`public/learn.js`: char 3–5-grams + words → hashing 4096 → dense 16 → sigmoid, int8 ~86 KB; 94% on unseen phrasings) that alerts on its own only for a *request* involving a *sensitive item*. Link analysis: official-domain match, entity/domain mismatch, entity-as-subdomain, digit-for-letter, Levenshtein look-alikes, Punycode, IP, @, shorteners, risky TLDs, HTTP, phishing paths and authority intel. WebRTC for call audio; Web Speech API or optional `gpt-4o-transcribe`; optional `gpt-4o-mini` as a second opinion only.
+
+**AI at every stage.** Messages: Arabic NLP + social-engineering classification · Links: string similarity + deceptive characters + threat intel · Calls: speech recognition (ASR) + NLP + intent + entities (NER) · Decision: signal fusion + explainable AI (XAI) · Authority portal: keyphrase extraction + impersonation-domain generation · Context: optional LLM for ambiguous cases.
+
+**Expert advice applied automatically.** Urgent/threatening language, requests for personal or financial data, and shortened or misspelled links (CISA); https and spelling checks, and never sharing bank details before verifying the caller (Al Khaleej); "if in doubt, hang up and contact the organisation directly" as an *End call* button inside the warning (NCSC).
 
 **Tools, APIs and data.** UAE PASS staging (OAuth 2.0), RDAP via the IANA bootstrap (fallback rdap.org; ARIN/RIPE for IPs), crt.sh, DNS, ipwho.is, thum.io, geoBoundaries (CC BY 4.0), optional OpenAI. Data: 56 official entities, the neural-network seed set, two labelled link sets (106 dev / 30 blind), 50 voice clips.
 
