@@ -44,7 +44,7 @@ git clone https://github.com/mansourx444-cyber/hisn-smart-shield.git
 cd hisn-smart-shield
 node server.js          # يحتاج Node.js 22 فقط — بدون npm install
 # افتح http://localhost:3000/demo
-npm test                # 54 اختبارًا للمحرك
+npm test                # 57 اختبارًا للمحرك
 ```
 
 ## ٦.٤ ملاحظات تقنية

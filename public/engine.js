@@ -58,6 +58,9 @@
     { id: 'cbuae', ar: 'مصرف الإمارات المركزي', en: 'Central Bank of the UAE', kind: 'bank', names: ['المصرف المركزي', 'البنك المركزي', 'central bank'], domains: ['centralbank.ae'], brand: ['centralbank'] },
     // جهات حكومية وخدمات
     { id: 'uaegov', ar: 'البوابة الرسمية لحكومة الإمارات', en: 'UAE Government portal', kind: 'org', names: ['حكومه الامارات', 'u.ae'], domains: ['u.ae', 'government.ae'], brand: [] },
+    // «ميرة» — المساعد الحكومي الشخصي (أُعلن 23 نوفمبر 2026، الإتاحة للجمهور من مارس 2027). لا نطاق مستقل معلن بعد ← البوابة الرسمية
+    { id: 'meera', ar: 'المساعد الحكومي «ميرة»', en: 'Meera, the UAE Government assistant', kind: 'org',
+      names: ['مساعد ميره', 'المساعد ميره', 'تطبيق ميره', 'منصه ميره', 'خدمه ميره', 'خدمات ميره', 'ميره الحكومي', 'المساعد الحكومي', 'meera assistant', 'meera app', 'uae meera', 'meera uae'], domains: ['u.ae'], brand: ['meerauae', 'uaemeera', 'meeragov', 'govmeera', 'meeraapp', 'meera-gov'] },
     { id: 'dubaipolice', ar: 'شرطة دبي', en: 'Dubai Police', kind: 'police', names: ['شرطه دبي', 'dubai police'], domains: ['dubaipolice.gov.ae'], brand: ['dubaipolice'] },
     { id: 'icp', ar: 'الهيئة الاتحادية للهوية والجنسية', en: 'ICP', kind: 'org', names: ['الهويه والجنسيه', 'icp'], domains: ['icp.gov.ae'], brand: [] },
     { id: 'rta', ar: 'هيئة الطرق والمواصلات', en: 'RTA', kind: 'org', names: ['هيئه الطرق والمواصلات', 'roads and transport authority'], domains: ['rta.ae'], brand: [] },
@@ -457,6 +460,7 @@
     swap: { ar: (e, h) => `اسم الموقع يستبدل حروفًا بأرقام أو حروف شبيهة ليبدو مثل ${e} (${iso(h)}).`, en: (e, h) => `The site name swaps letters for look-alike numbers or letters to resemble ${e} (${iso(h)}).` },
     kw: { ar: () => 'الرابط يحتوي كلمات تصيّد شائعة مثل login أو verify أو update.', en: () => 'The link contains common phishing words such as login, verify or update.' },
     sender: { ar: (e) => `الرسالة تدّعي أنها من ${e} لكنها مرسلة من رقم هاتف شخصي، والجهات الرسمية ترسل باسمها المعتمد.`, en: (e) => `The message claims to be from ${e} but comes from a personal phone number; official senders use their registered name.` },
+    meera: { ar: (pre) => pre ? 'الرسالة تستخدم اسم «ميرة»، المساعد الحكومي الجديد، وهو لم يُتح للجمهور بعد (الإتاحة تبدأ في مارس 2027) — أي رسالة أو رابط باسمه الآن انتحال.' : 'الرسالة تستخدم اسم «ميرة»، المساعد الحكومي، لتطلب رمزًا أو دفعًا أو دخولًا عبر رابط — «ميرة» تعمل داخل قنواتها الرسمية ولا تطلب الرمز في رسالة.', en: (pre) => pre ? 'The message uses the name of “Meera”, the new government assistant, which is not yet open to the public (public launch starts March 2027) — any message or link in its name now is impersonation.' : 'The message uses the name of “Meera”, the government assistant, to ask for a code, payment or sign-in through a link — Meera works inside its official channels and never asks for your code in a message.' },
     official: { ar: (e) => `الرابط يعود إلى النطاق الرسمي لـ${e}.`, en: (e) => `The link belongs to the official domain of ${e}.` },
     none: { ar: () => 'لم تظهر مؤشرات كافية للحكم على الرسالة.', en: () => 'There are not enough signs to judge this message.' },
   };
@@ -473,6 +477,9 @@
   const LURE = /(وظيف|وظائف|رواتب|راتب|دخل يومي|ربح يومي|ارباح|استثمار|مضمون|عمل من المنزل|job|salary|salaries|investment|profit|earn|work from home)/;
   const GROUP = /(مجموعه|قروب|جروب|group|join|انضم|انضمام)/;
   const DELIVERY = /(شحن|شحنه|شحنتك|طرد|طردك|توصيل|البريد|parcel|package|delivery|shipment|courier)/;
+  // ذكر «ميرة» في سياق حكومي/خدمي (وليس اسم شخص عادي)
+  const MEERA = /(مساعد|تطبيق|منصه|خدمه|خدمات|عبر|في|من)\s+(ال)?ميره|ميره\s+(ال)?(حكومي|ذكي|الشخصي|للخدمات)|(^|\s)meera(\s|$|[.,:!])|mirah|«ميره»|"ميره"/;
+  const MEERA_LIVE = Date.UTC(2027, 2, 1);
   const MSG_OTP_REQ =/(شارك|ارسل|ادخل|رد|اعد ارسال|ابعث|share|send|reply|enter|forward)/;
 
   function analyzeMessage(text, lang, from) {
@@ -530,6 +537,10 @@
     if (urgent && (fee || otpReq || reasons.length)) add('urgent', 2);
     if (PRIZE.test(n)) add('prize', 2);
     if (LURE.test(n) && urls.length && (GROUP.test(n) || urls.some((u) => /whatsapp|wa\.me|t\.me|telegram/.test(u.host)))) add('lure', urls.some((u) => !officialEntityOf(u.host) || officialEntityOf(u.host).id === 'whatsapp') ? 3 : 2);
+    // انتحال «ميرة»: قبل الإتاحة أي رابط/طلب باسمها احتيال، وبعدها أي طلب رمز/دفع/دخول عبر رسالة
+    if (MEERA.test(n) && (urls.length || otpReq || reasons.some((r) => ['cred', 'fee', 'login', 'otp'].includes(r.key)))) {
+      if (!urls.length || !urls.every((u) => officialEntityOf(u.host))) add('meera', 3, Date.now() < MEERA_LIVE);
+    }
     // ممارسات نشرتها الجهات (طرف ثالث موثوق)
     let reportedBy = null;
     for (const pt of PATTERNS) {
@@ -616,6 +627,8 @@
     else if (has('lure')) summary = R.lure[lang]();
     else summary = reasons[0].txt;
 
+    const mee_ = risky.find((r) => r.key === 'meera');
+    if (mee_) summary = mee_.txt + ' ' + summary;
     const rep_ = risky.find((r) => r.key === 'reported' || r.key === 'predicted');
     if (rep_ && !summary.includes(rep_.txt)) summary = rep_.txt + ' ' + summary;
     const sev3 = risky.filter((r) => r.sev >= 3).length;

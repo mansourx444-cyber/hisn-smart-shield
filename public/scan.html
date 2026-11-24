@@ -141,7 +141,7 @@
     };
     $('#jsn').onclick = () => dl(`hisn-scan-${stamp()}.json`, 'application/json', JSON.stringify(last, null, 2));
     // الرصد المبكر
-    const KW = [['uaepass', 'UAE PASS'], ['tamm', 'TAMM / تم'], ['adcb', 'ADCB'], ['emiratesnbd', 'Emirates NBD'], ['bankfab', 'FAB'], ['mashreq', 'Mashreq'], ['adib', 'ADIB'], ['rakbank', 'RAKBANK'], ['etisalat', 'e& / اتصالات'], ['adpolice', 'Abu Dhabi Police'], ['dubaipolice', 'Dubai Police'], ['emiratespost', 'Emirates Post'], ['aramex', 'Aramex'], ['salik', 'Salik'], ['dewa', 'DEWA'], ['adnoc', 'ADNOC']];
+    const KW = [['meera', 'ميرة / Meera (جديد)'], ['uaepass', 'UAE PASS'], ['tamm', 'TAMM / تم'], ['adcb', 'ADCB'], ['emiratesnbd', 'Emirates NBD'], ['bankfab', 'FAB'], ['mashreq', 'Mashreq'], ['adib', 'ADIB'], ['rakbank', 'RAKBANK'], ['etisalat', 'e& / اتصالات'], ['adpolice', 'Abu Dhabi Police'], ['dubaipolice', 'Dubai Police'], ['emiratespost', 'Emirates Post'], ['aramex', 'Aramex'], ['salik', 'Salik'], ['dewa', 'DEWA'], ['adnoc', 'ADNOC']];
     $('#kw').innerHTML = KW.map(([k, n]) => `<option value="${k}">${n}</option>`).join('');
     $('#wgo').onclick = async () => {
       $('#wgo').disabled = true; $('#wwait').classList.add('on');
