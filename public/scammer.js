@@ -17,7 +17,7 @@
   /* ------------------------------ السيناريوهات ------------------------------ */
   const T = {
     ar: {
-      title: 'المحتال', freeSms: '✍️ اكتب رسالتك بنفسك', freeSmsD: 'اكتب أي رسالة أو رابط احتيال من خيالك وشاهد «حِصن» يحلّلها.', senderPh: 'اسم أو رقم المرسل', textPh: 'نص الرسالة…', chSms: 'رسالة نصية', chWa: 'واتساب', freeCall: '🎙️ مكالمة حرة — تكلّم أنت بدور المحتال', freeCallD: 'بعد رد الضحية اضغط الميكروفون وتكلّم بنفسك، أو اكتب الجملة. يتحول صوتك إلى نص فعليًا ويحلّله «حِصن».', numPh: 'رقم المتصل', labelPh: 'يظهر للضحية باسم', micOn: '🔴 أستمع… تكلّم الآن', micOff: 'اضغط الميكروفون وتكلّم', micNA: 'التعرف على الكلام غير مدعوم في هذا المتصفح — استخدم Edge أو Chrome، أو اكتب الجملة', micDenied: 'لم يُسمح بالميكروفون', typePh: 'أو اكتب جملة المحتال…', freeTitle: 'مكالمة حرة', warn: '⚠ محاكاة لأغراض التوعية والتدريب فقط. الروابط وهمية ولا تعمل.', lang: 'English',
+      origin: '📍 موقع المحتال', oAuto: 'تلقائي (موقع هذا الجهاز)', oEm: 'داخل الدولة', oOut: 'خارج الدولة', title: 'المحتال', freeSms: '✍️ اكتب رسالتك بنفسك', freeSmsD: 'اكتب أي رسالة أو رابط احتيال من خيالك وشاهد «حِصن» يحلّلها.', senderPh: 'اسم أو رقم المرسل', textPh: 'نص الرسالة…', chSms: 'رسالة نصية', chWa: 'واتساب', freeCall: '🎙️ مكالمة حرة — تكلّم أنت بدور المحتال', freeCallD: 'بعد رد الضحية اضغط الميكروفون وتكلّم بنفسك، أو اكتب الجملة. يتحول صوتك إلى نص فعليًا ويحلّله «حِصن».', numPh: 'رقم المتصل', labelPh: 'يظهر للضحية باسم', micOn: '🔴 أستمع… تكلّم الآن', micOff: 'اضغط الميكروفون وتكلّم', micNA: 'التعرف على الكلام غير مدعوم في هذا المتصفح — استخدم Edge أو Chrome، أو اكتب الجملة', micDenied: 'لم يُسمح بالميكروفون', typePh: 'أو اكتب جملة المحتال…', freeTitle: 'مكالمة حرة', warn: '⚠ محاكاة لأغراض التوعية والتدريب فقط. الروابط وهمية ولا تعمل.', lang: 'English',
       linked: 'متصل بهاتف الضحية', waiting: 'بانتظار هاتف الضحية…', enterCode: 'أدخل رمز الربط من هاتف الضحية', offline: 'الرمز صحيح لكن هاتف الضحية غير مفتوح', bad: 'رمز غير صحيح',
       tabSms: 'رسائل احتيال', tabCalls: 'مكالمات احتيال', from: 'من', sms: 'رسالة نصية', wa: 'واتساب', mail: 'بريد إلكتروني', social: 'تواصل اجتماعي', qr: 'رمز QR في مكان عام', send: 'أرسل إلى الضحية', sent: '✓ وصلت إلى هاتف الضحية', notDelivered: 'لم تصل — هاتف الضحية غير متصل',
       call: 'اتصل بالضحية', victim: 'الضحية — مريم', ringing: 'يرن…', connecting: 'جارٍ الاتصال…', declined: 'رُفضت المكالمة', ended: 'انتهت المكالمة', busy: 'الضحية في مكالمة',
@@ -25,7 +25,7 @@
       pillActive: '🛡️ «حِصن» يحلّل المكالمة لحظيًا', pillDemo: '🛡️ تُحلَّل لحظيًا (عبارات تمثيلية)', pillPaused: '⚠️ الفحص متوقف', pillWait: 'بانتظار الرد',
     },
     en: {
-      title: 'The Scammer', freeSms: '✍️ Write your own message', freeSmsD: 'Type any scam message or link and watch HISN analyse it.', senderPh: 'Sender name or number', textPh: 'Message text…', chSms: 'Text message', chWa: 'WhatsApp', freeCall: '🎙️ Free call — you play the scammer', freeCallD: 'After the victim answers, press the mic and speak, or type. Your voice is really transcribed and analysed by HISN.', numPh: 'Caller number', labelPh: 'Shown to victim as', micOn: '🔴 Listening… speak now', micOff: 'Press the mic and speak', micNA: 'Speech recognition is not supported here — use Edge or Chrome, or type', micDenied: 'Microphone not allowed', typePh: 'Or type the scammer’s sentence…', freeTitle: 'Free call', warn: '⚠ Simulation for awareness and training only. Links are fake and do not work.', lang: 'العربية',
+      origin: '📍 Scammer location', oAuto: 'Automatic (this device)', oEm: 'Inside the UAE', oOut: 'Outside the UAE', title: 'The Scammer', freeSms: '✍️ Write your own message', freeSmsD: 'Type any scam message or link and watch HISN analyse it.', senderPh: 'Sender name or number', textPh: 'Message text…', chSms: 'Text message', chWa: 'WhatsApp', freeCall: '🎙️ Free call — you play the scammer', freeCallD: 'After the victim answers, press the mic and speak, or type. Your voice is really transcribed and analysed by HISN.', numPh: 'Caller number', labelPh: 'Shown to victim as', micOn: '🔴 Listening… speak now', micOff: 'Press the mic and speak', micNA: 'Speech recognition is not supported here — use Edge or Chrome, or type', micDenied: 'Microphone not allowed', typePh: 'Or type the scammer’s sentence…', freeTitle: 'Free call', warn: '⚠ Simulation for awareness and training only. Links are fake and do not work.', lang: 'العربية',
       linked: 'Connected to the victim phone', waiting: 'Waiting for the victim phone…', enterCode: 'Enter the pairing code from the victim phone', offline: 'Code is valid but the victim phone is not open', bad: 'Wrong code',
       tabSms: 'Scam messages', tabCalls: 'Scam calls', from: 'From', sms: 'Text message', wa: 'WhatsApp', mail: 'Email', social: 'Social media', qr: 'QR code in a public place', send: 'Send to victim', sent: '✓ Delivered to the victim phone', notDelivered: 'Not delivered — victim phone offline',
       call: 'Call the victim', victim: 'Victim', ringing: 'Ringing…', connecting: 'Connecting…', declined: 'Call declined', ended: 'Call ended', busy: 'Victim is in a call',
@@ -160,13 +160,37 @@
   const call = { on: false, sc: null, pc: null, local: null, pending: [], t0: 0, timer: null, said: new Set(), state: 'idle' };
   const sentAt = {};
 
+  /* ------------------------------ موقع المحتال (لخريطة الهجمات) ------------------------------ */
+  // تلقائي: الجهاز يحدد إمارته (إن سمح) وإلا يقدّرها الخادم من عنوان IP. أو يختار المقدّم إمارة/دولة للعرض.
+  const EXT = ['GB', 'US', 'DE', 'FR', 'IN', 'PK', 'NG', 'PH', 'EG', 'RU', 'CN', 'TR', 'BR', 'ZA'];
+  let autoEm = null;
+  function locateSelf() {
+    if (!navigator.geolocation || !window.UAE_MAP) return;
+    navigator.geolocation.getCurrentPosition((p) => { const { longitude: lon, latitude: lat } = p.coords; autoEm = lon > 51 && lon < 56.6 && lat > 22.4 && lat < 26.4 ? window.UAE_MAP.emirateOf(lon, lat) : null; }, () => {}, { timeout: 8000, maximumAge: 3600000 });
+  }
+  function originPick() {
+    const v = store.get('scamOrigin', 'auto');
+    if (v === 'auto') return autoEm ? { emirate: autoEm } : 'auto';
+    return /^AE-/.test(v) ? { emirate: v } : { country: v };
+  }
+  function renderOrigin() {
+    const sel = $('#originSel'); if (!sel) return;
+    $('#originLbl').textContent = tt('origin');
+    const dn = (c) => { try { return new Intl.DisplayNames([lang], { type: 'region' }).of(c); } catch { return c; } };
+    const ems = window.UAE_MAP ? window.UAE_MAP.shapes.map((x) => [x.iso, lang === 'ar' ? x.ar : x.en]) : [];
+    sel.innerHTML = `<option value="auto">${tt('oAuto')}</option><optgroup label="${tt('oEm')}">${ems.map(([k, n]) => `<option value="${k}">${n}</option>`).join('')}</optgroup><optgroup label="${tt('oOut')}">${EXT.map((c) => `<option value="${c}">${dn(c)}</option>`).join('')}</optgroup>`;
+    sel.value = store.get('scamOrigin', 'auto');
+    sel.onchange = () => { store.set('scamOrigin', sel.value); if (sel.value === 'auto') locateSelf(); };
+  }
+  if (store.get('scamOrigin', 'auto') === 'auto') locateSelf();
+
   /* ------------------------------ الواجهة ------------------------------ */
   function render() {
     document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     $('#tTitle').textContent = tt('title'); $('#tWarn').textContent = tt('warn'); $('#langBtn').textContent = tt('lang');
     $('#tabSms').textContent = tt('tabSms'); $('#tabCalls').textContent = tt('tabCalls');
     $('#sayTitle').textContent = tt('say'); $('#micLbl').textContent = tt('mic'); $('#outLbl').textContent = tt('outage');
-    renderLink(); renderSms(); renderCalls(); if (call.on) renderCall();
+    renderLink(); renderOrigin(); renderSms(); renderCalls(); if (call.on) renderCall();
   }
   function renderLink() {
     $('#linkCard').classList.toggle('on', linked && peer);
@@ -191,7 +215,7 @@
       const text = fc.querySelector('#fText').value.trim(); if (!text) return;
       const from = fc.querySelector('#fFrom').value.trim() || '0500000000', channel = fc.querySelector('#fCh').value;
       toParent({ type: 'sms-sent', id: 'free', channel });
-      const r = await post('/api/sms', { room: code, from, text, channel }).catch(() => null);
+      const r = await post('/api/sms', { room: code, from, text, channel, origin: originPick() }).catch(() => null);
       const j = r && r.ok ? await r.json() : null;
       const st = fc.querySelector('#fSent'); st.hidden = false; st.textContent = j && j.delivered ? tt('sent') : tt('notDelivered');
     });
@@ -203,7 +227,7 @@
       if (sentAt[s.id]) { st.hidden = false; st.textContent = sentAt[s.id]; }
       card.querySelector('.sc-btn').addEventListener('click', async () => {
         toParent({ type: 'sms-sent', id: s.id, channel: s.channel || 'sms' });
-        const r = await post('/api/sms', { room: code, from: s.from, fromLabel: s.fromLabel || '', text: s.text, channel: s.channel || 'sms' }).catch(() => null);
+        const r = await post('/api/sms', { room: code, from: s.from, fromLabel: s.fromLabel || '', text: s.text, channel: s.channel || 'sms', origin: originPick() }).catch(() => null);
         const j = r && r.ok ? await r.json() : null;
         sentAt[s.id] = j && j.delivered ? tt('sent') : tt('notDelivered');
         st.hidden = false; st.textContent = sentAt[s.id];
@@ -314,7 +338,7 @@
     await setupPC();
     const scx = id === 'free' ? freeCaller : CALLS[lang].find((c) => c.id === id);
     $('#freeBox').hidden = id !== 'free'; $('#freeText').placeholder = tt('typePh'); setMic(false);
-    const r = await post('/api/call', { room: code, action: 'ring', from: scx.num, label: scx.label }).catch(() => null);
+    const r = await post('/api/call', { room: code, action: 'ring', from: scx.num, label: scx.label, origin: originPick() }).catch(() => null);
     if (!r || r.status !== 200) { const j = r ? await r.json().catch(() => ({})) : {}; endCall(false, j.error === 'busy' ? tt('busy') : tt('notDelivered')); return; }
     toParent({ type: 'call', state: 'ringing' });
     if (!embed && window.ShieldTones) window.ShieldTones.backStart(); // نغمة الانتظار للمتصل (في صفحة العرض يرن هاتف الضحية بدلًا منها)

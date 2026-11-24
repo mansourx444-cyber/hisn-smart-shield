@@ -32,6 +32,20 @@
     .dot{fill:var(--bad)} .dot.sim{fill:none;stroke:var(--warn);stroke-width:2;stroke-dasharray:3 2}
     .ring{fill:none;stroke:var(--bad);stroke-width:3;animation:ring 1.8s ease-out forwards}
     @keyframes ring{from{r:4;opacity:1}to{r:46;opacity:0}}
+    .arc{fill:none;stroke-width:calc(1.6px * var(--z,1));stroke-linecap:round}
+    .arc.in{stroke:var(--gold)} .arc.out{stroke:#ff8a3d}
+    .arc.live{stroke:#fff;stroke-width:calc(3.5px * var(--z,1));stroke-dasharray:calc(10px * var(--z,1)) calc(7px * var(--z,1));animation:dash 1s linear infinite;opacity:1}
+    @keyframes dash{to{stroke-dashoffset:calc(-17px * var(--z,1))}}
+    .edge{font-size:calc(24px * var(--z,1));pointer-events:none}
+    .edgec{fill:#0b111bdd;stroke:#ff8a3d;stroke-width:calc(1.5px * var(--z,1))}
+    .src{fill:var(--gold)}
+    .livepin{fill:#fff;stroke:var(--bad);stroke-width:calc(3px * var(--z,1));animation:lp 1s ease-in-out infinite}
+    @keyframes lp{50%{opacity:.35}}
+    .livebox{display:none;margin:0 0 10px;padding:9px 12px;border-radius:10px;background:#3a0f12;border:1px solid var(--bad);font-size:13px}
+    .livebox.on{display:block} .livebox b{color:#fff}
+    .split{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#0f1826;margin:2px 0 4px}
+    .split i{display:block;height:100%} .split .a{background:var(--gold)} .split .b{background:#ff8a3d}
+    .splitl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
     .tip{position:absolute;pointer-events:none;background:#0b111bee;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12.5px;display:none;white-space:nowrap}
     .legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
     .legend .sc{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--land),#7a2b2b,#ff5a4f)}
@@ -74,6 +88,7 @@
     <section class="card">
       <div class="bar" role="group" aria-labelledby="tPeriod"><span class="lbl" id="tPeriod"></span><span id="periods"></span></div>
       <div class="bar" role="group" aria-labelledby="tType"><span class="lbl" id="tType"></span><span id="types"></span></div>
+      <div class="bar" role="group" aria-labelledby="tSrc"><span class="lbl" id="tSrc"></span><span id="srcs"></span></div>
       <div class="mapwrap" id="wrap">
         <div class="zoom"><button class="chip" id="zAll" type="button"></button><button class="chip" id="zNorth" type="button"></button></div>
         <svg id="map" role="img" aria-labelledby="tTitle"></svg>
@@ -82,13 +97,16 @@
       <div class="legend"><span id="tLess"></span><span class="sc"></span><span id="tMore"></span><span>·</span><span id="tDot"></span><span class="sp" style="flex:1"></span><button id="simBtn" class="btn" type="button"></button><button id="simClr" class="btn" type="button" hidden></button></div>
     </section>
     <aside class="card">
+      <div class="livebox" id="liveBox" role="status"></div>
       <div class="stats">
         <div class="stat"><b id="sDay">0</b><small id="tDay"></small></div>
         <div class="stat"><b id="sPeriod">0</b><small id="tInPeriod"></small></div>
         <div class="stat"><b id="sEm">—</b><small id="tTop"></small></div>
       </div>
+      <div class="splitl"><span id="sIn"></span><span id="sOut"></span></div><div class="split" id="split"><i class="a"></i><i class="b"></i></div>
       <div class="selhd"><h2 id="selName"></h2><button id="selX" class="chip x" type="button" hidden></button></div>
       <h3 id="tByType"></h3><div class="rows" id="byType"></div>
+      <h3 id="tFrom"></h3><div class="rows" id="froms"></div>
       <h3 id="tHosts"></h3><div class="rows" id="hosts"></div>
       <h3 id="tFeed"></h3><ul class="feed" id="feed" aria-live="polite"></ul>
       <p class="note" id="tPrivacy"></p>
@@ -103,7 +121,7 @@
     let lang = qs.get('lang') === 'en' ? 'en' : (localStorage.getItem('ds.lang') === '"en"' ? 'en' : 'ar');
     const T = {
       ar: { title: 'خريطة الهجمات في الإمارات', sub: 'كل هجمة صدّها «حِصن» أو أُبلغ عنها أو كشفها الماسح — مباشرة', live: 'مباشر', period: 'الفترة', type: 'النوع',
-        zAll: 'كل الإمارات', zNorth: 'الإمارات الشمالية', p1: '24 ساعة', p7: '7 أيام', p30: '30 يومًا', all: 'الكل', less: 'أقل', more: 'أكثر', dot: '● آخر الهجمات', sim: '▶ محاكاة هجمات للعرض', simStop: '■ إيقاف المحاكاة', simClr: 'مسح المحاكاة',
+        zAll: 'كل الإمارات', zNorth: 'الإمارات الشمالية', src: 'المصدر', sAll: 'الكل', sIn: '🏠 داخلي', sOut: '🌍 خارجي', inN: (n) => `داخلي (من داخل الدولة): ${n}`, outN: (n) => `خارجي (من خارج الدولة): ${n}`, from: 'من أين تأتي الهجمات', noFrom: 'لا يوجد مصدر معروف بعد.', fromW: 'من', toW: 'إلى', liveRing: 'مكالمة احتيال ترنّ الآن', liveCall: 'مكالمة احتيال جارية', unknownSrc: 'مصدر غير معروف', p1: '24 ساعة', p7: '7 أيام', p30: '30 يومًا', all: 'الكل', less: 'أقل', more: 'أكثر', dot: '● آخر الهجمات', sim: '▶ محاكاة هجمات للعرض', simStop: '■ إيقاف المحاكاة', simClr: 'مسح المحاكاة',
         day: 'آخر 24 ساعة', inPeriod: 'في الفترة', top: 'الأكثر استهدافًا', allUae: 'كل الإمارات', back: '× كل الإمارات', byType: 'حسب النوع', hosts: 'من أين تُستضاف الروابط الاحتيالية', feed: 'آخر الهجمات',
         empty: 'لا توجد هجمات في هذه الفترة.', noHosts: 'لا توجد روابط احتيالية بدولة استضافة معروفة بعد.', simTag: 'محاكاة', unknown: 'إمارة غير معروفة', attacks: (n) => `${n} هجمة`,
         privacy: 'الخصوصية: نسجّل نوع الهجمة والإمارة فقط. الإمارة يحددها الهاتف (إن سمح المستخدم) أو تُستنتج من عنوان IP ثم يُحذف العنوان. لا إحداثيات ولا أرقام هواتف ولا عناوين IP. عنوان MAC لا يُستخدم لأنه لا يخرج من الشبكة المحلية ولا يدل على موقع. حدود الإمارات: geoBoundaries (CC BY 4.0).',
@@ -111,7 +129,7 @@
         kd: { otp: 'طلب رمز التحقق', transfer: 'تحويل أموال', remote: 'تحكم عن بعد', police: 'انتحال صفة الشرطة', delivery: 'شحنة وهمية', fine: 'مخالفة وهمية', login: 'صفحة دخول مزيفة', card: 'سرقة بيانات البطاقة', boss: 'انتحال مدير أو قريب', brand: 'انتحال علامة تجارية', donate: 'تبرع وهمي', apk: 'تطبيق خبيث', scan: 'كشفه الماسح', approval: 'موافقة الهوية الرقمية', app: 'تطبيق خبيث', whatsapp: 'سرقة حساب واتساب', payment: 'صفحة دفع مزيفة' },
         ago: (m) => m < 1 ? 'الآن' : m < 60 ? `قبل ${m} د` : m < 1440 ? `قبل ${Math.floor(m / 60)} س` : `قبل ${Math.floor(m / 1440)} يوم` },
       en: { title: 'UAE attack map', sub: 'Every attack HISN stopped, users reported or the scanner caught — live', live: 'Live', period: 'Period', type: 'Type',
-        zAll: 'All emirates', zNorth: 'Northern emirates', p1: '24 hours', p7: '7 days', p30: '30 days', all: 'All', less: 'Fewer', more: 'More', dot: '● Latest attacks', sim: '▶ Simulate attacks (demo)', simStop: '■ Stop simulation', simClr: 'Clear simulation',
+        zAll: 'All emirates', zNorth: 'Northern emirates', src: 'Source', sAll: 'All', sIn: '🏠 Domestic', sOut: '🌍 External', inN: (n) => `Domestic (from inside the UAE): ${n}`, outN: (n) => `External (from outside the UAE): ${n}`, from: 'Where attacks come from', noFrom: 'No known source yet.', fromW: 'from', toW: 'to', liveRing: 'A scam call is ringing now', liveCall: 'Scam call in progress', unknownSrc: 'Unknown source', p1: '24 hours', p7: '7 days', p30: '30 days', all: 'All', less: 'Fewer', more: 'More', dot: '● Latest attacks', sim: '▶ Simulate attacks (demo)', simStop: '■ Stop simulation', simClr: 'Clear simulation',
         day: 'Last 24 hours', inPeriod: 'In period', top: 'Most targeted', allUae: 'All emirates', back: '× All emirates', byType: 'By type', hosts: 'Where scam links are hosted', feed: 'Latest attacks',
         empty: 'No attacks in this period.', noHosts: 'No scam links with a known hosting country yet.', simTag: 'simulated', unknown: 'Unknown emirate', attacks: (n) => `${n} attacks`,
         privacy: 'Privacy: we record only the attack type and the emirate. The phone determines the emirate (if the user allows), or it is inferred from the IP address, which is then discarded. No coordinates, phone numbers or IP addresses. MAC addresses are not used: they never leave the local network and carry no location. Emirate borders: geoBoundaries (CC BY 4.0).',
@@ -124,7 +142,7 @@
     const flag = (c) => c && c.length === 2 ? String.fromCodePoint(...[...c.toUpperCase()].map((x) => 0x1f1a5 + x.charCodeAt(0))) : '🏳️';
     const t = (k) => T[lang][k];
     const M = window.UAE_MAP;
-    let events = [], lastN = 0, days = 7, type = 'all', sel = null, simTimer = null;
+    let events = [], lastN = 0, days = 7, type = 'all', srcF = 'all', sel = null, simTimer = null, live = [];
 
     /* ---------- الرسم ---------- */
     const svg = $('#map'); const NS = 'http://www.w3.org/2000/svg';
@@ -140,8 +158,8 @@
     }
     function boxOf(iso) { const b = paths[iso].getBBox(); if (iso === 'AE-AZ') return FULL; const pad = Math.max(b.width, b.height) * 0.6 + 25; return [b.x - pad, b.y - pad, b.width + pad * 2, b.height + pad * 2]; }
     svg.setAttribute('viewBox', FULL.join(' '));
-    const gEm = document.createElementNS(NS, 'g'), gDots = document.createElementNS(NS, 'g'), gLab = document.createElementNS(NS, 'g'), gFx = document.createElementNS(NS, 'g');
-    svg.append(gEm, gDots, gFx, gLab);
+    const gEm = document.createElementNS(NS, 'g'), gDots = document.createElementNS(NS, 'g'), gLab = document.createElementNS(NS, 'g'), gFx = document.createElementNS(NS, 'g'), gArc = document.createElementNS(NS, 'g'), gLive = document.createElementNS(NS, 'g');
+    svg.append(gEm, gArc, gDots, gFx, gLab, gLive);
     const paths = {};
     // مواقع العناوين (تجنّب تداخل الإمارات الشمالية الصغيرة)
     const LBL = { 'AE-AZ': [430, 600], 'AE-DU': [770, 300], 'AE-SH': [872, 292], 'AE-AJ': [770, 178], 'AE-UQ': [810, 140], 'AE-RK': [880, 92], 'AE-FU': [945, 240] };
@@ -171,8 +189,24 @@
       pt = pt || [base[0], base[1] - 18]; ptCache.set(e.id, pt); return pt;
     }
 
+    // نقطة على حافة الخريطة باتجاه الدولة (للهجمات الخارجية)
+    const CC = { GB: [54, -2], US: [39, -98], DE: [51, 10], FR: [46, 2], IN: [22, 79], PK: [30, 70], NG: [9, 8], PH: [12, 122], EG: [26, 30], RU: [60, 90], CN: [35, 103], TR: [39, 35], BR: [-10, -52], ZA: [-29, 24], ID: [-2, 118], NL: [52, 5], SG: [1.3, 103.8], HK: [22.3, 114.2], SA: [24, 45], OM: [21, 57], QA: [25.3, 51.2], KW: [29.3, 47.5], BH: [26, 50.5], IR: [32, 53], JO: [31, 36], LB: [33.9, 35.9], KE: [0, 38], MA: [32, -6], IT: [42, 12], ES: [40, -4], CA: [56, -106], AU: [-25, 134], JP: [36, 138], KR: [36, 128], BD: [24, 90], LK: [7.8, 80.7], NP: [28, 84], UA: [49, 32], SE: [62, 15], PL: [52, 19], VN: [16, 107], TH: [15, 101], MY: [4, 102], GH: [8, -1], ET: [9, 39], SD: [15, 30], IQ: [33, 44], SY: [35, 38], YE: [15, 48], AF: [33, 66] };
+    function edgeFor(c) {
+      const [la, lo] = CC[c] || [20, -20]; const r = Math.PI / 180, p1 = 24.4 * r, p2 = la * r, dl = (lo - 54.4) * r;
+      const th = Math.atan2(Math.sin(dl) * Math.cos(p2), Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl));
+      const dx = Math.sin(th), dy = -Math.cos(th), cx = 520, cy = 430, x0 = 55, x1 = 965, y0 = 70, y1 = 775;
+      let t = Infinity; if (dx > 0) t = Math.min(t, (x1 - cx) / dx); if (dx < 0) t = Math.min(t, (x0 - cx) / dx); if (dy > 0) t = Math.min(t, (y1 - cy) / dy); if (dy < 0) t = Math.min(t, (y0 - cy) / dy);
+      return [cx + dx * t, cy + dy * t];
+    }
+    const srcPoint = (e) => e.from && e.from.emirate ? pointFor({ id: e.id + 's', emirate: e.from.emirate }) : e.from && e.from.country ? edgeFor(e.from.country) : null;
+    const isOut = (e) => !!(e.from && e.from.country);
+    const isIn = (e) => !!(e.from && e.from.emirate);
+    function arcPath(a, b) { const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = b[0] - a[0], dy = b[1] - a[1]; const k = 0.22; return `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q${(mx - dy * k).toFixed(1)} ${(my + dx * k).toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`; }
+    const emName = (iso) => { const s = M.shapes.find((x) => x.iso === iso); return s ? s[lang] : t('unknown'); };
+    const srcName = (f) => !f ? t('unknownSrc') : f.emirate ? '🇦🇪 ' + emName(f.emirate) : flag(f.country) + ' ' + COUNTRY[lang](f.country);
+
     /* ---------- البيانات ---------- */
-    const inPeriod = () => { const from = Date.now() - days * 86400000; return events.filter((e) => e.at >= from && (type === 'all' || e.type === type)); };
+    const inPeriod = () => { const from = Date.now() - days * 86400000; return events.filter((e) => e.at >= from && (type === 'all' || e.type === type) && (srcF === 'all' || (srcF === 'in' ? isIn(e) : isOut(e)))); };
     function render() {
       const list = inPeriod(); const scoped = sel ? list.filter((e) => e.emirate === sel) : list;
       const byEm = {}; for (const e of list) if (e.emirate) byEm[e.emirate] = (byEm[e.emirate] || 0) + 1;
@@ -188,6 +222,30 @@
       // النقاط: آخر 150 هجمة
       gDots.textContent = '';
       for (const e of list.slice(-150)) { const pt = pointFor(e); if (!pt) continue; const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', pt[0]); c.setAttribute('cy', pt[1]); c.setAttribute('r', ((e.sim ? 4 : 4.5) * vb[2] / FULL[2]).toFixed(2)); c.setAttribute('class', 'dot' + (e.sim ? ' sim' : '')); c.setAttribute('opacity', String(0.35 + 0.65 * Math.max(0, 1 - (Date.now() - e.at) / (days * 86400000)))); gDots.appendChild(c); }
+      // الأقواس: من المصدر إلى الإمارة المستهدفة (آخر 60)
+      gArc.textContent = '';
+      for (const e of list.slice(-28)) {
+        if (!e.from || !e.emirate || (e.from.emirate && e.from.emirate === e.emirate)) continue;
+        const a = srcPoint(e), b = pointFor(e); if (!a || !b) continue;
+        const pth = document.createElementNS(NS, 'path'); pth.setAttribute('d', arcPath(a, b)); pth.setAttribute('class', 'arc ' + (isOut(e) ? 'out' : 'in'));
+        pth.setAttribute('opacity', String(0.12 + 0.5 * Math.max(0, 1 - (Date.now() - e.at) / (6 * 3600000)))); gArc.appendChild(pth);
+      }
+      const edges = {}; for (const e of list) if (isOut(e)) edges[e.from.country] = (edges[e.from.country] || 0) + 1;
+      for (const [c] of Object.entries(edges).sort((a, b) => b[1] - a[1]).slice(0, 10)) {
+        const [x, y] = edgeFor(c); const z = vb[2] / FULL[2];
+        const ci = document.createElementNS(NS, 'circle'); ci.setAttribute('cx', x); ci.setAttribute('cy', y); ci.setAttribute('r', 17 * z); ci.setAttribute('class', 'edgec'); gArc.appendChild(ci);
+        const tx = document.createElementNS(NS, 'text'); tx.setAttribute('x', x); tx.setAttribute('y', y + 8 * z); tx.setAttribute('text-anchor', 'middle'); tx.setAttribute('class', 'edge'); tx.textContent = flag(c); gArc.appendChild(tx);
+      }
+      // داخلي / خارجي
+      const all = events.filter((e) => e.at >= Date.now() - days * 86400000 && (type === 'all' || e.type === type) && (!sel || e.emirate === sel));
+      const nIn = all.filter(isIn).length, nOut = all.filter(isOut).length, tot = Math.max(1, nIn + nOut);
+      $('#sIn').textContent = t('inN')(nIn); $('#sOut').textContent = t('outN')(nOut);
+      $('#split .a').style.width = (nIn / tot * 100) + '%'; $('#split .b').style.width = (nOut / tot * 100) + '%';
+      // من أين تأتي الهجمات
+      const byF = {}; for (const e of scoped) if (e.from) { const k = e.from.emirate || e.from.country; byF[k] = (byF[k] || 0) + 1; }
+      const fm = Math.max(1, ...Object.values(byF));
+      $('#froms').innerHTML = Object.keys(byF).length ? Object.entries(byF).sort((a, b) => b[1] - a[1]).slice(0, 7).map(([k, n]) => `<div class="r"><span>${esc(srcName(/^AE-/.test(k) ? { emirate: k } : { country: k }))}</span><span class="b"><i style="width:${(n / fm) * 100}%;background:${/^AE-/.test(k) ? 'var(--gold)' : '#ff8a3d'}"></i></span><span>${n}</span></div>`).join('') : `<div class="empty">${t('noFrom')}</div>`;
+      renderLive();
       // الإحصاءات
       const dayN = events.filter((e) => e.at >= Date.now() - 86400000 && (type === 'all' || e.type === type) && (!sel || e.emirate === sel)).length;
       $('#sDay').textContent = dayN; $('#sPeriod').textContent = scoped.length;
@@ -211,9 +269,21 @@
       $('#feed').innerHTML = items.length ? items.map((e) => {
         const em = e.emirate ? M.shapes.find((s) => s.iso === e.emirate)[lang] : t('unknown');
         const kd = e.kind && t('kd')[e.kind] ? ' — ' + t('kd')[e.kind] : '';
-        return `<li class="${shownFeed.has(e.id) ? '' : 'new'}"><span class="ic">${ICON[e.type] || '⚠️'}</span><span><b>${t('ty')[e.type] || e.type}</b>${kd}${e.sim ? `<span class="tag">${t('simTag')}</span>` : ''}<br><small>${esc(em)}${e.domain ? ` · <span class="dm">${esc(e.domain)}</span>` : ''}${e.country ? ' ' + flag(e.country) : ''}</small></span><span class="tm">${t('ago')(Math.floor((Date.now() - e.at) / 60000))}</span></li>`;
+        return `<li class="${shownFeed.has(e.id) ? '' : 'new'}"><span class="ic">${ICON[e.type] || '⚠️'}</span><span><b>${t('ty')[e.type] || e.type}</b>${kd}${e.sim ? `<span class="tag">${t('simTag')}</span>` : ''}<br><small>${e.from ? esc(srcName(e.from)) + (lang === 'ar' ? ' ← ' : ' → ') : ''}${esc(em)}${e.domain ? ` · <span class="dm">${esc(e.domain)}</span>` : ''}${e.country ? ' ' + flag(e.country) : ''}</small></span><span class="tm">${t('ago')(Math.floor((Date.now() - e.at) / 60000))}</span></li>`;
       }).join('') : `<li class="empty">${t('empty')}</li>`;
       items.forEach((e) => shownFeed.add(e.id));
+    }
+    function renderLive() {
+      gLive.textContent = ''; const z = vb[2] / FULL[2];
+      const box = $('#liveBox'); const cur = live.filter((c) => c.from);
+      box.classList.toggle('on', live.length > 0);
+      box.innerHTML = live.map((c) => `📞 <b>${c.state === 'call' ? t('liveCall') : t('liveRing')}</b><br>${t('fromW')} ${esc(srcName(c.from))}${c.to ? ` ${lang === 'ar' ? '←' : '→'} ${t('toW')} ${esc(emName(c.to))}` : ''}`).join('<hr style="border:0;border-top:1px solid #5a1d21">');
+      for (const c of cur) {
+        const a = c.from.emirate ? pointFor({ id: c.id + 'L', emirate: c.from.emirate }) : edgeFor(c.from.country);
+        if (c.to) { const b = pointFor({ id: c.id + 'T', emirate: c.to }); if (b && !(c.from.emirate && c.from.emirate === c.to && Math.hypot(a[0] - b[0], a[1] - b[1]) < 4)) { const pth = document.createElementNS(NS, 'path'); pth.setAttribute('d', arcPath(a, b)); pth.setAttribute('class', 'arc live'); gLive.appendChild(pth); } }
+        const pin = document.createElementNS(NS, 'circle'); pin.setAttribute('cx', a[0]); pin.setAttribute('cy', a[1]); pin.setAttribute('r', 13 * z); pin.setAttribute('class', 'livepin'); gLive.appendChild(pin);
+        const ic = document.createElementNS(NS, 'text'); ic.setAttribute('x', a[0]); ic.setAttribute('y', a[1] - 20 * z); ic.setAttribute('text-anchor', 'middle'); ic.setAttribute('class', 'edge'); ic.textContent = '📞'; gLive.appendChild(ic);
+      }
     }
     function pulse(e) {
       const pt = pointFor(e); if (!pt) return;
@@ -233,6 +303,7 @@
     async function poll() {
       try {
         const j = await fetch(`/api/attacks?after=${lastN}&days=30`, { cache: 'no-store' }).then((r) => r.json());
+        const wasLive = JSON.stringify(live); live = j.live || []; if (JSON.stringify(live) !== wasLive) renderLive();
         const fresh = j.events || [];
         if (fresh.length) {
           const first = lastN === 0; events = events.concat(fresh); lastN = fresh[fresh.length - 1].n;
@@ -258,19 +329,21 @@
     /* ---------- اللغة والمرشّحات ---------- */
     function applyLang() {
       document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; document.title = '«حِصن» — ' + t('title');
-      const map = { zAll: 'zAll', zNorth: 'zNorth', tTitle: 'title', tSub: 'sub', tLive: 'live', tPeriod: 'period', tType: 'type', tLess: 'less', tMore: 'more', tDot: 'dot', tDay: 'day', tInPeriod: 'inPeriod', tTop: 'top', tByType: 'byType', tHosts: 'hosts', tFeed: 'feed', tPrivacy: 'privacy', selX: 'back', simClr: 'simClr' };
+      const map = { zAll: 'zAll', zNorth: 'zNorth', tSrc: 'src', tFrom: 'from', tTitle: 'title', tSub: 'sub', tLive: 'live', tPeriod: 'period', tType: 'type', tLess: 'less', tMore: 'more', tDot: 'dot', tDay: 'day', tInPeriod: 'inPeriod', tTop: 'top', tByType: 'byType', tHosts: 'hosts', tFeed: 'feed', tPrivacy: 'privacy', selX: 'back', simClr: 'simClr' };
       for (const [id, k] of Object.entries(map)) $('#' + id).textContent = t(k);
       $('#langBtn').textContent = lang === 'ar' ? 'English' : 'العربية';
       $('#simBtn').textContent = simTimer ? t('simStop') : t('sim'); $('#simBtn').classList.toggle('on', !!simTimer);
       $('#simClr').hidden = !events.some((e) => e.sim);
       $('#periods').innerHTML = [[1, 'p1'], [7, 'p7'], [30, 'p30']].map(([d, k]) => `<button class="chip ${days === d ? 'on' : ''}" data-d="${d}" type="button" aria-pressed="${days === d}">${t(k)}</button>`).join(' ');
       $('#types').innerHTML = ['all', 'sms', 'call', 'link', 'wa', 'email', 'social', 'qr', 'app'].map((k) => `<button class="chip ${type === k ? 'on' : ''}" data-t="${k}" type="button" aria-pressed="${type === k}">${k === 'all' ? t('all') : (ICON[k] + ' ' + t('ty')[k])}</button>`).join(' ');
+      $('#srcs').innerHTML = [['all', 'sAll'], ['in', 'sIn'], ['out', 'sOut']].map(([k, l]) => `<button class="chip ${srcF === k ? 'on' : ''}" data-s="${k}" type="button" aria-pressed="${srcF === k}">${t(l)}</button>`).join(' ');
+      document.querySelectorAll('[data-s]').forEach((b) => b.onclick = () => { srcF = b.dataset.s; applyLang(); });
       document.querySelectorAll('[data-d]').forEach((b) => b.onclick = () => { days = +b.dataset.d; applyLang(); });
       document.querySelectorAll('[data-t]').forEach((b) => b.onclick = () => { type = b.dataset.t; applyLang(); });
       render();
     }
     $('#langBtn').addEventListener('click', () => { lang = lang === 'ar' ? 'en' : 'ar'; applyLang(); });
-    applyLang(); poll().then(applyLang); setInterval(poll, 4000); setInterval(render, 60000);
+    applyLang(); poll().then(applyLang); setInterval(poll, 2500); setInterval(render, 60000);
   })();
   </script>
 </body>

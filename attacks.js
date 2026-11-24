@@ -50,6 +50,20 @@ async function geoIp(ip) {
   ipCache.set(ip, { v, t: Date.now() }); if (ipCache.size > 2000) ipCache.delete(ipCache.keys().next().value);
   return v;
 }
+// مصدر الهجمة: إمارة (داخلي) أو دولة (خارجي) — موقع تقريبي للمهاجم فقط
+function cleanFrom(f) {
+  if (!f) return null;
+  if (ISO.includes(f.emirate)) return { emirate: f.emirate };
+  if (f.country && /^[A-Z]{2}$/.test(f.country)) return f.country === 'AE' ? null : { country: f.country };
+  return null;
+}
+// يحدد مصدر الطلب: ما اختاره المرسل (إمارة/دولة) أو من عنوان IP (ولا يُحفظ العنوان)
+async function originOf(req, pick) {
+  const c = cleanFrom(pick); if (c) return c;
+  const g = await geoIp(clientIp(req)); if (!g) return null;
+  if (g.emirate) return { emirate: g.emirate };
+  return g.country && g.country !== 'AE' ? { country: g.country } : null;
+}
 function add(ev) {
   const e = {
     n: ++seq, id: crypto.randomBytes(5).toString('hex'), at: Date.now(),
@@ -59,6 +73,7 @@ function add(ev) {
     country: ev.country && /^[A-Z]{2}$/.test(ev.country) ? ev.country : null,
     domain: ev.domain ? String(ev.domain).toLowerCase().replace(/^https?:\/\//, '').replace(/[/?#].*$/, '').slice(0, 80) : null,
     src: ['device', 'report', 'scan', 'sim'].includes(ev.src) ? ev.src : 'device',
+    from: cleanFrom(ev.from),
     sim: !!ev.sim,
   };
   list.push(e); if (list.length > 3000) list = list.slice(-3000);
@@ -87,6 +102,7 @@ const SIM = {
   em: [['AE-DU', 30], ['AE-AZ', 28], ['AE-SH', 18], ['AE-AJ', 7], ['AE-RK', 7], ['AE-FU', 5], ['AE-UQ', 5]],
   ty: [['sms', 30], ['call', 22], ['link', 18], ['wa', 14], ['email', 6], ['social', 5], ['qr', 3], ['app', 2]],
   kinds: { sms: ['otp', 'delivery', 'fine'], call: ['otp', 'transfer', 'remote', 'police'], link: ['login', 'card'], wa: ['otp', 'boss'], email: ['login'], social: ['brand'], qr: ['donate'], app: ['apk'] },
+  ext: ['GB', 'US', 'DE', 'IN', 'PK', 'NG', 'PH', 'EG', 'RU', 'CN', 'TR', 'BR', 'ID', 'FR', 'ZA'],
   hosts: [['adcb-verify-account.top', 'NL'], ['uaepass-login.xyz', 'US'], ['rta-fines-pay.online', 'RU'], ['emiratespost-track.info', 'SG'], ['dewa-refund.site', 'DE'], ['tamm-gov.ae-pay.com', 'US'], ['etisalat-gift.live', 'HK']],
 };
 const pick = (arr) => { const t = arr.reduce((a, x) => a + x[1], 0); let r = Math.random() * t; for (const x of arr) { r -= x[1]; if (r <= 0) return x[0]; } return arr[0][0]; };
@@ -95,10 +111,11 @@ function simulate(n) {
   for (let i = 0; i < Math.min(30, n || 1); i++) {
     const type = pick(SIM.ty); const ks = SIM.kinds[type];
     const h = (type === 'link' || type === 'email' || type === 'sms') && Math.random() < 0.6 ? SIM.hosts[Math.floor(Math.random() * SIM.hosts.length)] : null;
-    out.push(add({ type, kind: ks[Math.floor(Math.random() * ks.length)], emirate: pick(SIM.em), domain: h && h[0], country: h && h[1], src: 'sim', sim: true }));
+    const from = Math.random() < 0.55 ? { emirate: pick(SIM.em) } : { country: SIM.ext[Math.floor(Math.random() * SIM.ext.length)] };
+    out.push(add({ type, kind: ks[Math.floor(Math.random() * ks.length)], emirate: pick(SIM.em), from, domain: h && h[0], country: h && h[1], src: 'sim', sim: true }));
   }
   return out;
 }
 function clearSim() { const b = list.length; list = list.filter((e) => !e.sim); dirty = dirty || b !== list.length; return b - list.length; }
 
-module.exports = { init, record, add, since, simulate, clearSim, hostCountry, clientIp, ISO, TYPES, save };
+module.exports = { originOf, cleanFrom, init, record, add, since, simulate, clearSim, hostCountry, clientIp, ISO, TYPES, save };

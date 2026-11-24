@@ -104,7 +104,7 @@ try {
     for (const f of fs.readdirSync(SEED)) if (!have.has(path.basename(f, path.extname(f)))) fs.copyFileSync(path.join(SEED, f), path.join(CLIP_DIR, f));
   }
 } catch (e) { console.error('[voices]', e.message); }
-const CLIP_KEY = /^(bank|police|approve|remote|refuse):(dialog|cont|comply|line):\d{1,2}$/;
+const CLIP_KEY = /^(bank|police|approve|remote|boss|refuse):(dialog|cont|comply|line):\d{1,2}$/;
 const TYPE_EXT = { 'audio/mpeg': '.mp3', 'audio/mp3': '.mp3', 'audio/wav': '.wav', 'audio/x-wav': '.wav', 'audio/wave': '.wav', 'audio/mp4': '.m4a', 'audio/x-m4a': '.m4a', 'audio/aac': '.aac', 'audio/ogg': '.ogg', 'audio/webm': '.webm' };
 const clipFile = (key) => key.replace(/:/g, '_');
 function listClips() {
@@ -289,7 +289,7 @@ function endCall(room, by, scammed) {
   if (!room.inCall && !room.ringing) return;
   // نتيجة المكالمة: تجاهلت الضحية التحذير ونجحت الخدعة ← آخر ما قاله المحتال مثال احتيال مؤكد
   if (scammed) for (const t of room.ctx.slice(-2)) if (learn.predict(model, t) >= 0.4 || engine.analyzeUtterance(t, [], room.lang).alerts.length) learnFrom(t, 1, 'outcome');
-  room.inCall = false; room.ringing = false;
+  room.inCall = false; room.ringing = false; room.live = null;
   closeStt(room);
   room.ctx = []; room.alerted = {}; room.outage = false; room.sttState = 'idle';
   broadcast(room, 'callEnded', { by, scammed: scammed || null });
@@ -515,7 +515,9 @@ async function handler(req, res) {
     log('[report]', b.auto ? 'auto' : 'manual', b.channel || '');
     // خريطة الهجمات: النوع والإمارة فقط
     const ch = { mail: 'email', whatsapp: 'wa' }[b.channel] || b.channel;
-    attacks.record(req, { type: attacks.TYPES.includes(ch) ? ch : (Array.isArray(b.hosts) && b.hosts.length ? 'link' : 'sms'), kind: b.kind, emirate: b.emirate, domain: Array.isArray(b.hosts) ? b.hosts[0] : null, src: b.auto ? 'device' : 'report' }).catch(() => {});
+    const rm = b.room ? rooms.get(String(b.room)) : null; const fresh = (x) => (x && Date.now() - x.t < 900000 ? x.o : null);
+    const from = rm ? (ch === 'call' ? fresh(rm.callFrom) : fresh(rm.smsFrom)) : null;
+    attacks.record(req, { type: attacks.TYPES.includes(ch) ? ch : (Array.isArray(b.hosts) && b.hosts.length ? 'link' : 'sms'), kind: b.kind, emirate: b.emirate, from, domain: Array.isArray(b.hosts) ? b.hosts[0] : null, src: b.auto ? 'device' : 'report' }).catch(() => {});
     return json(res, 200, { ok: true, total: reports.total });
   }
   if (p === '/api/reports' && req.method === 'GET') return json(res, 200, { total: reports.total, auto: reports.auto, manual: reports.manual, topHosts: Object.entries(reports.hosts).sort((a, b) => b[1] - a[1]).slice(0, 10) });
@@ -549,7 +551,8 @@ async function handler(req, res) {
   }
   // خريطة الهجمات في الإمارات
   if (p === '/api/attacks' && req.method === 'GET') {
-    return json(res, 200, { now: Date.now(), events: attacks.since(Number(url.searchParams.get('after')) || 0, Number(url.searchParams.get('days')) || 30) });
+    const live = []; for (const r of rooms.values()) if (r.live && (r.ringing || r.inCall) && r.sse && r.sse.user && Date.now() - r.live.at < 900000) live.push({ id: r.live.id, at: r.live.at, from: r.live.from, to: r.live.to, state: r.inCall ? 'call' : 'ring' });
+    return json(res, 200, { now: Date.now(), live, events: attacks.since(Number(url.searchParams.get('after')) || 0, Number(url.searchParams.get('days')) || 30) });
   }
   if (p === '/api/attacks/sim' && (req.method === 'POST' || req.method === 'DELETE')) {
     if (req.method === 'DELETE') return json(res, 200, { removed: attacks.clearSim() });
@@ -614,6 +617,7 @@ async function handler(req, res) {
     if (!room) return json(res, 404, { error: 'room' });
     const msg = { id: crypto.randomUUID(), channel: ['wa', 'mail', 'social', 'qr'].includes(b.channel) ? b.channel : 'sms', from: String(b.from || 'SMS').slice(0, 40), fromLabel: String(b.fromLabel || '').slice(0, 60), text: String(b.text || '').slice(0, 1200), at: Date.now() };
     const delivered = send(room, 'user', 'sms', msg);
+    attacks.originOf(req, b.origin).then((o) => { room.smsFrom = { o, t: Date.now() }; }).catch(() => {});
     try { const r = engine.analyzeMessage(msg.text, room.lang, msg.from); if (r.level === 'danger' && !(r.reasons.length === 1 && r.ml)) learnFrom(msg.text, 1, 'rules'); } catch {}
     log('[sms] relayed', room.code, delivered ? 'delivered' : 'offline');
     return json(res, 200, { delivered });
@@ -627,13 +631,16 @@ async function handler(req, res) {
       if (!room.sse.user) return json(res, 409, { error: 'offline' });
       if (room.inCall || room.ringing) return json(res, 409, { error: 'busy' });
       room.ringing = true; send(room, 'user', 'ring', { from: String(b.from || '').slice(0, 40), label: String(b.label || '').slice(0, 60) });
+      room.live = { id: crypto.randomBytes(4).toString('hex'), at: Date.now(), from: null, to: null, label: String(b.label || '').slice(0, 60) };
+      attacks.originOf(req, b.origin).then((o) => { if (room.live) room.live.from = o; room.callFrom = { o, t: Date.now() }; }).catch(() => {});
       log('[call] ring', room.code);
     } else if (act === 'accept') {
       room.ringing = false; room.inCall = true; room.ctx = []; room.alerted = {};
+      if (room.live) attacks.originOf(req, { emirate: b.emirate }).then((o) => { if (room.live && o && o.emirate) room.live.to = o.emirate; }).catch(() => {});
       send(room, 'caller', 'accepted', {}); pushState(room);
       log('[call] accepted', room.code);
     } else if (act === 'decline') {
-      room.ringing = false; send(room, 'caller', 'declined', {});
+      room.ringing = false; room.live = null; send(room, 'caller', 'declined', {});
     } else if (act === 'end') endCall(room, b.role === 'caller' ? 'caller' : 'user', ['otp', 'transfer', 'approval', 'remote', 'boss'].includes(b.scammed) ? b.scammed : null);
     return json(res, 200, { ok: true });
   }

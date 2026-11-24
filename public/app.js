@@ -652,7 +652,7 @@
     unlockAudioCtx();
     enterCallUI('user');
     const pc = newPC();
-    await post('/api/call', { room: code, action: 'accept' });
+    await post('/api/call', { room: code, action: 'accept', emirate: myEmirate() });
     await pc.setLocalDescription(await pc.createOffer({ offerToReceiveAudio: true }));
     sendSignal({ sdp: pc.localDescription });
   }

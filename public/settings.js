@@ -5,7 +5,7 @@
   let lang = 'ar'; try { lang = JSON.parse(localStorage.getItem('ds.lang') || '"ar"'); } catch {}
   const EN = lang === 'en';
   const L = EN ? {
-    names: { bank: 'Fake bank employee asks for the code', police: 'Fake investigator and “safe account”', approve: 'Digital-ID notification approval', remote: 'Fake tech support and remote app', refuse: 'Maryam’s reply when ending the call' },
+    names: { bank: 'Fake bank employee asks for the code', police: 'Fake investigator and “safe account”', approve: 'Digital-ID notification approval', remote: 'Fake tech support and remote app', boss: 'Cloned voice of the manager', refuse: 'Maryam’s reply when ending the call' },
     part: { dialog: 'Start of the call', cont: 'After “Continue call” (first warning)', comply: 'After ignoring the warning again (the scam succeeds)' },
     stat: (h, n, id) => `${h} of ${n} lines recorded — bulk-upload file names: ${id}-1.mp3, ${id}-2.mp3 …`,
     scam: '👨 Scammer', vic: '👩 Maryam', key: ' — ⚠ the risky line', has: (k) => `✓ Recording available (${k} KB)`, none: 'No recording — the synthetic voice will read it',
@@ -13,7 +13,7 @@
     fail: (l, e) => `Could not upload ${l}: ${e === 'type' ? 'unsupported file type (use mp3, wav, m4a or ogg)' : e === 'size' ? 'file too large (20 MB max)' : e === 'local-only' ? 'uploading works only on the system’s computer' : 'error'}`,
     mic: 'Microphone access was not allowed', recording: (l) => `🔴 Recording ${l}… speak, then press “Stop”`, bulk: (ok, skip) => `✓ Uploaded ${ok} file(s)${skip.length ? ` — line number not recognised in: ${skip.join(', ')}` : ''}`,
   } : {
-    names: { bank: 'موظف بنك مزيف يطلب الرمز', police: 'محقق مزيف و«حساب آمن»', approve: 'موافقة على إشعار الهوية الرقمية', remote: 'دعم فني مزيف وبرنامج تحكم', refuse: 'ردّ مريم عند إنهاء المكالمة' },
+    names: { bank: 'موظف بنك مزيف يطلب الرمز', police: 'محقق مزيف و«حساب آمن»', approve: 'موافقة على إشعار الهوية الرقمية', remote: 'دعم فني مزيف وبرنامج تحكم', boss: 'صوت مقلَّد للمدير', refuse: 'ردّ مريم عند إنهاء المكالمة' },
     part: { dialog: 'بداية المكالمة', cont: 'بعد «متابعة المكالمة» (التنبيه الأول)', comply: 'بعد تجاهل التحذير مرة ثانية (تنجح الخدعة)' },
     stat: (h, n, id) => `${h} من ${n} جمل مسجّلة — اسم الملفات للرفع الجماعي: ${id}-1.mp3 ، ${id}-2.mp3 …`,
     scam: '👨 المحتال', vic: '👩 مريم', key: ' — ⚠ الجملة الخطيرة', has: (k) => `✓ يوجد تسجيل (${k} ك.ب)`, none: 'لا يوجد تسجيل — سيُقرأ بالصوت المولَّد',
