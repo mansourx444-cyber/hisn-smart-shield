@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>«حِصن» — خريطة الهجمات في الإمارات</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    :root{--bg:#0d1420;--panel:#141e2d;--line:#243247;--ink:#e9eef5;--muted:#8fa0b5;--gold:#c9a24a;--bad:#ff5a4f;--warn:#ffb020;--ok:#3ccf8e;--sea:#0f1a29;--land:#1b2940}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Kufi Arabic","Segoe UI",Tahoma,sans-serif;line-height:1.55}
+    header{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:#0b111b}
+    header img{width:34px;height:34px} header b{font-size:18px} header small{display:block;color:var(--muted);font-size:12px}
+    header .sp{flex:1}
+    .live{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ok)} .live i{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:bl 1.4s infinite}
+    @keyframes bl{50%{opacity:.25}}
+    .chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+    .chip.on{background:var(--gold);border-color:var(--gold);color:#1a1405;font-weight:700}
+    .chip:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+    .em:focus{outline:none}.em:focus-visible{stroke:#fff;stroke-width:2.6}
+    main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px;padding:14px;max-width:1400px;margin:0 auto}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+    .bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+    .bar .lbl{color:var(--muted);font-size:12px;margin-inline-end:2px}
+    .mapwrap{position:relative;background:radial-gradient(ellipse at 70% 30%,#13233a 0%,var(--sea) 70%);border-radius:12px;overflow:hidden}
+    svg{display:block;width:100%;height:auto}
+    .em{stroke:#3b5373;stroke-width:1.2;cursor:pointer;transition:fill .4s}
+    .em:hover{stroke:var(--gold);stroke-width:2}
+    .em.sel{stroke:var(--gold);stroke-width:2.6}
+    .lab{font-size:calc(19px * var(--z,1));fill:#dfe7f1;pointer-events:none;paint-order:stroke;stroke:#0d1420;stroke-width:4px;font-weight:700}
+    .cnt{font-size:calc(16px * var(--z,1));fill:#ffd9d6;pointer-events:none;paint-order:stroke;stroke:#0d1420;stroke-width:4px}
+    .dot{fill:var(--bad)} .dot.sim{fill:none;stroke:var(--warn);stroke-width:2;stroke-dasharray:3 2}
+    .ring{fill:none;stroke:var(--bad);stroke-width:3;animation:ring 1.8s ease-out forwards}
+    @keyframes ring{from{r:4;opacity:1}to{r:46;opacity:0}}
+    .tip{position:absolute;pointer-events:none;background:#0b111bee;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12.5px;display:none;white-space:nowrap}
+    .legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+    .legend .sc{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--land),#7a2b2b,#ff5a4f)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+    .stat{background:#0f1826;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+    .stat b{display:block;font-size:22px;color:#fff} .stat small{color:var(--muted);font-size:11.5px}
+    h2{font-size:15px;margin:0 0 8px} h3{font-size:13px;margin:12px 0 6px;color:var(--muted);font-weight:600}
+    .rows{display:flex;flex-direction:column;gap:5px}
+    .r{display:grid;grid-template-columns:110px 1fr 34px;gap:8px;align-items:center;font-size:12.5px}
+    .r .b{height:7px;background:#0f1826;border-radius:4px;overflow:hidden}.r .b i{display:block;height:100%;background:var(--bad)}
+    .r span:last-child{text-align:end;color:var(--muted)}
+    .feed{list-style:none;margin:0;padding:0;max-height:330px;overflow:auto}
+    .feed li{display:flex;gap:8px;padding:7px 4px;border-bottom:1px solid var(--line);font-size:12.5px;align-items:flex-start}
+    .feed li.new{animation:nw 2.5s}@keyframes nw{from{background:#ff5a4f33}to{background:transparent}}
+    .feed .ic{font-size:16px;line-height:1.2} .feed .tm{color:var(--muted);font-size:11px;margin-inline-start:auto;white-space:nowrap}
+    .feed .dm{direction:ltr;display:inline-block;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;color:#ffd9d6}
+    .tag{font-size:10.5px;border:1px dashed var(--warn);color:var(--warn);border-radius:6px;padding:0 5px;margin-inline-start:4px}
+    .empty{color:var(--muted);font-size:12.5px;padding:10px 0}
+    .note{color:var(--muted);font-size:11.5px;margin-top:10px;line-height:1.6}
+    .btn{border:1px solid var(--warn);background:transparent;color:var(--warn);border-radius:10px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+    .btn.on{background:var(--warn);color:#1a1405}
+    .selhd{display:flex;align-items:center;gap:8px}.selhd .x{margin-inline-start:auto}
+    @media (max-width:900px){main{grid-template-columns:1fr}}
+    @media (max-width:600px){.lab{font-size:calc(34px * var(--z,1));stroke-width:6px}.cnt{font-size:calc(30px * var(--z,1));stroke-width:6px}.legend .sc{width:70px}}
+    .zoom{position:absolute;bottom:8px;inset-inline-start:8px;display:flex;gap:6px;z-index:2}
+    .zoom .chip{background:#0b111bcc}
+    body.embed header{padding:8px 12px} body.embed header small{display:none} body.embed main{padding:8px;gap:8px}
+    body.embed .card{padding:10px} body.embed .feed{max-height:240px}
+  </style>
+</head>
+<body>
+  <header>
+    <img src="icon.svg" alt="">
+    <div><b id="tTitle"></b><small id="tSub"></small></div>
+    <span class="sp"></span>
+    <span class="live" aria-live="off"><i></i><span id="tLive"></span></span>
+    <button id="langBtn" class="chip" type="button"></button>
+  </header>
+  <main>
+    <section class="card">
+      <div class="bar" role="group" aria-labelledby="tPeriod"><span class="lbl" id="tPeriod"></span><span id="periods"></span></div>
+      <div class="bar" role="group" aria-labelledby="tType"><span class="lbl" id="tType"></span><span id="types"></span></div>
+      <div class="mapwrap" id="wrap">
+        <div class="zoom"><button class="chip" id="zAll" type="button"></button><button class="chip" id="zNorth" type="button"></button></div>
+        <svg id="map" role="img" aria-labelledby="tTitle"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="legend"><span id="tLess"></span><span class="sc"></span><span id="tMore"></span><span>·</span><span id="tDot"></span><span class="sp" style="flex:1"></span><button id="simBtn" class="btn" type="button"></button><button id="simClr" class="btn" type="button" hidden></button></div>
+    </section>
+    <aside class="card">
+      <div class="stats">
+        <div class="stat"><b id="sDay">0</b><small id="tDay"></small></div>
+        <div class="stat"><b id="sPeriod">0</b><small id="tInPeriod"></small></div>
+        <div class="stat"><b id="sEm">—</b><small id="tTop"></small></div>
+      </div>
+      <div class="selhd"><h2 id="selName"></h2><button id="selX" class="chip x" type="button" hidden></button></div>
+      <h3 id="tByType"></h3><div class="rows" id="byType"></div>
+      <h3 id="tHosts"></h3><div class="rows" id="hosts"></div>
+      <h3 id="tFeed"></h3><ul class="feed" id="feed" aria-live="polite"></ul>
+      <p class="note" id="tPrivacy"></p>
+    </aside>
+  </main>
+  <script src="uae-map.js"></script>
+  <script>
+  (function () {
+    const $ = (s) => document.querySelector(s);
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('embed')) document.body.classList.add('embed');
+    let lang = qs.get('lang') === 'en' ? 'en' : (localStorage.getItem('ds.lang') === '"en"' ? 'en' : 'ar');
+    const T = {
+      ar: { title: 'خريطة الهجمات في الإمارات', sub: 'كل هجمة صدّها «حِصن» أو أُبلغ عنها أو كشفها الماسح — مباشرة', live: 'مباشر', period: 'الفترة', type: 'النوع',
+        zAll: 'كل الإمارات', zNorth: 'الإمارات الشمالية', p1: '24 ساعة', p7: '7 أيام', p30: '30 يومًا', all: 'الكل', less: 'أقل', more: 'أكثر', dot: '● آخر الهجمات', sim: '▶ محاكاة هجمات للعرض', simStop: '■ إيقاف المحاكاة', simClr: 'مسح المحاكاة',
+        day: 'آخر 24 ساعة', inPeriod: 'في الفترة', top: 'الأكثر استهدافًا', allUae: 'كل الإمارات', back: '× كل الإمارات', byType: 'حسب النوع', hosts: 'من أين تُستضاف الروابط الاحتيالية', feed: 'آخر الهجمات',
+        empty: 'لا توجد هجمات في هذه الفترة.', noHosts: 'لا توجد روابط احتيالية بدولة استضافة معروفة بعد.', simTag: 'محاكاة', unknown: 'إمارة غير معروفة', attacks: (n) => `${n} هجمة`,
+        privacy: 'الخصوصية: نسجّل نوع الهجمة والإمارة فقط. الإمارة يحددها الهاتف (إن سمح المستخدم) أو تُستنتج من عنوان IP ثم يُحذف العنوان. لا إحداثيات ولا أرقام هواتف ولا عناوين IP. عنوان MAC لا يُستخدم لأنه لا يخرج من الشبكة المحلية ولا يدل على موقع. حدود الإمارات: geoBoundaries (CC BY 4.0).',
+        ty: { sms: 'رسالة نصية', call: 'مكالمة', link: 'رابط', wa: 'واتساب', email: 'بريد إلكتروني', social: 'تواصل اجتماعي', qr: 'رمز QR', app: 'تطبيق' },
+        kd: { otp: 'طلب رمز التحقق', transfer: 'تحويل أموال', remote: 'تحكم عن بعد', police: 'انتحال صفة الشرطة', delivery: 'شحنة وهمية', fine: 'مخالفة وهمية', login: 'صفحة دخول مزيفة', card: 'سرقة بيانات البطاقة', boss: 'انتحال مدير أو قريب', brand: 'انتحال علامة تجارية', donate: 'تبرع وهمي', apk: 'تطبيق خبيث', scan: 'كشفه الماسح', approval: 'موافقة الهوية الرقمية', app: 'تطبيق خبيث', whatsapp: 'سرقة حساب واتساب', payment: 'صفحة دفع مزيفة' },
+        ago: (m) => m < 1 ? 'الآن' : m < 60 ? `قبل ${m} د` : m < 1440 ? `قبل ${Math.floor(m / 60)} س` : `قبل ${Math.floor(m / 1440)} يوم` },
+      en: { title: 'UAE attack map', sub: 'Every attack HISN stopped, users reported or the scanner caught — live', live: 'Live', period: 'Period', type: 'Type',
+        zAll: 'All emirates', zNorth: 'Northern emirates', p1: '24 hours', p7: '7 days', p30: '30 days', all: 'All', less: 'Fewer', more: 'More', dot: '● Latest attacks', sim: '▶ Simulate attacks (demo)', simStop: '■ Stop simulation', simClr: 'Clear simulation',
+        day: 'Last 24 hours', inPeriod: 'In period', top: 'Most targeted', allUae: 'All emirates', back: '× All emirates', byType: 'By type', hosts: 'Where scam links are hosted', feed: 'Latest attacks',
+        empty: 'No attacks in this period.', noHosts: 'No scam links with a known hosting country yet.', simTag: 'simulated', unknown: 'Unknown emirate', attacks: (n) => `${n} attacks`,
+        privacy: 'Privacy: we record only the attack type and the emirate. The phone determines the emirate (if the user allows), or it is inferred from the IP address, which is then discarded. No coordinates, phone numbers or IP addresses. MAC addresses are not used: they never leave the local network and carry no location. Emirate borders: geoBoundaries (CC BY 4.0).',
+        ty: { sms: 'SMS', call: 'Call', link: 'Link', wa: 'WhatsApp', email: 'Email', social: 'Social media', qr: 'QR code', app: 'App' },
+        kd: { otp: 'OTP request', transfer: 'Money transfer', remote: 'Remote control', police: 'Police impersonation', delivery: 'Fake parcel', fine: 'Fake fine', login: 'Fake login page', card: 'Card theft', boss: 'Boss/relative impersonation', brand: 'Brand impersonation', donate: 'Fake donation', apk: 'Malicious app', scan: 'Caught by scanner', approval: 'UAE PASS approval', app: 'Malicious app', whatsapp: 'WhatsApp takeover', payment: 'Fake payment page' },
+        ago: (m) => m < 1 ? 'now' : m < 60 ? `${m}m ago` : m < 1440 ? `${Math.floor(m / 60)}h ago` : `${Math.floor(m / 1440)}d ago` },
+    };
+    const ICON = { sms: '📩', call: '📞', link: '🔗', wa: '💬', email: '✉️', social: '📣', qr: '🔳', app: '📱' };
+    const COUNTRY = { ar: (c) => { try { return new Intl.DisplayNames(['ar'], { type: 'region' }).of(c); } catch { return c; } }, en: (c) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(c); } catch { return c; } } };
+    const flag = (c) => c && c.length === 2 ? String.fromCodePoint(...[...c.toUpperCase()].map((x) => 0x1f1a5 + x.charCodeAt(0))) : '🏳️';
+    const t = (k) => T[lang][k];
+    const M = window.UAE_MAP;
+    let events = [], lastN = 0, days = 7, type = 'all', sel = null, simTimer = null;
+
+    /* ---------- الرسم ---------- */
+    const svg = $('#map'); const NS = 'http://www.w3.org/2000/svg';
+    const FULL = [20, 30, 975, 780], NORTH = [735, 40, 260, 310];
+    let vb = FULL.slice(), zAnim = null;
+    function applyVB() { svg.setAttribute('viewBox', vb.map((x) => x.toFixed(1)).join(' ')); svg.style.setProperty('--z', (vb[2] / FULL[2]).toFixed(3)); gDots && gDots.querySelectorAll('circle').forEach((c) => c.setAttribute('r', (4.5 * vb[2] / FULL[2]).toFixed(2))); }
+    function zoomTo(target) {
+      // يحافظ على نسبة الأبعاد ويحرّك العرض بسلاسة
+      const ar = FULL[2] / FULL[3]; let [x, y, w, h] = target; if (w / h > ar) { const nh = w / ar; y -= (nh - h) / 2; h = nh; } else { const nw = h * ar; x -= (nw - w) / 2; w = nw; }
+      const from = vb.slice(), to = [x, y, w, h], t0 = performance.now(); cancelAnimationFrame(zAnim);
+      const step = (now) => { const k = Math.min(1, (now - t0) / 450), e = 1 - Math.pow(1 - k, 3); vb = from.map((v, i) => v + (to[i] - v) * e); applyVB(); if (k < 1) zAnim = requestAnimationFrame(step); };
+      zAnim = requestAnimationFrame(step);
+    }
+    function boxOf(iso) { const b = paths[iso].getBBox(); if (iso === 'AE-AZ') return FULL; const pad = Math.max(b.width, b.height) * 0.6 + 25; return [b.x - pad, b.y - pad, b.width + pad * 2, b.height + pad * 2]; }
+    svg.setAttribute('viewBox', FULL.join(' '));
+    const gEm = document.createElementNS(NS, 'g'), gDots = document.createElementNS(NS, 'g'), gLab = document.createElementNS(NS, 'g'), gFx = document.createElementNS(NS, 'g');
+    svg.append(gEm, gDots, gFx, gLab);
+    const paths = {};
+    // مواقع العناوين (تجنّب تداخل الإمارات الشمالية الصغيرة)
+    const LBL = { 'AE-AZ': [430, 600], 'AE-DU': [770, 300], 'AE-SH': [872, 292], 'AE-AJ': [770, 178], 'AE-UQ': [810, 140], 'AE-RK': [880, 92], 'AE-FU': [945, 240] };
+    for (const s of M.shapes) {
+      const p = document.createElementNS(NS, 'path'); p.setAttribute('d', s.d); p.setAttribute('class', 'em'); p.setAttribute('tabindex', '0'); p.setAttribute('role', 'button');
+      p.dataset.iso = s.iso; gEm.appendChild(p); paths[s.iso] = p;
+      p.addEventListener('click', () => select(sel === s.iso ? null : s.iso));
+      p.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(sel === s.iso ? null : s.iso); } });
+      p.addEventListener('mousemove', (e) => tip(e, s.iso)); p.addEventListener('mouseleave', () => { $('#tip').style.display = 'none'; });
+      const [x, y] = LBL[s.iso];
+      const a = document.createElementNS(NS, 'text'); a.setAttribute('x', x); a.setAttribute('y', y); a.setAttribute('class', 'lab'); a.setAttribute('text-anchor', 'middle'); a.dataset.iso = s.iso; gLab.appendChild(a);
+      const c = document.createElementNS(NS, 'text'); c.setAttribute('x', x); c.setAttribute('y', y + 20); c.setAttribute('class', 'cnt'); c.setAttribute('text-anchor', 'middle'); c.dataset.cnt = s.iso; gLab.appendChild(c);
+    }
+    // نقطة ثابتة داخل حدود الإمارة لكل هجمة (من معرّفها)
+    const ptCache = new Map();
+    function pointFor(e) {
+      if (ptCache.has(e.id)) return ptCache.get(e.id);
+      const s = M.shapes.find((x) => x.iso === e.emirate); if (!s) return null;
+      let h = 0; for (const ch of e.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      const p = paths[e.emirate]; const base = LBL[e.emirate]; const spread = e.emirate === 'AE-AZ' ? 160 : e.emirate === 'AE-DU' ? 45 : 22;
+      let pt = null;
+      for (let i = 0; i < 25 && !pt; i++) {
+        h = (h * 1103515245 + 12345) >>> 0; const dx = ((h % 1000) / 1000 - 0.5) * 2 * spread; h = (h * 1103515245 + 12345) >>> 0; const dy = ((h % 1000) / 1000 - 0.5) * 2 * spread * 0.6;
+        const q = svg.createSVGPoint(); q.x = base[0] + dx; q.y = base[1] - 18 + dy;
+        try { if (p.isPointInFill(q)) pt = [q.x, q.y]; } catch { pt = [q.x, q.y]; }
+      }
+      pt = pt || [base[0], base[1] - 18]; ptCache.set(e.id, pt); return pt;
+    }
+
+    /* ---------- البيانات ---------- */
+    const inPeriod = () => { const from = Date.now() - days * 86400000; return events.filter((e) => e.at >= from && (type === 'all' || e.type === type)); };
+    function render() {
+      const list = inPeriod(); const scoped = sel ? list.filter((e) => e.emirate === sel) : list;
+      const byEm = {}; for (const e of list) if (e.emirate) byEm[e.emirate] = (byEm[e.emirate] || 0) + 1;
+      const max = Math.max(1, ...Object.values(byEm));
+      for (const s of M.shapes) {
+        const n = byEm[s.iso] || 0; const k = n / max;
+        const col = n ? `rgb(${Math.round(27 + k * (255 - 27))},${Math.round(41 + k * (90 - 41))},${Math.round(64 + k * (79 - 64))})` : 'var(--land)';
+        paths[s.iso].style.fill = col; paths[s.iso].classList.toggle('sel', sel === s.iso);
+        paths[s.iso].setAttribute('aria-label', `${s[lang]}: ${t('attacks')(n)}`);
+        gLab.querySelector(`[data-iso="${s.iso}"]`).textContent = s[lang];
+        gLab.querySelector(`[data-cnt="${s.iso}"]`).textContent = n ? n : '';
+      }
+      // النقاط: آخر 150 هجمة
+      gDots.textContent = '';
+      for (const e of list.slice(-150)) { const pt = pointFor(e); if (!pt) continue; const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', pt[0]); c.setAttribute('cy', pt[1]); c.setAttribute('r', ((e.sim ? 4 : 4.5) * vb[2] / FULL[2]).toFixed(2)); c.setAttribute('class', 'dot' + (e.sim ? ' sim' : '')); c.setAttribute('opacity', String(0.35 + 0.65 * Math.max(0, 1 - (Date.now() - e.at) / (days * 86400000)))); gDots.appendChild(c); }
+      // الإحصاءات
+      const dayN = events.filter((e) => e.at >= Date.now() - 86400000 && (type === 'all' || e.type === type) && (!sel || e.emirate === sel)).length;
+      $('#sDay').textContent = dayN; $('#sPeriod').textContent = scoped.length;
+      const top = Object.entries(byEm).sort((a, b) => b[1] - a[1])[0];
+      $('#sEm').textContent = top ? M.shapes.find((s) => s.iso === top[0])[lang] : '—';
+      $('#selName').textContent = sel ? M.shapes.find((s) => s.iso === sel)[lang] : t('allUae'); $('#selX').hidden = !sel;
+      // حسب النوع
+      const byT = {}; for (const e of scoped) byT[e.type] = (byT[e.type] || 0) + 1;
+      const tm = Math.max(1, ...Object.values(byT));
+      $('#byType').innerHTML = Object.keys(byT).length ? Object.entries(byT).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<div class="r"><span>${ICON[k] || ''} ${t('ty')[k] || k}</span><span class="b"><i style="width:${(n / tm) * 100}%"></i></span><span>${n}</span></div>`).join('') : `<div class="empty">${t('empty')}</div>`;
+      // دول الاستضافة
+      const byC = {}; for (const e of scoped) if (e.country) byC[e.country] = (byC[e.country] || 0) + 1;
+      const cm = Math.max(1, ...Object.values(byC));
+      $('#hosts').innerHTML = Object.keys(byC).length ? Object.entries(byC).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([c, n]) => `<div class="r"><span>${flag(c)} ${esc(COUNTRY[lang](c))}</span><span class="b"><i style="width:${(n / cm) * 100}%;background:var(--warn)"></i></span><span>${n}</span></div>`).join('') : `<div class="empty">${t('noHosts')}</div>`;
+      renderFeed(scoped);
+    }
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    let shownFeed = new Set();
+    function renderFeed(scoped) {
+      const items = scoped.slice(-40).reverse();
+      $('#feed').innerHTML = items.length ? items.map((e) => {
+        const em = e.emirate ? M.shapes.find((s) => s.iso === e.emirate)[lang] : t('unknown');
+        const kd = e.kind && t('kd')[e.kind] ? ' — ' + t('kd')[e.kind] : '';
+        return `<li class="${shownFeed.has(e.id) ? '' : 'new'}"><span class="ic">${ICON[e.type] || '⚠️'}</span><span><b>${t('ty')[e.type] || e.type}</b>${kd}${e.sim ? `<span class="tag">${t('simTag')}</span>` : ''}<br><small>${esc(em)}${e.domain ? ` · <span class="dm">${esc(e.domain)}</span>` : ''}${e.country ? ' ' + flag(e.country) : ''}</small></span><span class="tm">${t('ago')(Math.floor((Date.now() - e.at) / 60000))}</span></li>`;
+      }).join('') : `<li class="empty">${t('empty')}</li>`;
+      items.forEach((e) => shownFeed.add(e.id));
+    }
+    function pulse(e) {
+      const pt = pointFor(e); if (!pt) return;
+      const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', pt[0]); c.setAttribute('cy', pt[1]); c.setAttribute('r', 4); c.setAttribute('class', 'ring'); c.style.transform = `scale(1)`; c.style.strokeWidth = (3 * vb[2] / FULL[2]) + 'px'; if (e.sim) c.style.stroke = 'var(--warn)';
+      gFx.appendChild(c); setTimeout(() => c.remove(), 1900);
+    }
+    function tip(ev, iso) {
+      const s = M.shapes.find((x) => x.iso === iso); const n = inPeriod().filter((e) => e.emirate === iso).length;
+      const box = $('#wrap').getBoundingClientRect(); const el = $('#tip');
+      el.textContent = `${s[lang]} — ${t('attacks')(n)}`; el.style.display = 'block';
+      el.style.left = (ev.clientX - box.left + 12) + 'px'; el.style.top = (ev.clientY - box.top + 12) + 'px';
+    }
+    function select(iso) { sel = iso; zoomTo(iso ? boxOf(iso) : FULL); render(); }
+    $('#zAll').addEventListener('click', () => select(null));
+    $('#zNorth').addEventListener('click', () => { sel = null; zoomTo(NORTH); render(); });
+
+    async function poll() {
+      try {
+        const j = await fetch(`/api/attacks?after=${lastN}&days=30`, { cache: 'no-store' }).then((r) => r.json());
+        const fresh = j.events || [];
+        if (fresh.length) {
+          const first = lastN === 0; events = events.concat(fresh); lastN = fresh[fresh.length - 1].n;
+          if (events.length > 3000) events = events.slice(-3000);
+          if (!first) fresh.slice(-12).forEach((e, i) => setTimeout(() => pulse(e), i * 120)); else events.forEach((e) => shownFeed.add(e.id));
+          render();
+        }
+      } catch {}
+    }
+    // تحديث العدّ بعد المسح
+    async function reload() { events = []; lastN = 0; shownFeed = new Set(); ptCache.clear(); await poll(); render(); }
+
+    /* ---------- المحاكاة (مُعلَّمة) ---------- */
+    $('#simBtn').addEventListener('click', () => {
+      if (simTimer) { clearInterval(simTimer); simTimer = null; applyLang(); return; }
+      const once = () => fetch('/api/attacks/sim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ n: 1 + Math.floor(Math.random() * 2) }) }).then(poll).catch(() => {});
+      once(); simTimer = setInterval(once, 1400); setTimeout(() => { if (simTimer) { clearInterval(simTimer); simTimer = null; applyLang(); } }, 45000);
+      applyLang();
+    });
+    $('#simClr').addEventListener('click', async () => { if (simTimer) { clearInterval(simTimer); simTimer = null; } await fetch('/api/attacks/sim', { method: 'DELETE' }); await reload(); applyLang(); });
+    $('#selX').addEventListener('click', () => select(null));
+
+    /* ---------- اللغة والمرشّحات ---------- */
+    function applyLang() {
+      document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; document.title = '«حِصن» — ' + t('title');
+      const map = { zAll: 'zAll', zNorth: 'zNorth', tTitle: 'title', tSub: 'sub', tLive: 'live', tPeriod: 'period', tType: 'type', tLess: 'less', tMore: 'more', tDot: 'dot', tDay: 'day', tInPeriod: 'inPeriod', tTop: 'top', tByType: 'byType', tHosts: 'hosts', tFeed: 'feed', tPrivacy: 'privacy', selX: 'back', simClr: 'simClr' };
+      for (const [id, k] of Object.entries(map)) $('#' + id).textContent = t(k);
+      $('#langBtn').textContent = lang === 'ar' ? 'English' : 'العربية';
+      $('#simBtn').textContent = simTimer ? t('simStop') : t('sim'); $('#simBtn').classList.toggle('on', !!simTimer);
+      $('#simClr').hidden = !events.some((e) => e.sim);
+      $('#periods').innerHTML = [[1, 'p1'], [7, 'p7'], [30, 'p30']].map(([d, k]) => `<button class="chip ${days === d ? 'on' : ''}" data-d="${d}" type="button" aria-pressed="${days === d}">${t(k)}</button>`).join(' ');
+      $('#types').innerHTML = ['all', 'sms', 'call', 'link', 'wa', 'email', 'social', 'qr', 'app'].map((k) => `<button class="chip ${type === k ? 'on' : ''}" data-t="${k}" type="button" aria-pressed="${type === k}">${k === 'all' ? t('all') : (ICON[k] + ' ' + t('ty')[k])}</button>`).join(' ');
+      document.querySelectorAll('[data-d]').forEach((b) => b.onclick = () => { days = +b.dataset.d; applyLang(); });
+      document.querySelectorAll('[data-t]').forEach((b) => b.onclick = () => { type = b.dataset.t; applyLang(); });
+      render();
+    }
+    $('#langBtn').addEventListener('click', () => { lang = lang === 'ar' ? 'en' : 'ar'; applyLang(); });
+    applyLang(); poll().then(applyLang); setInterval(poll, 4000); setInterval(render, 60000);
+  })();
+  </script>
+</body>
+</html>

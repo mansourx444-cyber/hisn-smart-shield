@@ -187,3 +187,9 @@ textarea:focus,.code-input:focus,.inp:focus{border-color:var(--navy);outline:0}
 .uaepass-btn img{max-width:100%;height:auto;display:block}
 .uaepass-btn:focus-visible{outline:3px solid var(--info);outline-offset:3px}
 .uaepass-btn[hidden]{display:none}
+.map-card{display:flex;align-items:center;gap:12px;width:100%;text-align:start;cursor:pointer;font:inherit;color:inherit}
+.map-card .mc-ic{font-size:30px}
+.map-card b{display:block}.map-card small{display:block;color:var(--muted,#6b6b6b);font-size:.82rem;line-height:1.5}
+.map-card .mc-go{margin-inline-start:auto;font-size:22px;opacity:.6}
+html[dir=ltr] .map-card .mc-go{transform:scaleX(-1)}
+.map-frame{width:100%;height:calc(100vh - 130px);min-height:560px;border:0;border-radius:14px;background:#0d1420}

@@ -44,9 +44,26 @@
 
 للصراحة: المجموعتان من إعدادنا (روابط رسمية حقيقية + روابط احتيال بأنماط شائعة)، والرقم الأدق هو نتيجة المجموعة العمياء. الفحص العميق (التتبع وعمر النطاق والمحتوى) يرفع الاستدعاء أكثر.
 
-**خدمات خارجية يستخدمها الفحص العميق:** RDAP من خوادم جهات التسجيل الرسمية حسب سجل IANA مع rdap.org كبديل (بيانات التسجيل والاستضافة)، وcrt.sh (سجلات شفافية الشهادات)، وthum.io (لقطة الشاشة)، وDNS. الخادم لا يزور إلا http/https ويرفض العناوين الداخلية (حماية من SSRF)، ولا ينفّذ أي سكربت من الصفحات.
+**خدمات خارجية يستخدمها الفحص العميق:** RDAP من خوادم جهات التسجيل الرسمية حسب سجل IANA مع rdap.org كبديل (بيانات التسجيل والاستضافة)، وcrt.sh (سجلات شفافية الشهادات)، وthum.io (لقطة الشاشة)، وDNS. وخريطة الهجمات تستخدم ipwho.is لتقدير الإمارة ودولة الاستضافة من عنوان IP. الخادم لا يزور إلا http/https ويرفض العناوين الداخلية (حماية من SSRF)، ولا ينفّذ أي سكربت من الصفحات.
 
 **لم يُنفَّذ بعد (صراحة):** مسح نتائج محركات البحث وقوائم الخرائط بحثًا عن صفحات أعمال وأرقام خدمة عملاء مزيفة يحتاج مفاتيح واجهات برمجة (مثل Google Places)، وهو ضمن المرحلة التالية؛ والمقارنة البصرية للصفحات بلقطات الشاشة.
+
+## 🗺️ خريطة الهجمات في الإمارات (`/map`)
+
+خريطة تفاعلية للإمارات السبع تتحدّث مباشرة:
+- **مصدر البيانات:** كل هجمة صدّها «حِصن» (رسالة أو مكالمة أو رابط)، أو أبلغ عنها مستخدم، أو كشفها الماسح.
+- **التلوين:** تتلوّن كل إمارة حسب عدد الهجمات فيها، وتظهر آخر الهجمات نقاطًا، وتنبض كل هجمة جديدة لحظة وصولها.
+- **التحكم:** مرشّحات للفترة (24 ساعة، 7 أيام، 30 يومًا) ولنوع الهجمة. الضغط على إمارة يقرّبها ويعرض أنواع الهجمات فيها وآخرها، وزر لتقريب الإمارات الشمالية.
+- **مصدر الروابط الاحتيالية:** قائمة بالدول التي تُستضاف فيها، من عنوان IP لخادم الرابط.
+- **أماكن الوصول إليها:** داخل تطبيق «حِصن» (بطاقة «خريطة الهجمات في الإمارات»)، وفي صفحة العرض، والماسح، وبوابة الجهات.
+- **محاكاة للعرض:** زر يولّد هجمات **مُعلَّمة «محاكاة»** لتوضيح الخريطة أمام اللجنة، وزر لمسحها.
+
+**الخصوصية في تحديد الموقع:**
+- **لا نسجّل إلا نوع الهجمة والإمارة،** بلا إحداثيات ولا أرقام هواتف ولا عناوين IP.
+- **تحديد الإمارة:** إذا فعّل المستخدم «شارك إمارتك فقط»، يحدد الهاتف إمارته ويرسل اسمها فقط. وإلا تُقدَّر الإمارة من عنوان الإنترنت عبر ipwho.is، ثم يُحذف العنوان.
+- **عنوان MAC لا يُستخدم:** لا يخرج من الشبكة المحلية، ولا يحمل أي معلومة عن الموقع.
+
+حدود الإمارات من geoBoundaries (رخصة CC BY 4.0).
 
 ## الاختيارات التقنية وأسبابها
 
@@ -101,7 +118,7 @@ Live demo: https://hisn-smart-shield.onrender.com (two QR codes: victim phone + 
 
 **Trade-offs / left out / next.** Rules miss brand-new phrasings (mitigated by the authority portal); a web app cannot read real calls/SMS (demo uses in-app calls/messages); in-memory server. UAE PASS sign-in is wired via OAuth 2.0 to the official UAE PASS staging environment (public `sandbox_stage` credentials; production needs onboarding: `UAEPASS_ENV=prod`, `UAEPASS_CLIENT_ID`, `UAEPASS_CLIENT_SECRET`), with a demo sign-in for judges without a staging account. Next: train an explainable Arabic classifier on partner data, native Android/iOS, telecom-level call screening, synthetic-voice detection.
 
-**Link detection.** `/scan` batch-scans links (score 0–100, verdict, reasons; CSV/JSON), with a curated list of 55 local and global brands and their official domains (all `gov.ae` trusted) to avoid false positives. Deep scan follows redirects and shorteners (incl. meta/JS redirects), detects cloaking (phone vs. crawler view), reads page content, and builds a police evidence report (RDAP/WHOIS registrar, creation date, abuse contact, hosting IP/org/country, page hash, screenshot, SHA-256 report hash, bilingual takedown request). Early detection combines two sources: Certificate Transparency logs (crt.sh) for newly certified domains carrying local brand names, and a built-in lookalike generator (~280 typo/affix/risky-TLD variants per brand) checked against DNS, with RDAP registration dates; high-risk hits feed the authority intel. Measured with `npm run eval`: 100% precision / 98% recall on our development set (106 links) and 100% precision / 86.7% recall on a blind set (30 links), 0% false positives on official sites. Not yet built: crawling search results and map listings for fake helplines (needs API keys), and visual page similarity.
+**Link detection.** `/scan` batch-scans links (score 0–100, verdict, reasons; CSV/JSON), with a curated list of 55 local and global brands and their official domains (all `gov.ae` trusted) to avoid false positives. Deep scan follows redirects and shorteners (incl. meta/JS redirects), detects cloaking (phone vs. crawler view), reads page content, and builds a police evidence report (RDAP/WHOIS registrar, creation date, abuse contact, hosting IP/org/country, page hash, screenshot, SHA-256 report hash, bilingual takedown request). Early detection combines two sources: Certificate Transparency logs (crt.sh) for newly certified domains carrying local brand names, and a built-in lookalike generator (~280 typo/affix/risky-TLD variants per brand) checked against DNS, with RDAP registration dates; high-risk hits feed the authority intel. Measured with `npm run eval`: 100% precision / 98% recall on our development set (106 links) and 100% precision / 86.7% recall on a blind set (30 links), 0% false positives on official sites. A live interactive UAE attack map (`/map`) shows attacks by emirate (choropleth, live pulses, type/period filters, click-to-zoom) and the hosting countries of scam links; only the attack type and emirate are stored (emirate from the phone if the user opts in, otherwise from the IP via ipwho.is, then the IP is discarded; MAC addresses are never used). Not yet built: crawling search results and map listings for fake helplines (needs API keys), and visual page similarity.
 
 **Third-party code.** `public/qrcode.js` — QR Code Generator by Kazuhiko Arase (MIT). Fonts: Noto Kufi Arabic, Inter (SIL OFL).
 
@@ -228,6 +245,9 @@ node test/engine.test.js            # 54 اختبارًا للمحرك
 ```
 server.js            خادم بلا مكتبات: ملفات + إشارات WebRTC (SSE + استطلاع طويل) + تمرير الرسائل + التفريغ اللحظي + المساعد
 uaepass.js           الدخول بالهوية الرقمية UAE PASS (OAuth 2.0)
+attacks.js           سجل الهجمات لخريطة الإمارات (النوع والإمارة فقط)
+public/map.html      خريطة الهجمات التفاعلية
+public/uae-map.js    حدود الإمارات السبع (geoBoundaries، CC BY 4.0)
 scanner.js           الفحص العميق للروابط والأدلة والرصد المبكر
 public/engine.js     محرك الفحص (الرسائل والروابط + عبارات المكالمة) — يعمل في المتصفح والخادم
 public/app.js        الواجهة: التفعيل، الرسائل الواردة، متصفح الدرع، المكالمة، الهاتف الثاني

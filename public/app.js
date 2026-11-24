@@ -24,6 +24,7 @@
       msgsIos: 'في الديمو: الرسائل التجريبية من الهاتف الثاني. في تطبيق آيفون: فلتر رسائل SMS وMMS من المرسلين المجهولين (لا يشمل iMessage).',
       msgsOther: 'الرسائل التجريبية الواردة من الهاتف الثاني.',
       optMsgs: 'فحص الرسائل المدعومة عند وصولها', optCalls: 'التنبيه أثناء المكالمات داخل التطبيق', optCallsDesc: 'يحلّل كلام المتصل لحظيًا وينبّهك والمكالمة مستمرة.',
+      mapTitle: 'خريطة الهجمات في الإمارات', mapDesc: 'أين تحدث الهجمات الآن، وأنواعها، ومن أين تُستضاف الروابط الاحتيالية', optGeo: 'شارك إمارتك فقط مع خريطة الهجمات', optGeoDesc: 'يحدد الهاتف إمارتك ويرسل اسمها فقط عند صدّ هجمة، بلا موقعك الدقيق. بدونه تُقدَّر الإمارة من عنوان الإنترنت ثم يُحذف.',
       optAssist: 'رأي المساعد الذكي', optAssistDesc: 'يرسل نص الرسالة لنموذج ذكاء اصطناعي ليشرح الخطر بلغة بسيطة، من دون حفظه.',
       decideNote: 'الدرع ينبّه، وأنت تقرر. تقدر توقف أي خيار من الإعدادات.',
       useAsSender: 'استخدم هذا الهاتف كمرسل ومتصل تجريبي (للعرض)',
@@ -63,6 +64,7 @@
       msgsIos: 'In the demo: test messages from the second phone. In the iPhone app: an SMS/MMS filter for unknown senders (iMessage is not covered).',
       msgsOther: 'Test messages from the second phone.',
       optMsgs: 'Check supported messages on arrival', optCalls: 'Alert during in-app calls', optCallsDesc: 'Analyses what the caller says in real time and alerts you while the call continues.',
+      mapTitle: 'UAE attack map', mapDesc: 'Where attacks are happening now, their types, and where scam links are hosted', optGeo: 'Share only my emirate with the attack map', optGeoDesc: 'Your phone finds your emirate and sends only its name when an attack is stopped — never your exact location. Without it, the emirate is estimated from your internet address, which is then discarded.',
       optAssist: 'AI assistant opinion', optAssistDesc: 'Sends the message text to an AI model to explain the risk in plain words, without storing it.',
       decideNote: 'The Shield warns — you decide. You can turn off any option in Settings.',
       useAsSender: 'Use this phone as the test sender / caller (demo)',
@@ -166,7 +168,7 @@
   }
 
   /* ------------------------------ التفعيل والإعدادات ------------------------------ */
-  const OPTS = ['links', 'msgs', 'calls', 'assist'];
+  const OPTS = ['links', 'msgs', 'calls', 'assist', 'geo'];
   function readOpts(root) { const o = {}; OPTS.forEach((k) => { const el = root.querySelector(`[data-opt="${k}"]`); o[k] = !!(el && el.checked && !el.closest('[hidden]')); }); return o; }
   function renderIdentity() {
     const id = store.get('identity', null);
@@ -201,6 +203,7 @@
     store.set('settings', settings);
     if ('Notification' in window && Notification.permission === 'default') { try { await Notification.requestPermission(); } catch {} }
     registerSW();
+    locateEmirate(true);
     mode = 'user';
     await connectUser();
     renderHome(); renderSettings(); show('home');
@@ -209,7 +212,7 @@
   function renderHome() {
     { const n = store.get('reports', 0) || 0; const e2 = document.getElementById('secRepN'); if (e2) e2.textContent = n ? '✓ ' + n : '✓'; }
     if (!settings) return;
-    const on = OPTS.filter((k) => settings[k] && (k !== 'assist' || cfg.assist));
+    const on = OPTS.filter((k) => k !== 'geo' && settings[k] && (k !== 'assist' || cfg.assist));
     $('#guard').classList.toggle('off', !on.length);
     $('#guardTitle').textContent = on.length ? t('guardOn') : t('guardOff');
     $('#guardSub').textContent = on.length ? t('guardSub') : t('guardOffSub');
@@ -226,10 +229,11 @@
     host.textContent = '';
     const rows = [['links', 'optLinks'], ['msgs', 'optMsgs'], ['calls', 'optCalls']];
     if (cfg.assist) rows.push(['assist', 'optAssist']);
+    rows.push(['geo', 'optGeo']);
     for (const [k, label] of rows) {
       const l = document.createElement('label'); l.className = 'opt';
       const i = document.createElement('input'); i.type = 'checkbox'; i.checked = !!settings[k];
-      i.addEventListener('change', () => { settings[k] = i.checked; store.set('settings', settings); renderHome(); });
+      i.addEventListener('change', () => { settings[k] = i.checked; store.set('settings', settings); renderHome(); if (k === 'geo' && i.checked) locateEmirate(true); if (k === 'geo' && !i.checked) store.del('emirate'); });
       const s = document.createElement('span'); const b = document.createElement('b'); b.textContent = t(label); s.appendChild(b);
       l.append(i, s); host.appendChild(l);
     }
@@ -311,7 +315,7 @@
     bump('msgs');
     const v = verdictOf(item);
     if (v.matchedPattern) post('/api/hit', { id: v.matchedPattern });
-    if (v.level === 'danger') { bump('threats'); notifyDanger(item); reportIt(item.text, item.channel || 'sms', true, v.urls); }
+    if (v.level === 'danger') { bump('threats'); notifyDanger(item); reportIt(item.text, item.channel || 'sms', true, v.urls, v.kind); }
     if (settings.assist && cfg.assist) askAssist(item.text).then((a) => {
       if (!a) return;
       item.assist = a;
@@ -373,10 +377,21 @@
   }
   let toastTimer = null;
   // البلاغ الفوري: تلقائي (النطاقات فقط) أو يدوي (نص الرسالة يُستخدم لتعليم النموذج ولا يُخزَّن)
-  function reportIt(text, channel, auto, hosts) {
+  // الإمارة فقط (لا إحداثيات): يحددها الهاتف إن سمح المستخدم، وتُحفظ 6 ساعات
+  function myEmirate() { const e = store.get('emirate', null); return e && Date.now() - e.t < 6 * 3600000 ? e.iso : null; }
+  function locateEmirate(force) {
+    if (!settings || !settings.geo || !navigator.geolocation || !window.UAE_MAP) return;
+    if (!force && myEmirate()) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const { longitude: lon, latitude: lat } = pos.coords;
+      const inUae = lon > 51 && lon < 56.6 && lat > 22.4 && lat < 26.4;
+      store.set('emirate', { iso: inUae ? window.UAE_MAP.emirateOf(lon, lat) : null, t: Date.now() });
+    }, () => {}, { enableHighAccuracy: false, timeout: 8000, maximumAge: 3600000 });
+  }
+  function reportIt(text, channel, auto, hosts, kind) {
     const n = (store.get('reports', 0) || 0) + 1; store.set('reports', n);
     const el2 = document.getElementById('secRepN'); if (el2) el2.textContent = '✓ ' + n;
-    post('/api/report', { room: code, channel, auto: !!auto, hosts: hosts || [], text: auto ? '' : String(text || '').slice(0, 600) }).catch(() => {});
+    post('/api/report', { room: code, channel, auto: !!auto, hosts: hosts || [], kind: kind || null, emirate: myEmirate(), text: auto ? '' : String(text || '').slice(0, 600) }).catch(() => {});
     if (!auto) toast(t('report'), t('reported'), null, null, true);
   }
   function toast(title, body, action, onAction, ok) {
@@ -512,7 +527,7 @@
     callState.timer = setInterval(() => { const s = Math.floor((Date.now() - callState.t0) / 1000); $('#callTimer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
   }
   function enterCallUI(role) {
-    callState.active = true; callState.live = false; callState.ignored = 0; callState.role = role; callState.analysis = 'waiting'; callState.serverOk = true; callState.audioFail = 0;
+    callState.active = true; callState.live = false; callState.ignored = 0; callState.mapped = false; callState.role = role; callState.analysis = 'waiting'; callState.serverOk = true; callState.audioFail = 0;
     if (window.ShieldTones) window.ShieldTones.ringStop();
     $('#ringBox').hidden = true; $('#callLive').hidden = false;
     $('#callerNotice').hidden = role !== 'caller';
@@ -597,6 +612,7 @@
     if (!callState.active || !settings || !settings.calls) return;
     if (lastCallerLine) lastCallerLine.classList.add('flag');
     bump('threats');
+    if (!callState.mapped) { callState.mapped = true; reportIt('', 'call', true, [], a.type || a.kind || null); }
     $('#alTitle').textContent = a.title; $('#alReason').textContent = a.reason; $('#alStep').textContent = a.step;
     let lat = '';
     if (a.source === 'stt' && callState.lastVoice) { const ms = Math.round(performance.now() - callState.lastVoice); lat = t('latSpeech', ms); callState.latencies.push(ms); }
@@ -813,6 +829,7 @@ registerProcessor('pcm-tap',Tap);`;
     $('#btnActivate').addEventListener('click', activate);
     $('#btnIdLogin').addEventListener('click', idLogin);
     $('#btnUaePass').addEventListener('click', uaePassLogin);
+    $('#btnMap').addEventListener('click', () => { const f = $('#mapFrame'); const u = `/map?embed=1&lang=${lang}`; if (f.getAttribute('src') !== u) f.setAttribute('src', u); show('map'); });
     $('#btnDeactivate').addEventListener('click', (e) => {
       const b = e.currentTarget;
       if (!b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = t('offConfirm'); setTimeout(() => { b.classList.remove('confirm'); b.textContent = t('offBtn'); }, 4000); return; }

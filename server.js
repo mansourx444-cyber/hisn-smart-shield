@@ -15,6 +15,7 @@ const engine = require('./public/engine.js');
 const learn = require('./public/learn.js');
 const scanner = require('./scanner.js');
 const uaepass = require('./uaepass.js');
+const attacks = require('./attacks.js');
 const LSEED = require('./learn-seed.js');
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -215,6 +216,8 @@ function closeStt(room) {
 // شبكة عصبية خفيفة تتدرّب من: ممارسات الجهات + قرارات المحرك الواثقة + نتائج المكالمات. تُحفظ الأوزان فقط، لا النصوص.
 const MODEL_FILE = path.join(DATA_DIR, 'model.json');
 const reports = { total: 0, auto: 0, manual: 0, hosts: {} };
+attacks.init(DATA_DIR);
+const simQuota = new Map();
 const scanQuota = new Map(), watchCache = new Map();
 // نطاقات رصدها الكشف المبكر ← تُضاف كممارسة «متنبأ بها» حتى تُكشف في الرسائل قبل أن يبلّغ عنها أحد
 function addWatchIntel(domains, kw) {
@@ -345,6 +348,7 @@ function serveStatic(req, res, pathname) {
   else if (p === '/phones') p = '/phones.html';
   else if (p === '/scan') p = '/scan.html';
   else if (p === '/evidence') p = '/evidence.html';
+  else if (p === '/map') p = '/map.html';
   const file = path.normalize(path.join(PUBLIC, p));
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, buf) => {
@@ -509,6 +513,9 @@ async function handler(req, res) {
     for (const h of (Array.isArray(b.hosts) ? b.hosts : []).slice(0, 5)) { const k = String(h).toLowerCase().slice(0, 80); reports.hosts[k] = (reports.hosts[k] || 0) + 1; }
     if (!b.auto && b.text) learnFrom(String(b.text), 1, 'report');
     log('[report]', b.auto ? 'auto' : 'manual', b.channel || '');
+    // خريطة الهجمات: النوع والإمارة فقط
+    const ch = { mail: 'email', whatsapp: 'wa' }[b.channel] || b.channel;
+    attacks.record(req, { type: attacks.TYPES.includes(ch) ? ch : (Array.isArray(b.hosts) && b.hosts.length ? 'link' : 'sms'), kind: b.kind, emirate: b.emirate, domain: Array.isArray(b.hosts) ? b.hosts[0] : null, src: b.auto ? 'device' : 'report' }).catch(() => {});
     return json(res, 200, { ok: true, total: reports.total });
   }
   if (p === '/api/reports' && req.method === 'GET') return json(res, 200, { total: reports.total, auto: reports.auto, manual: reports.manual, topHosts: Object.entries(reports.hosts).sort((a, b) => b[1] - a[1]).slice(0, 10) });
@@ -522,6 +529,10 @@ async function handler(req, res) {
     const t0 = Date.now(); const results = await scanner.scanMany(urls, { deep, lang });
     const sum = results.reduce((a, r) => { a[r.verdict] = (a[r.verdict] || 0) + 1; return a; }, {});
     log('[scan]', deep ? 'deep' : 'quick', results.length, 'urls', Date.now() - t0 + 'ms');
+    if (deep) for (const r of results.filter((x) => x.verdict === 'phishing').slice(0, 10)) {
+      const ev = r.evidence || {};
+      attacks.hostCountry(ev.ips, ev.hosting && ev.hosting.country).then((country) => attacks.record(req, { type: 'link', kind: 'scan', domain: r.registrable || r.host, country, src: 'scan' })).catch(() => {});
+    }
     return json(res, 200, { deep, count: results.length, summary: sum, ms: Date.now() - t0, results, ...(b.debug ? { rdapLog: scanner.rdapLog.slice(-15) } : {}) });
   }
   // الرصد المبكر: نطاقات جديدة تحمل اسم علامة محلية (من سجلات شفافية الشهادات)، وتُضاف لاستخبارات الجهات
@@ -535,6 +546,18 @@ async function handler(req, res) {
     const flagged = (out.items || []).filter((x) => x.score >= 40 && (x.hasBrand || (x.ageDays != null && x.ageDays < 365))).map((x) => x.domain);
     if (flagged.length) addWatchIntel(flagged, kw);
     return json(res, 200, url.searchParams.get('debug') ? { ...out, rdapLog: scanner.rdapLog.slice(-15) } : out);
+  }
+  // خريطة الهجمات في الإمارات
+  if (p === '/api/attacks' && req.method === 'GET') {
+    return json(res, 200, { now: Date.now(), events: attacks.since(Number(url.searchParams.get('after')) || 0, Number(url.searchParams.get('days')) || 30) });
+  }
+  if (p === '/api/attacks/sim' && (req.method === 'POST' || req.method === 'DELETE')) {
+    if (req.method === 'DELETE') return json(res, 200, { removed: attacks.clearSim() });
+    const b = await readJson(req); const ip = attacks.clientIp(req);
+    const q = simQuota.get(ip) || { n: 0, t: Date.now() }; if (Date.now() - q.t > 60000) { q.n = 0; q.t = Date.now(); }
+    const n = Math.min(10, Math.max(1, Number(b.n) || 1)); q.n += n; simQuota.set(ip, q);
+    if (q.n > 80) return json(res, 429, { error: 'rate' });
+    return json(res, 200, { events: attacks.simulate(n) });
   }
   if (p === '/api/model' && req.method === 'GET') {
     const meta = { version: model.version, seen: model.seen, pos: model.pos, neg: model.neg, sources: mlStats.sources, holdout: mlStats.holdout, trainedAt: model.trainedAt, arch: 'char n-grams (3–5) + words → hashing 4096 → dense 16 (ReLU) → sigmoid' };

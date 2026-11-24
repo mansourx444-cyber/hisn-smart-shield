@@ -40,7 +40,7 @@
   </style>
 </head>
 <body>
-  <header><img src="icon.svg" alt="" width="38" height="38"><div><b data-t="title"></b><small data-t="sub"></small></div><span class="sp"></span><button id="lng" class="btn ghost" type="button" style="padding:5px 12px">English</button><a href="/demo" data-t="toDemo"></a><a href="/partners" data-t="toPortal"></a></header>
+  <header><img src="icon.svg" alt="" width="38" height="38"><div><b data-t="title"></b><small data-t="sub"></small></div><span class="sp"></span><button id="lng" class="btn ghost" type="button" style="padding:5px 12px">English</button><a href="/map" data-t="toMap"></a><a href="/demo" data-t="toDemo"></a><a href="/partners" data-t="toPortal"></a></header>
   <main>
     <div class="tabs"><button type="button" class="on" data-tab="scan" data-t="tScan"></button><button type="button" data-tab="watch" data-t="tWatch"></button></div>
 
@@ -86,14 +86,14 @@
   <script>
   (() => {
     const L = {
-      ar: { title: 'ماسح الروابط والرصد المبكر', sub: 'لجنة التحكيم والشرطة: افحص قائمة روابط دفعة واحدة، وصدّر النتائج والأدلة', toDemo: 'صفحة العرض', toPortal: 'بوابة الجهات', tScan: '🔎 ماسح الروابط', tWatch: '🛰️ الرصد المبكر',
+      ar: { title: 'ماسح الروابط والرصد المبكر', sub: 'لجنة التحكيم والشرطة: افحص قائمة روابط دفعة واحدة، وصدّر النتائج والأدلة', toMap: 'خريطة الهجمات', toDemo: 'صفحة العرض', toPortal: 'بوابة الجهات', tScan: '🔎 ماسح الروابط', tWatch: '🛰️ الرصد المبكر',
         scanH: 'افحص قائمة روابط', scanNote: 'رابط في كل سطر (أو ملف txt/csv). الفحص السريع يحلّل الرابط نفسه (13 فحصًا + علامات محلية وعالمية). الفحص العميق يتتبّع التحويلات والروابط المختصرة حتى الوجهة الحقيقية، ويكشف الإخفاء (Cloaking)، ويقرأ محتوى الصفحة، ويجمع بيانات تسجيل النطاق والاستضافة كأدلة.',
         scanBtn: 'افحص', deep: 'فحص عميق مع الأدلة (حتى 60 رابطًا)', examples: 'أمثلة', upload: 'رفع ملف', csv: 'تصدير CSV', json: 'تصدير JSON', scanning: 'جارٍ الفحص…',
         cUrl: 'الرابط', cVerdict: 'الحكم والدرجة', cReasons: 'الأسباب', cFinal: 'الوجهة النهائية / عمر النطاق', cEv: 'الأدلة', evBtn: 'تقرير أدلة', phishing: 'احتيالي', suspicious: 'مشبوه', safe: 'سليم', invalid: 'غير صالح', error: 'خطأ',
         age: (d) => `عمر النطاق: ${d} يوم`, total: (n, ms) => `${n} رابط في ${(ms / 1000).toFixed(1)} ث`,
         watchH: 'رصد نطاقات جديدة تنتحل علامات محلية', watchNote: 'يبحث في سجلات شفافية الشهادات (Certificate Transparency) عن نطاقات حصلت على شهادة أمان حديثًا وتحمل اسم علامة محلية، قبل أن يصل أي رابط منها لضحية. النطاقات عالية الخطورة تُضاف تلقائيًا لاستخبارات الجهات، فيكشفها «حِصن» في الرسائل فورًا.',
         days: 'آخر (أيام)', watchBtn: 'ارصد', watching: 'جارٍ البحث في سجلات الشهادات وفحص النطاقات الشبيهة… (قد يأخذ حتى دقيقة)', cDomain: 'النطاق', cSeen: 'التسجيل / أول ظهور', addScan: 'افحص بعمق', found: (n, t) => `${n} نطاق شبيه غير رسمي (من ${t} نطاق مرصود)`, srcErr: 'تعذّر الرصد الآن، حاول بعد قليل.', srcCt: 'سجلات الشهادات', srcDns: 'نطاق شبيه مسجّل', ctOff: 'سجلات الشهادات لا ترد الآن — النتائج من فحص النطاقات الشبيهة فقط', checked: (n) => `فُحص ${n} اسم شبيه`, days_: 'يوم' },
-      en: { title: 'Link scanner & early detection', sub: 'For judges and police: scan a list of links at once and export the results and evidence', toDemo: 'Demo page', toPortal: 'Authority portal', tScan: '🔎 Link scanner', tWatch: '🛰️ Early detection',
+      en: { title: 'Link scanner & early detection', sub: 'For judges and police: scan a list of links at once and export the results and evidence', toMap: 'Attack map', toDemo: 'Demo page', toPortal: 'Authority portal', tScan: '🔎 Link scanner', tWatch: '🛰️ Early detection',
         scanH: 'Scan a list of links', scanNote: 'One link per line (or a txt/csv file). Quick scan analyses the link itself (13 checks + local and global brands). Deep scan follows redirects and shorteners to the real destination, detects cloaking, reads the page content, and collects domain registration and hosting data as evidence.',
         scanBtn: 'Scan', deep: 'Deep scan with evidence (up to 60 links)', examples: 'Examples', upload: 'Upload file', csv: 'Export CSV', json: 'Export JSON', scanning: 'Scanning…',
         cUrl: 'Link', cVerdict: 'Verdict & score', cReasons: 'Reasons', cFinal: 'Final destination / domain age', cEv: 'Evidence', evBtn: 'Evidence report', phishing: 'Phishing', suspicious: 'Suspicious', safe: 'Safe', invalid: 'Invalid', error: 'Error',

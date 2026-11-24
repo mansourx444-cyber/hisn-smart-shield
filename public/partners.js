@@ -18,7 +18,7 @@
       loginTitle: 'شاركونا ما ترصدونه من احتيال', loginDesc: 'للبنوك والشركات والمؤسسات التي تتواصل مع العملاء: انشروا الممارسات الاحتيالية التي تُنتحل فيها أسماؤكم، ليستعد لها الدرع الذكي بالذكاء الاصطناعي ويتنبأ بأشكالها ويحمي كل الأجهزة المحمية فورًا.',
       org: 'الجهة', loginBtn: 'ما عند المفوَّض حساب؟ دخول تجريبي للعرض', waiting: 'تم إرسال طلب الدخول إلى تطبيق الهوية الرقمية… بانتظار موافقة المفوَّض', loginFail: 'لم يكتمل الدخول بالهوية الرقمية، حاول مرة أخرى أو استخدم الدخول التجريبي', viaUae: (n) => `عبر UAE PASS${n ? ' — ' + n : ''}`, viaDemo: 'دخول تجريبي',
       privacy: '🔒 تُنشر الأنماط فقط (عبارات، نطاقات، أساليب) ولا تُشارك أي بيانات شخصية للعملاء. الدرع لا يطّلع على ملفات المستخدمين ولا يتتبعهم.',
-      signedAs: 'مسجّل الدخول باسم الجهة', logout: 'تسجيل الخروج',
+      signedAs: 'مسجّل الدخول باسم الجهة', lnkMap: '🗺️ خريطة الهجمات', logout: 'تسجيل الخروج',
       mine: 'ممارسات نشرتموها', hits: 'مرات صد بفضل تحذيراتكم', all: 'ممارسات منشورة من كل الجهات',
       publish: 'نشر ممارسة احتيالية جديدة', publishDesc: 'ستصل فورًا لكل هواتف المستخدمين المحميين، ويستخدمها المحرك في فحص الرسائل والروابط والمكالمات.',
       channel: 'القناة', sev: 'الخطورة', title: 'عنوان الممارسة', desc: 'وصف مختصر للأسلوب', sample: 'مثال لرسالة أو عبارة يستخدمها المحتال', phrases: 'عبارات مميزة (افصل بفاصلة)', domains: 'نطاقات مزيفة رصدتموها (افصل بفاصلة)',
@@ -32,7 +32,7 @@
       loginTitle: 'Share the fraud you see', loginDesc: 'Banks, companies and institutions that deal with customers: publish the scam practices that abuse your name, so Smart Shield’s AI can prepare for them, predict their variants and protect every device instantly.',
       org: 'Institution', loginBtn: 'Officer has no account? Demo sign-in', waiting: 'Sign-in request sent to the digital identity app… waiting for the authorised officer', loginFail: 'UAE PASS sign-in was not completed. Try again or use the demo sign-in', viaUae: (n) => `via UAE PASS${n ? ' — ' + n : ''}`, viaDemo: 'Demo sign-in',
       privacy: '🔒 Only patterns are published (phrases, domains, methods) — never customer personal data. The Shield does not read users’ files or track them.',
-      signedAs: 'Signed in for', logout: 'Sign out',
+      signedAs: 'Signed in for', lnkMap: '🗺️ Attack map', logout: 'Sign out',
       mine: 'Practices you published', hits: 'Attempts stopped thanks to you', all: 'Practices from all institutions',
       publish: 'Publish a new scam practice', publishDesc: 'It reaches every protected phone instantly and the engine uses it to check messages, links and calls.',
       channel: 'Channel', sev: 'Severity', title: 'Practice title', desc: 'Short description', sample: 'Example message or phrase the scammer uses', phrases: 'Distinctive phrases (comma-separated)', domains: 'Fake domains you have seen (comma-separated)',
@@ -50,7 +50,7 @@
 
   function render() {
     document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    const map = { tBrand: 'brand', tBrandSub: 'brandSub', tLoginTitle: 'loginTitle', tLoginDesc: 'loginDesc', tOrg: 'org', tLoginBtn: 'loginBtn', tPrivacy: 'privacy', tSignedAs: 'signedAs', tMine: 'mine', tHits: 'hits', tAll: 'all', tPublish: 'publish', tPublishDesc: 'publishDesc', tChannel: 'channel', tSev: 'sev', tTitle: 'title', tDesc: 'desc', tSample: 'sample', tPhrases: 'phrases', tDomains: 'domains', tPredict: 'predict', tList: 'list' };
+    const map = { tBrand: 'brand', tBrandSub: 'brandSub', tLoginTitle: 'loginTitle', tLoginDesc: 'loginDesc', tOrg: 'org', tLoginBtn: 'loginBtn', tPrivacy: 'privacy', tSignedAs: 'signedAs', lnkMap: 'lnkMap', tMine: 'mine', tHits: 'hits', tAll: 'all', tPublish: 'publish', tPublishDesc: 'publishDesc', tChannel: 'channel', tSev: 'sev', tTitle: 'title', tDesc: 'desc', tSample: 'sample', tPhrases: 'phrases', tDomains: 'domains', tPredict: 'predict', tList: 'list' };
     for (const [id, k] of Object.entries(map)) $('#' + id).textContent = t(k);
     $('#langBtn').textContent = t('other'); $('#btnLogout').textContent = t('logout'); $('#btnExample').textContent = t('example'); $('#btnPublish').textContent = t('publishBtn');
     const orgSel = $('#orgSel'), cur = orgSel.value;

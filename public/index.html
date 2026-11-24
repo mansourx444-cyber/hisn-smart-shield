@@ -36,6 +36,7 @@
         <label class="opt"><input type="checkbox" data-opt="links" checked><span><b data-i18n="optLinks"></b><small data-i18n="optLinksDesc"></small></span></label>
         <label class="opt"><input type="checkbox" data-opt="msgs" checked><span><b data-i18n="optMsgs"></b><small id="msgsDesc"></small></span></label>
         <label class="opt"><input type="checkbox" data-opt="calls" checked><span><b data-i18n="optCalls"></b><small data-i18n="optCallsDesc"></small></span></label>
+        <label class="opt"><input type="checkbox" data-opt="geo"><span><b data-i18n="optGeo"></b><small data-i18n="optGeoDesc"></small></span></label>
         <label class="opt" id="optAssistRow" hidden><input type="checkbox" data-opt="assist" checked><span><b data-i18n="optAssist"></b><small data-i18n="optAssistDesc"></small></span></label>
       </div>
       <p class="note" data-i18n="decideNote"></p>
@@ -61,6 +62,7 @@
         <div><b id="stCalls">0</b><small data-i18n="stCalls"></small></div>
       </div>
       <div class="card secure" id="secCard"><h3 data-i18n="secTitle"></h3><ul class="sec-list"><li><span aria-hidden="true">🔐</span><span data-i18n="secMfa"></span><b>✓</b></li><li><span aria-hidden="true">🔄</span><span data-i18n="secUpd"></span><b>✓</b></li><li><span aria-hidden="true">🚩</span><span data-i18n="secRep"></span><b id="secRepN">✓</b></li></ul><small data-i18n="secNote"></small></div>
+      <button class="card map-card" id="btnMap" type="button"><span class="mc-ic" aria-hidden="true">🗺️</span><span><b data-i18n="mapTitle"></b><small data-i18n="mapDesc"></small></span><span class="mc-go" aria-hidden="true">‹</span></button>
       <span id="statusBox" hidden></span><span id="statusTitle" hidden></span>
       <div class="pair"><span data-i18n="pairCode"></span><b id="pairCode">----</b></div>
       <h2 data-i18n="recent"></h2>
@@ -150,6 +152,12 @@
     </section>
 
     <!-- الهاتف الثاني: مرسل ومتصل تجريبي -->
+    <!-- خريطة الهجمات في الإمارات -->
+    <section id="scr-map" class="screen">
+      <button class="back" type="button" data-go="home"><span aria-hidden="true">‹</span> <span data-i18n="back"></span></button>
+      <iframe id="mapFrame" class="map-frame" title="UAE attack map" loading="lazy"></iframe>
+    </section>
+
     <section id="scr-sender" class="screen">
       <button class="back" type="button" data-go="start"><span aria-hidden="true">‹</span> <span data-i18n="back"></span></button>
       <h1 data-i18n="senderTitle"></h1>
@@ -215,6 +223,7 @@
   <script src="qrcode.js"></script>
   <script src="tones.js"></script>
   <script src="voice.js"></script>
+  <script src="uae-map.js"></script>
   <script src="app.js"></script>
   <script src="iphone.js"></script>
 </body>
