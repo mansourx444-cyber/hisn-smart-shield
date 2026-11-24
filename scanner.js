@@ -91,12 +91,15 @@ async function getJson(url, ms) {
   } catch (e) { rdapLog.push(url + ' ' + (e.name || 'err')); return null; } finally { to.done(); if (rdapLog.length > 30) rdapLog.splice(0, 10); }
 }
 // خوادم RDAP الرسمية لكل امتداد من سجل IANA (تُحمَّل مرة وتُحفظ)، ثم rdap.org كبديل
-let dnsBoot = null, dnsBootAt = 0;
+let dnsBoot = null, dnsBootAt = 0, dnsBootP = null;
 async function rdapServers(tld) {
-  if (!dnsBoot || Date.now() - dnsBootAt > 86400000) {
-    const j = await getJson('https://data.iana.org/rdap/dns.json', 8000);
-    if (j && j.services) { dnsBoot = {}; for (const [tlds, urls] of j.services) for (const t of tlds) dnsBoot[t] = urls; dnsBootAt = Date.now(); }
+  if ((!dnsBoot || Date.now() - dnsBootAt > 86400000) && !dnsBootP) {
+    dnsBootP = getJson('https://data.iana.org/rdap/dns.json', 10000).then((j) => {
+      if (j && j.services) { dnsBoot = {}; for (const [tlds, urls] of j.services) for (const t of tlds) dnsBoot[t] = urls; }
+      dnsBootAt = Date.now(); // حتى لو فشل: لا نعيد المحاولة قبل يوم، ونستخدم rdap.org
+    }).finally(() => { dnsBootP = null; });
   }
+  if (dnsBootP) await dnsBootP;
   const list = (dnsBoot && dnsBoot[tld]) || [];
   return [...list.map((u) => u.replace(/\/?$/, '/')), 'https://rdap.org/'];
 }
@@ -232,7 +235,10 @@ async function watchBrand(keyword, days, lang) {
     let score = r.score, verdict = r.verdict;
     // خطأ إملائي بلا اسم العلامة وعمره غير معروف أو قديم: قد يكون موقعًا حقيقيًا لا علاقة له — يحتاج تحقق فقط
     if (!hasBrand && !(age != null && age < 365) && verdict === 'phishing') { score = Math.min(score, 35); verdict = 'suspicious'; }
-    return { ...x, ageDays: age, hasBrand, score, verdict, official: r.official, reasons: r.reasons.map((y) => y.text) };
+    // نطاق قديم (أكثر من سنتين) يحمل اسم العلامة: غالبًا تملكه الجهة نفسها أو قديم — يحتاج تحقق من الملكية لا حظرًا
+    let note = null;
+    if (age != null && age > 730 && verdict === 'phishing') { score = Math.min(score, 35); verdict = 'suspicious'; note = lang === 'en' ? 'Registered over 2 years ago — verify ownership (may belong to the brand)' : 'مسجّل منذ أكثر من سنتين — تحقّق من الملكية (قد يعود للجهة نفسها)'; }
+    return { ...x, ageDays: age, hasBrand, score, verdict, official: r.official, reasons: r.reasons.map((y) => y.text).concat(note ? [note] : []) };
   }).filter((x) => !x.official && x.verdict !== 'safe')
     .sort((a, b) => b.score - a.score || String(b.firstSeen || '').localeCompare(String(a.firstSeen || ''))).slice(0, 60);
   return { keyword: kw, days: days || 30, checkedAt: new Date().toISOString(), sources: { ct: ct ? 'ok' : 'unavailable', dns: dw.checked }, total: all.size, items };
