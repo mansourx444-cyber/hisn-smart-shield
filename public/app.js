@@ -184,8 +184,8 @@
   // الدخول الفعلي بالهوية الرقمية (UAE PASS) في نافذة صغيرة، فيعمل حتى داخل هواتف العرض
   function uaePassLogin() {
     $('#idState').innerHTML = '<span class="spin"></span>'; $('#idState').append(t('idWaiting'));
-    const w = window.open(`/auth/uaepass/start?role=user&lang=${lang}`, 'uaepass', 'width=480,height=760');
-    if (!w) location.href = `/auth/uaepass/start?role=user&lang=${lang}`;
+    const w = window.open(`/auth/uaepass/start?role=user&lang=${lang}&next=${encodeURIComponent(location.pathname + location.search)}`, 'uaepass', 'width=480,height=760');
+    if (!w) location.href = `/auth/uaepass/start?role=user&lang=${lang}&next=${encodeURIComponent(location.pathname + location.search)}`;
   }
   function uaePassResult(d) {
     if (!d || d.role !== 'user') return;

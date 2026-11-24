@@ -101,7 +101,7 @@
   // الدخول الفعلي بالهوية الرقمية (UAE PASS)
   $('#btnUaePass').addEventListener('click', () => {
     $('#loginState').innerHTML = '<span class="spin"></span>'; $('#loginState').append(t('waiting'));
-    const u = `/auth/uaepass/start?role=partner&org=${encodeURIComponent($('#orgSel').value)}&lang=${lang}`;
+    const u = `/auth/uaepass/start?role=partner&org=${encodeURIComponent($('#orgSel').value)}&lang=${lang}&next=${encodeURIComponent(location.pathname + location.search)}`;
     if (!window.open(u, 'uaepass', 'width=480,height=760')) location.href = u;
   });
   async function uaeResult(d) {

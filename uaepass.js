@@ -10,7 +10,10 @@ const ENV = process.env.UAEPASS_ENV === 'prod' ? 'prod' : 'stg';
 const BASE = ENV === 'prod' ? 'https://id.uaepass.ae/idshub' : 'https://stg-id.uaepass.ae/idshub';
 const CLIENT_ID = process.env.UAEPASS_CLIENT_ID || 'sandbox_stage';
 const CLIENT_SECRET = process.env.UAEPASS_CLIENT_SECRET || 'sandbox_stage';
-const states = new Map(); // state -> { role, orgId, lang, t }
+const states = new Map(); // state -> { role, orgId, lang, next, t }
+const recent = []; // آخر نتائج الدخول بلا بيانات شخصية (للتشخيص)
+function note(x) { recent.push({ at: new Date().toISOString(), ...x }); if (recent.length > 10) recent.shift(); }
+const safeNext = (n, d) => (typeof n === 'string' && /^\/(?!\/)[^\s\\]*$/.test(n) && n.length < 300 ? n : d);
 
 function baseUrl(req, publicUrl) {
   if (publicUrl) return publicUrl;
@@ -35,7 +38,7 @@ async function handle(req, res, url, ctx) {
     sweep();
     const state = crypto.randomBytes(16).toString('hex');
     const role = url.searchParams.get('role') === 'partner' ? 'partner' : 'user';
-    states.set(state, { role, orgId: url.searchParams.get('org') || '', lang: url.searchParams.get('lang') === 'en' ? 'en' : 'ar', next: role === 'partner' ? '/partners' : '/', t: Date.now() });
+    states.set(state, { role, orgId: url.searchParams.get('org') || '', lang: url.searchParams.get('lang') === 'en' ? 'en' : 'ar', next: safeNext(url.searchParams.get('next'), role === 'partner' ? '/partners' : '/index.html'), t: Date.now() });
     const q = new URLSearchParams({
       response_type: 'code', client_id: CLIENT_ID, scope: 'urn:uae:digitalid:profile:general', state,
       redirect_uri: baseUrl(req, ctx.publicUrl) + '/auth/uaepass/callback',
@@ -47,10 +50,10 @@ async function handle(req, res, url, ctx) {
   }
   if (p === '/auth/uaepass/callback') {
     const st = states.get(url.searchParams.get('state') || '');
-    if (!st) { finishPage(res, { ok: false, error: 'state' }, 'ar'); return true; }
+    if (!st) { note({ ok: false, error: 'state' }); finishPage(res, { ok: false, error: 'state' }, 'ar'); return true; }
     states.delete(url.searchParams.get('state'));
     const code = url.searchParams.get('code');
-    if (!code) { finishPage(res, { ok: false, error: url.searchParams.get('error') || 'cancelled', next: st.next }, st.lang); return true; }
+    if (!code) { note({ ok: false, error: url.searchParams.get('error') || 'cancelled' }); finishPage(res, { ok: false, error: url.searchParams.get('error') || 'cancelled', next: st.next }, st.lang); return true; }
     try {
       const redirect = baseUrl(req, ctx.publicUrl) + '/auth/uaepass/callback';
       const form = new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: redirect });
@@ -67,13 +70,16 @@ async function handle(req, res, url, ctx) {
       const out = { ok: true, role: st.role, user, next: st.next };
       if (st.role === 'partner') { const s = ctx.partnerLogin(st.orgId); if (!s) throw new Error('org'); out.session = s; }
       ctx.log('[uaepass]', st.role, ENV, user.userType || '');
+      note({ ok: true, role: st.role, env: ENV, userType: user.userType, hasName: !!user.name });
       finishPage(res, out, st.lang);
     } catch (e) {
       ctx.log('[uaepass] failed', e.message);
+      note({ ok: false, error: 'exchange', detail: String(e.message).slice(0, 80) });
       finishPage(res, { ok: false, error: 'exchange', next: st.next }, st.lang);
     }
     return true;
   }
+  if (p === '/auth/uaepass/status') { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify({ env: ENV, recent })); return true; }
   return false;
 }
 
