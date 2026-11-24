@@ -14,6 +14,7 @@ const crypto = require('crypto');
 const engine = require('./public/engine.js');
 const learn = require('./public/learn.js');
 const scanner = require('./scanner.js');
+const uaepass = require('./uaepass.js');
 const LSEED = require('./learn-seed.js');
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -224,6 +225,15 @@ function addWatchIntel(domains, kw) {
   if (pt.predicted.length > 500) pt.predicted = pt.predicted.slice(-500);
   if (pt.predicted.length !== before) { applyPatterns(); try { savePatterns(); } catch {} log('[watch]', kw, '+', pt.predicted.length - before, 'domains'); }
 }
+// جلسة جهة (تُستدعى من الدخول بالهوية الرقمية أو الدخول التجريبي)
+function partnerLogin(orgId) {
+  const org = engine.ENTITIES.find((e) => e.id === orgId);
+  if (!org) return null;
+  const token = crypto.randomBytes(16).toString('hex');
+  partnerTokens.set(token, org.id);
+  log('[partner] login', org.id);
+  return { token, org: { id: org.id, ar: org.ar, en: org.en, domains: org.domains } };
+}
 const mlStats = { sources: { seed: 0, authority: 0, rules: 0, outcome: 0 }, holdout: null, startedAt: Date.now() };
 let model = null;
 function holdoutAcc() { let ok = 0; for (const [t, y] of LSEED.HOLDOUT) if ((learn.predict(model, t) >= 0.5) === !!y) ok++; return Math.round(ok / LSEED.HOLDOUT.length * 100); }
@@ -348,6 +358,7 @@ async function handler(req, res) {
   const url = new URL(req.url, 'http://x');
   const p = url.pathname;
   const roomOf = (code) => { const r = rooms.get(String(code || '')); if (r) r.last = Date.now(); return r; };
+  if (p.startsWith('/auth/uaepass/') && await uaepass.handle(req, res, url, { publicUrl: PUBLIC_URL, log, partnerLogin })) return;
 
   if (p === '/api/tunnel' && req.method === 'GET') {
     if (PUBLIC_URL) return json(res, 200, { status: 'ready', url: PUBLIC_URL, hosted: true, error: null, port: PORT, rooms: [] });
@@ -533,12 +544,8 @@ async function handler(req, res) {
   if (p === '/api/patterns' && req.method === 'GET') return json(res, 200, { patterns: patterns.map(withPred), hits });
   if (p === '/api/partner/login' && req.method === 'POST') {
     const b = await readJson(req);
-    const org = engine.ENTITIES.find((e) => e.id === b.orgId);
-    if (!org) return json(res, 400, { error: 'org' });
-    const token = crypto.randomBytes(16).toString('hex');
-    partnerTokens.set(token, org.id);
-    log('[partner] login', org.id);
-    return json(res, 200, { token, org: { id: org.id, ar: org.ar, en: org.en, domains: org.domains } });
+    const s = partnerLogin(b.orgId);
+    return s ? json(res, 200, { ...s, demo: true }) : json(res, 400, { error: 'org' });
   }
   if (p === '/api/patterns' && (req.method === 'POST' || req.method === 'DELETE')) {
     const b = await readJson(req);

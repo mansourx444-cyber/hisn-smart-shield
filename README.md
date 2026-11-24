@@ -70,9 +70,9 @@
 - القواعد أدق في الحالات المعروفة وأضعف أمام صياغة جديدة تمامًا؛ عوّضنا ذلك ببوابة الجهات وبالتحليل المركّب (الجهة + الطلب + القناة).
 - تطبيق الويب لا يصل للمكالمات والرسائل العادية (قيود iOS وAndroid)، فالعرض يستخدم مكالمة ورسائل داخل التطبيق.
 - الخادم يحفظ في الذاكرة فقط (خصوصية أعلى، لكن لا سجل دائم)، والاستضافة المجانية تنام بعد ١٥ دقيقة.
-- الهوية الرقمية (UAE PASS) محاكاة.
+- الدخول بالهوية الرقمية (UAE PASS) مربوط فعليًا ببيئة الاختبار الرسمية لـ UAE PASS (OAuth 2.0 بالبيانات العامة `sandbox_stage`). الدخول بها يحتاج حساب UAE PASS تجريبي وتطبيق بيئة الاختبار، لذلك يوجد بجانبه «دخول تجريبي للعرض». التشغيل الفعلي يحتاج انضمام الجهة لـ UAE PASS: `UAEPASS_ENV=prod` و`UAEPASS_CLIENT_ID` و`UAEPASS_CLIENT_SECRET`.
 
-**ما تُرك عمدًا:** تطبيق أصلي، ربط فعلي مع UAE PASS والبنوك وشركات الاتصالات، قاعدة بيانات وصلاحيات حقيقية لبوابة الجهات، خادم TURN للصوت بين الشبكات المختلفة.
+**ما تُرك عمدًا:** تطبيق أصلي، ربط فعلي مع البنوك وشركات الاتصالات، قاعدة بيانات وصلاحيات حقيقية لبوابة الجهات، خادم TURN للصوت بين الشبكات المختلفة.
 
 **بوقت أكبر سنفعل:** ترقية الشبكة الخفيفة إلى نموذج لغوي عميق (مثل AraBERT) مع تعلّم موحّد (Federated Learning) يبقي البيانات على الجهاز، وتدريب مصنّف عربي على بيانات احتيال حقيقية من الجهات الشريكة (مع الإبقاء على الشرح)، تطبيق أندرويد أصلي (`NotificationListenerService`) ثم iOS (Message Filter Extension)، فحص المكالمات بالشراكة مع شركات الاتصالات، وتحليل الصوت لكشف الأصوات المولّدة.
 
@@ -99,7 +99,7 @@ Live demo: https://hisn-smart-shield.onrender.com (two QR codes: victim phone + 
 
 **Privacy design.** Messages are analysed on the phone; the server relays without storing; call audio and transcripts are not saved; logs contain events only; no access to the user's files.
 
-**Trade-offs / left out / next.** Rules miss brand-new phrasings (mitigated by the authority portal); a web app cannot read real calls/SMS (demo uses in-app calls/messages); in-memory server; simulated UAE PASS. Next: train an explainable Arabic classifier on partner data, native Android/iOS, telecom-level call screening, synthetic-voice detection.
+**Trade-offs / left out / next.** Rules miss brand-new phrasings (mitigated by the authority portal); a web app cannot read real calls/SMS (demo uses in-app calls/messages); in-memory server. UAE PASS sign-in is wired via OAuth 2.0 to the official UAE PASS staging environment (public `sandbox_stage` credentials; production needs onboarding: `UAEPASS_ENV=prod`, `UAEPASS_CLIENT_ID`, `UAEPASS_CLIENT_SECRET`), with a demo sign-in for judges without a staging account. Next: train an explainable Arabic classifier on partner data, native Android/iOS, telecom-level call screening, synthetic-voice detection.
 
 **Link detection.** `/scan` batch-scans links (score 0–100, verdict, reasons; CSV/JSON), with a curated list of 55 local and global brands and their official domains (all `gov.ae` trusted) to avoid false positives. Deep scan follows redirects and shorteners (incl. meta/JS redirects), detects cloaking (phone vs. crawler view), reads page content, and builds a police evidence report (RDAP/WHOIS registrar, creation date, abuse contact, hosting IP/org/country, page hash, screenshot, SHA-256 report hash, bilingual takedown request). Early detection combines two sources: Certificate Transparency logs (crt.sh) for newly certified domains carrying local brand names, and a built-in lookalike generator (~280 typo/affix/risky-TLD variants per brand) checked against DNS, with RDAP registration dates; high-risk hits feed the authority intel. Measured with `npm run eval`: 100% precision / 98% recall on our development set (106 links) and 100% precision / 86.7% recall on a blind set (30 links), 0% false positives on official sites. Not yet built: crawling search results and map listings for fake helplines (needs API keys), and visual page similarity.
 
@@ -160,7 +160,7 @@ node test/engine.test.js            # 54 اختبارًا للمحرك
 
 | المرحلة | التقنية |
 |---|---|
-| الدخول والتفعيل | الهوية الرقمية (محاكاة): تحقق من الهوية مرة واحدة بلا كلمات مرور |
+| الدخول والتفعيل | الهوية الرقمية UAE PASS عبر OAuth 2.0 (بيئة الاختبار الرسمية) في نافذة صغيرة: تحقق مرة واحدة بلا كلمات مرور، ولا نأخذ إلا الاسم ونوع الحساب. ودخول تجريبي للعرض |
 | الرسائل والروابط | تحليل الروابط والنطاقات ومقارنتها بالنطاق الرسمي، وكشف التشابه الإملائي (مسافة التحرير Levenshtein)، والأحرف المضللة (Punycode)، والروابط المختصرة وعناوين IP |
 | معالجة اللغة الطبيعية (NLP) | تطبيع العربية واللهجة المحلية، وتقسيم العبارات، وتصنيف الكلمات (طلب، موضوع حساس، نفي، استعجال)، وتحليل النية، وفهم النفي والسياق («عطني الرمز» ≠ «لا تشارك الرمز»)، واستخراج الجهة المنتحلة |
 | المكالمات | نقل الصوت لحظيًا (WebRTC)، ثم التعرف على الكلام وتحويله إلى نص (ASR) بنموذج لحظي، ثم NLP لكل جملة مكتملة مع سياقها، ثم تقييم الخطر، ثم تنبيه خلال ثوانٍ والمكالمة مستمرة |
@@ -179,11 +179,11 @@ node test/engine.test.js            # 54 اختبارًا للمحرك
 ## صفحة العرض الحيّ (هاتفان + بوابة الجهات)
 
 افتح `http://localhost:8787/demo` (أو اختصار **Smart Shield** على سطح المكتب):
-- **هاتف الضحية**: آيفون بتطبيقات وهمية، و«الرسائل» و«واتساب»، والدرع الذكي. التفعيل يكون بالدخول بالهوية الرقمية (محاكاة)، ويظهر بيان الخصوصية.
+- **هاتف الضحية**: آيفون بتطبيقات وهمية، و«الرسائل» و«واتساب»، والدرع الذكي. التفعيل يكون بالدخول بالهوية الرقمية UAE PASS (أو الدخول التجريبي للعرض)، ويظهر بيان الخصوصية.
 - **المحتال**: رسائل احتيال (توصيل، مخالفة، بطاقة، رمز، جائزة، مجموعة واتساب لسرقة الحساب) ومكالمات احتيال بنصوص جاهزة.
 - **خط الاتصال**: يبقى «بانتظار المحتال» حتى أول رسالة أو مكالمة، ثم «جارٍ الاتصال» ثم «متصل». الانقطاع القصير لا يظهر.
 - **ماذا لو تجاهلت التحذير؟**: «فتح الرابط رغم التحذير» أو زر «ماذا لو تجاهلت التحذير» يشغّل محاكاة واقعية لكل نوع: صفحة دفع مزيفة ثم سحب الرصيد، أو سرقة الحساب برمز التحقق، أو التحويل إلى «حساب آمن»، أو الموافقة على إشعار الهوية الرقمية واستخدامها في تمويل، أو التحكم عن بعد، أو سرقة حساب واتساب ومراسلة الأهل. تنتهي المحاكاة بملخص «ما الذي كان سيحميك» وزر إعادة الهاتف.
-- **🏛️ بوابة الجهات** (`/partners`): تدخل الجهة بالهوية الرقمية (محاكاة) وتنشر ممارسات الاحتيال (عبارات ونطاقات مزيفة). تصل الممارسة فورًا لكل الأجهزة المحمية ويستخدمها المحرك في الرسائل والمكالمات. الدرع يتنبأ أيضًا بالنطاقات التي قد تُستخدم لانتحال الجهة ويراقبها. البوابة تعرض عدد مرات الصد بفضل تحذيرات الجهة، ولا تُنشر أي بيانات شخصية. تُحفظ الممارسات في `data/patterns.json`.
+- **🏛️ بوابة الجهات** (`/partners`): يدخل مفوَّض الجهة بالهوية الرقمية UAE PASS (أو الدخول التجريبي للعرض) وتنشر ممارسات الاحتيال (عبارات ونطاقات مزيفة). تصل الممارسة فورًا لكل الأجهزة المحمية ويستخدمها المحرك في الرسائل والمكالمات. الدرع يتنبأ أيضًا بالنطاقات التي قد تُستخدم لانتحال الجهة ويراقبها. البوابة تعرض عدد مرات الصد بفضل تحذيرات الجهة، ولا تُنشر أي بيانات شخصية. تُحفظ الممارسات في `data/patterns.json`.
 
 > 🔒 الدرع الذكي لا يطّلع على ملفاتك الخاصة، وليس برنامج تجسس أو تتبع. دوره التصدي لمحاولات الاحتيال، سواء وصلت عبر الروابط أو المكالمات أو الرسائل النصية أو البريد الإلكتروني أو وسائل التواصل الاجتماعي ومجموعات واتساب.
 
@@ -227,6 +227,8 @@ node test/engine.test.js            # 54 اختبارًا للمحرك
 
 ```
 server.js            خادم بلا مكتبات: ملفات + إشارات WebRTC (SSE + استطلاع طويل) + تمرير الرسائل + التفريغ اللحظي + المساعد
+uaepass.js           الدخول بالهوية الرقمية UAE PASS (OAuth 2.0)
+scanner.js           الفحص العميق للروابط والأدلة والرصد المبكر
 public/engine.js     محرك الفحص (الرسائل والروابط + عبارات المكالمة) — يعمل في المتصفح والخادم
 public/app.js        الواجهة: التفعيل، الرسائل الواردة، متصفح الدرع، المكالمة، الهاتف الثاني
 public/index.html, app.css, sw.js, icon.svg, manifest.webmanifest

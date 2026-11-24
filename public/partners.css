@@ -40,3 +40,7 @@ select.p-in{appearance:auto}
 @keyframes sp{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}}
 @media (max-width:520px){.p-grid,.p-stats{grid-template-columns:1fr}}
+.uaepass-btn{display:block;margin:14px auto 4px;background:none;border:0;padding:0;cursor:pointer;border-radius:12px;line-height:0}
+.uaepass-btn img{max-width:100%;height:auto}
+.uaepass-btn:focus-visible{outline:3px solid #1db584;outline-offset:3px}
+.p-link{display:block;margin:4px auto;background:none;border:0;color:#0f8a63;text-decoration:underline;font:inherit;cursor:pointer;padding:6px}

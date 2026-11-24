@@ -16,9 +16,9 @@
     ar: {
       brand: 'بوابة الجهات الشريكة', brandSub: 'حِصن — الدرع الذكي لحماية المجتمع من الاحتيال الإلكتروني', other: 'English',
       loginTitle: 'شاركونا ما ترصدونه من احتيال', loginDesc: 'للبنوك والشركات والمؤسسات التي تتواصل مع العملاء: انشروا الممارسات الاحتيالية التي تُنتحل فيها أسماؤكم، ليستعد لها الدرع الذكي بالذكاء الاصطناعي ويتنبأ بأشكالها ويحمي كل الأجهزة المحمية فورًا.',
-      org: 'الجهة', loginBtn: 'الدخول بالهوية الرقمية (محاكاة)', waiting: 'تم إرسال طلب الدخول إلى تطبيق الهوية الرقمية… بانتظار موافقة المفوَّض', loginFail: 'تعذّر الدخول',
+      org: 'الجهة', loginBtn: 'ما عند المفوَّض حساب؟ دخول تجريبي للعرض', waiting: 'تم إرسال طلب الدخول إلى تطبيق الهوية الرقمية… بانتظار موافقة المفوَّض', loginFail: 'لم يكتمل الدخول بالهوية الرقمية، حاول مرة أخرى أو استخدم الدخول التجريبي', viaUae: (n) => `عبر UAE PASS${n ? ' — ' + n : ''}`, viaDemo: 'دخول تجريبي',
       privacy: '🔒 تُنشر الأنماط فقط (عبارات، نطاقات، أساليب) ولا تُشارك أي بيانات شخصية للعملاء. الدرع لا يطّلع على ملفات المستخدمين ولا يتتبعهم.',
-      signedAs: 'مسجّل الدخول بالهوية الرقمية باسم', logout: 'تسجيل الخروج',
+      signedAs: 'مسجّل الدخول باسم الجهة', logout: 'تسجيل الخروج',
       mine: 'ممارسات نشرتموها', hits: 'مرات صد بفضل تحذيراتكم', all: 'ممارسات منشورة من كل الجهات',
       publish: 'نشر ممارسة احتيالية جديدة', publishDesc: 'ستصل فورًا لكل هواتف المستخدمين المحميين، ويستخدمها المحرك في فحص الرسائل والروابط والمكالمات.',
       channel: 'القناة', sev: 'الخطورة', title: 'عنوان الممارسة', desc: 'وصف مختصر للأسلوب', sample: 'مثال لرسالة أو عبارة يستخدمها المحتال', phrases: 'عبارات مميزة (افصل بفاصلة)', domains: 'نطاقات مزيفة رصدتموها (افصل بفاصلة)',
@@ -30,9 +30,9 @@
     en: {
       brand: 'Partner institutions portal', brandSub: 'HISN — the smart shield protecting the community from online fraud', other: 'العربية',
       loginTitle: 'Share the fraud you see', loginDesc: 'Banks, companies and institutions that deal with customers: publish the scam practices that abuse your name, so Smart Shield’s AI can prepare for them, predict their variants and protect every device instantly.',
-      org: 'Institution', loginBtn: 'Sign in with digital identity (simulation)', waiting: 'Sign-in request sent to the digital identity app… waiting for the authorised officer', loginFail: 'Sign-in failed',
+      org: 'Institution', loginBtn: 'Officer has no account? Demo sign-in', waiting: 'Sign-in request sent to the digital identity app… waiting for the authorised officer', loginFail: 'UAE PASS sign-in was not completed. Try again or use the demo sign-in', viaUae: (n) => `via UAE PASS${n ? ' — ' + n : ''}`, viaDemo: 'Demo sign-in',
       privacy: '🔒 Only patterns are published (phrases, domains, methods) — never customer personal data. The Shield does not read users’ files or track them.',
-      signedAs: 'Signed in with digital identity as', logout: 'Sign out',
+      signedAs: 'Signed in for', logout: 'Sign out',
       mine: 'Practices you published', hits: 'Attempts stopped thanks to you', all: 'Practices from all institutions',
       publish: 'Publish a new scam practice', publishDesc: 'It reaches every protected phone instantly and the engine uses it to check messages, links and calls.',
       channel: 'Channel', sev: 'Severity', title: 'Practice title', desc: 'Short description', sample: 'Example message or phrase the scammer uses', phrases: 'Distinctive phrases (comma-separated)', domains: 'Fake domains you have seen (comma-separated)',
@@ -62,7 +62,7 @@
     if (session) renderDash();
   }
   function renderDash() {
-    $('#orgName').textContent = session.org[lang]; $('#orgDomain').textContent = session.org.domains[0];
+    $('#orgName').textContent = session.org[lang]; $('#orgDomain').textContent = session.org.domains[0] + ' · ' + (session.via === 'uaepass' ? t('viaUae', session.officer) : t('viaDemo'));
     const mine = data.patterns.filter((p) => p.orgId === session.org.id);
     $('#sMine').textContent = mine.length;
     $('#sHits').textContent = mine.reduce((a, p) => a + (data.hits[p.id] || 0), 0);
@@ -90,8 +90,6 @@
 
   $('#btnLogin').addEventListener('click', async () => {
     const b = $('#btnLogin'); b.disabled = true;
-    $('#loginState').innerHTML = '<span class="spin"></span>'; $('#loginState').append(t('waiting'));
-    await new Promise((r) => setTimeout(r, 2000));
     try {
       const r = await fetch('/api/partner/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orgId: $('#orgSel').value }) });
       if (!r.ok) throw new Error();
@@ -100,6 +98,20 @@
     } catch { $('#loginState').textContent = t('loginFail'); }
     b.disabled = false;
   });
+  // الدخول الفعلي بالهوية الرقمية (UAE PASS)
+  $('#btnUaePass').addEventListener('click', () => {
+    $('#loginState').innerHTML = '<span class="spin"></span>'; $('#loginState').append(t('waiting'));
+    const u = `/auth/uaepass/start?role=partner&org=${encodeURIComponent($('#orgSel').value)}&lang=${lang}`;
+    if (!window.open(u, 'uaepass', 'width=480,height=760')) location.href = u;
+  });
+  async function uaeResult(d) {
+    if (!d || d.role !== 'partner') return;
+    if (!d.ok || !d.session) { $('#loginState').textContent = t('loginFail'); return; }
+    session = { ...d.session, via: 'uaepass', officer: d.user && d.user.name }; sessionStorage.setItem('ds.partner', JSON.stringify(session));
+    $('#loginState').textContent = ''; await load(); render();
+  }
+  window.addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.uaepass) uaeResult(e.data.uaepass); });
+  try { const r = sessionStorage.getItem('uaepass.result'); if (r) { sessionStorage.removeItem('uaepass.result'); setTimeout(() => uaeResult(JSON.parse(r)), 0); } } catch {}
   $('#btnLogout').addEventListener('click', () => { session = null; sessionStorage.removeItem('ds.partner'); render(); });
   $('#btnExample').addEventListener('click', () => {
     const x = EX[lang]; $('#fTitle').value = x.title; $('#fDesc').value = x.desc; $('#fSample').value = x.sample; $('#fPhrases').value = x.phrases; $('#fDomains').value = x.domains; $('#fChannel').value = x.channel; $('#fSev').value = 'high';

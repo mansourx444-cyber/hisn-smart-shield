@@ -27,7 +27,7 @@
       optAssist: 'رأي المساعد الذكي', optAssistDesc: 'يرسل نص الرسالة لنموذج ذكاء اصطناعي ليشرح الخطر بلغة بسيطة، من دون حفظه.',
       decideNote: 'الدرع ينبّه، وأنت تقرر. تقدر توقف أي خيار من الإعدادات.',
       useAsSender: 'استخدم هذا الهاتف كمرسل ومتصل تجريبي (للعرض)',
-      idTitle: 'الدخول بالهوية الرقمية', idDesc: 'تحقّق من هويتك مرة واحدة لتفعيل الحماية. لا نطلب كلمة مرور ولا نحتفظ بوثائقك.', idLogin: 'الدخول بالهوية الرقمية (محاكاة)',
+      idTitle: 'الدخول بالهوية الرقمية', idDesc: 'تحقّق من هويتك مرة واحدة لتفعيل الحماية. لا نطلب كلمة مرور ولا نحتفظ بوثائقك.', idDemo: 'ما عندك حساب؟ دخول تجريبي للعرض', idUaeOk: (n) => `✓ تم التحقق عبر الهوية الرقمية UAE PASS${n ? ' — ' + n : ''}`, idUaeFail: 'لم يكتمل الدخول بالهوية الرقمية، حاول مرة أخرى أو استخدم الدخول التجريبي',
       idWaiting: 'تم إرسال طلب إلى تطبيق الهوية الرقمية في هاتفك… وافق عليه', idOk: '✓ تم التحقق من هويتك — مستخدم تجريبي',
       privacy: '🔒 الدرع الذكي لا يطّلع على ملفاتك الخاصة، وليس برنامج تجسس أو تتبع. دوره التصدي لمحاولات الاحتيال وحمايتك وحماية بياناتك، سواء وصلت عبر الروابط أو المكالمات أو الرسائل النصية أو البريد الإلكتروني أو وسائل التواصل الاجتماعي ومجموعات واتساب.',
       techTitle: '🧠 كيف يعمل حِصن؟ التقنيات في كل مرحلة', tech: [["🪪", "الدخول والتفعيل", "الهوية الرقمية (محاكاة): تحقق من الهوية مرة واحدة بلا كلمات مرور."], ["🔗", "الرسائل والروابط", "تحليل الروابط والنطاقات، ومقارنتها بالنطاق الرسمي للجهة، وكشف التشابه الإملائي بخوارزمية مسافة التحرير (Levenshtein)، والأحرف المضللة (Punycode)، والروابط المختصرة وعناوين IP."], ["🧠", "معالجة اللغة الطبيعية (NLP)", "تطبيع النص العربي واللهجة المحلية، وتقسيم العبارات، وتحليل النية (طلب رمز، دفع، موافقة، تثبيت برنامج)، وفهم النفي والسياق («عطني الرمز» ≠ «لا تشارك الرمز»)، واستخراج الجهة المنتحلة."], ["🎙️", "المكالمات", "نقل الصوت لحظيًا (WebRTC)، ثم التعرف على الكلام وتحويله إلى نص (ASR / Speech-to-Text) بنموذج لحظي، ثم تحليل كل جملة مكتملة مع سياقها بالـNLP، وتنبيه خلال ثوانٍ والمكالمة مستمرة."], ["🤖", "المساعد الذكي (LLM)", "نموذج لغوي كبير يعطي رأيًا ثانيًا ويشرح الخطر بلغة بسيطة."], ["🏛️", "استخبارات الجهات والتنبؤ", "الجهات الموثقة تنشر ممارسات الاحتيال، وحِصن يولّد النطاقات التي قد تُستخدم لانتحالها ويراقبها، ويحدّث كل الأجهزة لحظيًا."], ["🔊", "نطق النتيجة", "تحويل النص إلى كلام (TTS) لمن يفضّل الاستماع."], ["🔒", "الخصوصية", "التحليل لحظي، ولا يُحفظ الصوت ولا نص الرسائل والمكالمات."]],
@@ -66,7 +66,7 @@
       optAssist: 'AI assistant opinion', optAssistDesc: 'Sends the message text to an AI model to explain the risk in plain words, without storing it.',
       decideNote: 'The Shield warns — you decide. You can turn off any option in Settings.',
       useAsSender: 'Use this phone as the test sender / caller (demo)',
-      idTitle: 'Sign in with digital identity', idDesc: 'Verify your identity once to turn on protection. No password, no documents stored.', idLogin: 'Sign in with digital identity (simulation)',
+      idTitle: 'Sign in with digital identity', idDesc: 'Verify your identity once to turn on protection. No password, no documents stored.', idDemo: 'No account? Demo sign-in', idUaeOk: (n) => `✓ Verified with UAE PASS${n ? ' — ' + n : ''}`, idUaeFail: 'UAE PASS sign-in was not completed. Try again or use the demo sign-in',
       idWaiting: 'A request was sent to the digital identity app on your phone… approve it', idOk: '✓ Identity verified — demo user',
       privacy: '🔒 Smart Shield cannot see your private files and is not spyware or a tracker. It stands between you and fraud attempts and protects your data — whether they come by link, phone call, text message, email, social media or WhatsApp groups.',
       techTitle: '🧠 How HISN works — technology at each stage', tech: [["🪪", "Sign-in & activation", "Digital identity (simulation): verify once, no passwords."], ["🔗", "Messages & links", "URL and domain analysis against the official domain, look-alike detection with edit distance (Levenshtein), deceptive characters (Punycode), shorteners and raw IPs."], ["🧠", "Natural language processing (NLP)", "Arabic & dialect normalisation, clause splitting, intent analysis (code, payment, approval, app install), negation and context understanding (“give me the code” ≠ “don’t share the code”), and impersonated-entity extraction."], ["🎙️", "Calls", "Live audio over WebRTC → speech recognition (ASR / speech-to-text) with a real-time model → NLP on every complete sentence with its context → alert within seconds while the call continues."], ["🤖", "AI assistant (LLM)", "A large language model gives a second opinion and explains the risk in plain words."], ["🏛️", "Institution intelligence & prediction", "Verified institutions publish scam practices; HISN generates and watches likely impersonation domains and updates every device instantly."], ["🔊", "Read-aloud", "Text-to-speech (TTS) for those who prefer to listen."], ["🔒", "Privacy", "Analysis is real-time; no audio or message/call text is stored."]],
@@ -171,8 +171,8 @@
   function renderIdentity() {
     const id = store.get('identity', null);
     $('#idCard').classList.toggle('ok', !!id);
-    $('#idState').textContent = id ? t('idOk') : '';
-    $('#btnIdLogin').hidden = !!id;
+    $('#idState').textContent = id ? (id.via === 'uaepass' ? t('idUaeOk', id.name) : t('idOk')) : '';
+    $('#btnIdLogin').hidden = !!id; $('#btnUaePass').hidden = !!id;
     $('#btnActivate').disabled = !id;
   }
   function idLogin() {
@@ -181,6 +181,20 @@
     $('#idState').append(t('idWaiting'));
     setTimeout(() => { store.set('identity', { verifiedAt: Date.now(), name: 'demo' }); $('#btnIdLogin').disabled = false; renderIdentity(); }, 2200);
   }
+  // الدخول الفعلي بالهوية الرقمية (UAE PASS) في نافذة صغيرة، فيعمل حتى داخل هواتف العرض
+  function uaePassLogin() {
+    $('#idState').innerHTML = '<span class="spin"></span>'; $('#idState').append(t('idWaiting'));
+    const w = window.open(`/auth/uaepass/start?role=user&lang=${lang}`, 'uaepass', 'width=480,height=760');
+    if (!w) location.href = `/auth/uaepass/start?role=user&lang=${lang}`;
+  }
+  function uaePassResult(d) {
+    if (!d || d.role !== 'user') return;
+    if (d.ok) store.set('identity', { verifiedAt: Date.now(), name: d.user && d.user.name, via: 'uaepass', env: d.user && d.user.env });
+    renderIdentity();
+    if (!d.ok) $('#idState').textContent = t('idUaeFail');
+  }
+  window.addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.uaepass) uaePassResult(e.data.uaepass); });
+  try { const r = sessionStorage.getItem('uaepass.result'); if (r) { sessionStorage.removeItem('uaepass.result'); setTimeout(() => uaePassResult(JSON.parse(r)), 0); } } catch {}
   async function activate() {
     if (!store.get('identity', null)) return;
     settings = readOpts($('#optList'));
@@ -798,6 +812,7 @@ registerProcessor('pcm-tap',Tap);`;
     }));
     $('#btnActivate').addEventListener('click', activate);
     $('#btnIdLogin').addEventListener('click', idLogin);
+    $('#btnUaePass').addEventListener('click', uaePassLogin);
     $('#btnDeactivate').addEventListener('click', (e) => {
       const b = e.currentTarget;
       if (!b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = t('offConfirm'); setTimeout(() => { b.classList.remove('confirm'); b.textContent = t('offBtn'); }, 4000); return; }

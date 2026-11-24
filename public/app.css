@@ -183,3 +183,7 @@ textarea:focus,.code-input:focus,.inp:focus{border-color:var(--navy);outline:0}
 .sec-list li span:nth-child(2){flex:1}
 .sec-list b{color:var(--ok,#1a9e5c);font-size:12px;white-space:nowrap}
 .card.secure small{color:var(--muted,#6b7280);font-size:11px;line-height:1.5;display:block}
+.uaepass-btn{background:none;border:0;padding:0;cursor:pointer;align-self:center;border-radius:12px;line-height:0}
+.uaepass-btn img{max-width:100%;height:auto;display:block}
+.uaepass-btn:focus-visible{outline:3px solid var(--info);outline-offset:3px}
+.uaepass-btn[hidden]{display:none}
