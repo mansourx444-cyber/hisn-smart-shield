@@ -185,7 +185,7 @@
     $('#judgeClose').addEventListener('click', () => { $('#judgePop').hidden = true; });
   }
   function renderUX() {
-    $('#dJudge').textContent = ux().judge; $('#dVoices').textContent = ux().voices; $('#dSettings').textContent = lang === 'ar' ? '⚙️ الإعدادات' : '⚙️ Settings'; $('#dAiTech').textContent = lang === 'ar' ? '🤖 تقنيات الذكاء الاصطناعي' : '🤖 AI technologies';
+    $('#dJudge').textContent = ux().judge; $('#dVoices').textContent = ux().voices; $('#dSettings').textContent = lang === 'ar' ? '⚙️ الإعدادات' : '⚙️ Settings'; $('#dAiTech').textContent = lang === 'ar' ? '🤖 تقنيات الذكاء الاصطناعي' : '🤖 AI technologies'; $('#dScan').textContent = lang === 'ar' ? '🔎 ماسح الروابط' : '🔎 Link scanner';
     $('#vTitle').textContent = ux().vTitle; $('#vScamL').textContent = ux().vScam; $('#vVicL').textContent = ux().vVic;
     $('#gTitle').textContent = ux().gTitle; $('#gNote').textContent = ux().gNote;
     $('#gSteps').innerHTML = ux().gSteps.map((x) => `<li>${esc(x)}</li>`).join('');

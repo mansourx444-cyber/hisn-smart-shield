@@ -25,6 +25,29 @@
 
 **إضافةً لذلك:** بطاقة «حماية حساباتك» (المصادقة متعددة العوامل، التحديثات التلقائية، البلاغ الفوري)، وزر «🚩 بلّغ عن هذه الرسالة» في كل تحذير، وبلاغ تلقائي عن الروابط الخطرة (النطاقات فقط، بلا بيانات شخصية)، وكشف طلب بيانات البطاقة والرقم السري للصراف ورقم الأمان CVV (موظفو البنوك لا يطلبونها أبدًا).
 
+## ماسح الروابط والأدلة والرصد المبكر (`/scan`)
+
+| الميزة | ماذا تفعل | معيار التقييم |
+|---|---|---|
+| **ماسح دفعات** | قائمة روابط (أو ملف txt/csv) ← لكل رابط درجة خطورة 0–100 وحكم (احتيالي/مشبوه/سليم) وأسباب، مع تصدير CSV وJSON. ومن سطر الأوامر: `npm run scan -- urls.txt > results.csv` | دقة الكشف |
+| **قائمة رسمية** | 55 جهة محلية وعالمية بنطاقاتها الرسمية (البنوك الإماراتية، تم، الهوية الرقمية، الشرطة، سالك، الهيئات، الاتصالات، البريد…)، وكل نطاق `gov.ae` موثوق، حتى لا تُصنَّف المواقع الحقيقية احتيالًا | دقة الكشف |
+| **فحص عميق** | يتتبع إعادة التوجيه والروابط المختصرة (حتى 8 خطوات، ومنها التحويل داخل الصفحة)، ويكشف الإخفاء (Cloaking) بمقارنة ما يراه هاتف بما يراه روبوت فحص، ويقرأ محتوى الصفحة (اسم العلامة، حقول كلمة المرور والبطاقة) | دقة الكشف |
+| **تقرير أدلة للشرطة** (`/evidence`) | رقم بلاغ، وطابع زمني، ودرجة وأسباب، وسلسلة التحويل، وبيانات تسجيل النطاق (RDAP/WHOIS: المسجّل وتاريخ التسجيل وبريد البلاغات)، والاستضافة (IP والمزوّد والدولة)، وبصمة الصفحة، ولقطة شاشة، وبصمة SHA-256 للتقرير، وطلب إزالة جاهز بالعربية والإنجليزية. يُطبع PDF أو يُنزَّل JSON | التفسير والتنفيذ |
+| **الرصد المبكر** | يبحث في سجلات شفافية الشهادات عن نطاقات جديدة تحمل اسم علامة محلية قبل أن يصل أي رابط منها لضحية، ويضيف عالية الخطورة لاستخبارات الجهات فيكشفها «حِصن» في الرسائل فورًا. وعمر النطاق (أقل من 7/30 يومًا) عامل خطورة | الكشف المبكر |
+
+**الدقة المقاسة** (`npm run eval`، عتبة 40/100، فحص سريع بلا إنترنت):
+
+| المجموعة | الروابط | الدقة (Precision) | الاستدعاء (Recall) | الإنذار الكاذب |
+|---|---|---|---|---|
+| مجموعة التطوير (`tools/eval-links.csv`) | 106 | 100٪ | 98٪ | 0٪ |
+| مجموعة عمياء لم تُضبط عليها القواعد (`tools/eval-blind.csv`) | 30 | 100٪ | 86.7٪ | 0٪ |
+
+للصراحة: المجموعتان من إعدادنا (روابط رسمية حقيقية + روابط احتيال بأنماط شائعة)، والرقم الأدق هو نتيجة المجموعة العمياء. الفحص العميق (التتبع وعمر النطاق والمحتوى) يرفع الاستدعاء أكثر.
+
+**خدمات خارجية يستخدمها الفحص العميق:** RDAP عبر rdap.org (بيانات التسجيل والاستضافة)، وcrt.sh (سجلات شفافية الشهادات)، وthum.io (لقطة الشاشة)، وDNS. الخادم لا يزور إلا http/https ويرفض العناوين الداخلية (حماية من SSRF)، ولا ينفّذ أي سكربت من الصفحات.
+
+**لم يُنفَّذ بعد (صراحة):** مسح نتائج محركات البحث وقوائم الخرائط بحثًا عن صفحات أعمال وأرقام خدمة عملاء مزيفة يحتاج مفاتيح واجهات برمجة (مثل Google Places)، وهو ضمن المرحلة التالية؛ والمقارنة البصرية للصفحات بلقطات الشاشة.
+
 ## الاختيارات التقنية وأسبابها
 
 | الاختيار | السبب |
@@ -60,7 +83,10 @@ git clone https://github.com/mansourx444-cyber/hisn-smart-shield.git
 cd hisn-smart-shield
 node server.js            # Node.js 22, no npm install needed → http://localhost:3000
 npm test                  # 54 engine tests
+npm run eval              # link-detection precision/recall on the labelled sets
+npm run scan -- urls.txt  # batch-scan a list of links → CSV
 ```
+Link scanner & evidence: `/scan` (batch scan, CSV/JSON export, deep scan with redirects, cloaking, WHOIS/RDAP and hosting, police evidence report, early detection of new look-alike domains).
 Live demo: https://hisn-smart-shield.onrender.com (two QR codes: victim phone + scammer phone). One-screen demo: `/demo`.
 
 ## English summary
@@ -74,6 +100,8 @@ Live demo: https://hisn-smart-shield.onrender.com (two QR codes: victim phone + 
 **Privacy design.** Messages are analysed on the phone; the server relays without storing; call audio and transcripts are not saved; logs contain events only; no access to the user's files.
 
 **Trade-offs / left out / next.** Rules miss brand-new phrasings (mitigated by the authority portal); a web app cannot read real calls/SMS (demo uses in-app calls/messages); in-memory server; simulated UAE PASS. Next: train an explainable Arabic classifier on partner data, native Android/iOS, telecom-level call screening, synthetic-voice detection.
+
+**Link detection.** `/scan` batch-scans links (score 0–100, verdict, reasons; CSV/JSON), with a curated list of 55 local and global brands and their official domains (all `gov.ae` trusted) to avoid false positives. Deep scan follows redirects and shorteners (incl. meta/JS redirects), detects cloaking (phone vs. crawler view), reads page content, and builds a police evidence report (RDAP/WHOIS registrar, creation date, abuse contact, hosting IP/org/country, page hash, screenshot, SHA-256 report hash, bilingual takedown request). Early detection searches Certificate Transparency logs (crt.sh) for newly certified domains carrying local brand names and feeds high-risk ones into the authority intel. Measured with `npm run eval`: 100% precision / 98% recall on our development set (106 links) and 100% precision / 86.7% recall on a blind set (30 links), 0% false positives on official sites. Not yet built: crawling search results and map listings for fake helplines (needs API keys), and visual page similarity.
 
 **Third-party code.** `public/qrcode.js` — QR Code Generator by Kazuhiko Arase (MIT). Fonts: Noto Kufi Arabic, Inter (SIL OFL).
 

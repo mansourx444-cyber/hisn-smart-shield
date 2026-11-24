@@ -4,9 +4,13 @@
   "description": "الدرع الذكي — مساعدك الشخصي للوقاية من الاحتيال الإلكتروني",
   "main": "server.js",
   "private": true,
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node server.js",
-    "test": "node test/engine.test.js"
+    "test": "node test/engine.test.js",
+    "eval": "node tools/eval.js && node tools/eval.js tools/eval-blind.csv",
+    "scan": "node tools/scan.js"
   }
 }

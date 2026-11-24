@@ -42,7 +42,50 @@
     { id: 'uaepass', ar: 'الهوية الرقمية UAE PASS', en: 'UAE PASS', kind: 'org',
       names: ['uae pass', 'uaepass', 'الهويه الرقميه'], domains: ['uaepass.ae'], brand: ['uaepass'] },
     { id: 'whatsapp', ar: 'واتساب', en: 'WhatsApp', kind: 'org', names: ['واتساب', 'واتس اب', 'whatsapp'], domains: ['whatsapp.com', 'wa.me', 'whatsapp.net'], brand: ['whatsapp', 'whatsap', 'watsapp'] },
-    { id: 'tamm', ar: 'تم', en: 'TAMM', kind: 'org', names: ['tamm', 'منصه تم'], domains: ['tamm.abudhabi'], brand: [] },
+    { id: 'tamm', ar: 'تم', en: 'TAMM', kind: 'org', names: ['tamm', 'منصه تم'], domains: ['tamm.abudhabi', 'tamm.gov.ae'], brand: ['tammabudhabi'] },
+    // بنوك إماراتية إضافية
+    { id: 'mashreq', ar: 'بنك المشرق', en: 'Mashreq', kind: 'bank', names: ['بنك المشرق', 'mashreq'], domains: ['mashreq.com', 'mashreqbank.com', 'mashreqneo.com'], brand: ['mashreq'] },
+    { id: 'dib', ar: 'بنك دبي الإسلامي', en: 'Dubai Islamic Bank', kind: 'bank', names: ['بنك دبي الاسلامي', 'dubai islamic bank'], domains: ['dib.ae'], brand: ['dubaiislamic'] },
+    { id: 'cbd', ar: 'بنك دبي التجاري', en: 'Commercial Bank of Dubai', kind: 'bank', names: ['بنك دبي التجاري', 'commercial bank of dubai'], domains: ['cbd.ae'], brand: [] },
+    { id: 'rakbank', ar: 'بنك رأس الخيمة الوطني', en: 'RAKBANK', kind: 'bank', names: ['بنك راس الخيمه', 'rakbank'], domains: ['rakbank.ae'], brand: ['rakbank'] },
+    { id: 'ei', ar: 'الإمارات الإسلامي', en: 'Emirates Islamic', kind: 'bank', names: ['الامارات الاسلامي', 'emirates islamic'], domains: ['emiratesislamic.ae'], brand: ['emiratesislamic'] },
+    { id: 'alhilal', ar: 'مصرف الهلال', en: 'Al Hilal Bank', kind: 'bank', names: ['مصرف الهلال', 'al hilal bank'], domains: ['alhilalbank.ae'], brand: ['alhilalbank'] },
+    { id: 'ajmanbank', ar: 'مصرف عجمان', en: 'Ajman Bank', kind: 'bank', names: ['مصرف عجمان', 'ajman bank'], domains: ['ajmanbank.ae'], brand: ['ajmanbank'] },
+    { id: 'nbf', ar: 'بنك الفجيرة الوطني', en: 'NBF', kind: 'bank', names: ['بنك الفجيره الوطني', 'national bank of fujairah'], domains: ['nbf.ae'], brand: [] },
+    { id: 'sib', ar: 'مصرف الشارقة الإسلامي', en: 'Sharjah Islamic Bank', kind: 'bank', names: ['مصرف الشارقه الاسلامي', 'sharjah islamic bank'], domains: ['sib.ae'], brand: [] },
+    { id: 'hsbcae', ar: 'إتش إس بي سي الإمارات', en: 'HSBC UAE', kind: 'bank', names: ['hsbc'], domains: ['hsbc.ae', 'hsbc.com'], brand: ['hsbc'] },
+    { id: 'wio', ar: 'بنك ويو', en: 'Wio Bank', kind: 'bank', names: ['wio bank'], domains: ['wio.io'], brand: [] },
+    { id: 'cbuae', ar: 'مصرف الإمارات المركزي', en: 'Central Bank of the UAE', kind: 'bank', names: ['المصرف المركزي', 'البنك المركزي', 'central bank'], domains: ['centralbank.ae'], brand: ['centralbank'] },
+    // جهات حكومية وخدمات
+    { id: 'uaegov', ar: 'البوابة الرسمية لحكومة الإمارات', en: 'UAE Government portal', kind: 'org', names: ['حكومه الامارات', 'u.ae'], domains: ['u.ae', 'government.ae'], brand: [] },
+    { id: 'dubaipolice', ar: 'شرطة دبي', en: 'Dubai Police', kind: 'police', names: ['شرطه دبي', 'dubai police'], domains: ['dubaipolice.gov.ae'], brand: ['dubaipolice'] },
+    { id: 'icp', ar: 'الهيئة الاتحادية للهوية والجنسية', en: 'ICP', kind: 'org', names: ['الهويه والجنسيه', 'icp'], domains: ['icp.gov.ae'], brand: [] },
+    { id: 'rta', ar: 'هيئة الطرق والمواصلات', en: 'RTA', kind: 'org', names: ['هيئه الطرق والمواصلات', 'roads and transport authority'], domains: ['rta.ae'], brand: [] },
+    { id: 'itc', ar: 'مركز النقل المتكامل (درب ومواقف)', en: 'ITC Abu Dhabi (Darb/Mawaqif)', kind: 'org', names: ['مركز النقل المتكامل', 'درب', 'مواقف', 'darb', 'mawaqif'], domains: ['itc.gov.ae'], brand: [] },
+    { id: 'salik', ar: 'سالك', en: 'Salik', kind: 'org', names: ['سالك', 'salik'], domains: ['salik.ae'], brand: ['salik'] },
+    { id: 'mohre', ar: 'وزارة الموارد البشرية والتوطين', en: 'MOHRE', kind: 'org', names: ['وزاره الموارد البشريه', 'mohre'], domains: ['mohre.gov.ae'], brand: [] },
+    { id: 'tdra', ar: 'هيئة تنظيم الاتصالات والحكومة الرقمية', en: 'TDRA', kind: 'org', names: ['هيئه تنظيم الاتصالات', 'tdra'], domains: ['tdra.gov.ae'], brand: [] },
+    { id: 'fta', ar: 'الهيئة الاتحادية للضرائب', en: 'Federal Tax Authority', kind: 'org', names: ['الهيئه الاتحاديه للضرائب', 'federal tax authority'], domains: ['tax.gov.ae'], brand: [] },
+    { id: 'dewa', ar: 'هيئة كهرباء ومياه دبي', en: 'DEWA', kind: 'org', names: ['هيئه كهرباء ومياه دبي', 'dewa'], domains: ['dewa.gov.ae'], brand: ['dewa'] },
+    { id: 'addc', ar: 'أبوظبي للتوزيع', en: 'ADDC', kind: 'org', names: ['ابوظبي للتوزيع', 'addc'], domains: ['addc.ae'], brand: [] },
+    { id: 'aadc', ar: 'العين للتوزيع', en: 'AADC', kind: 'org', names: ['العين للتوزيع', 'aadc'], domains: ['aadc.ae'], brand: [] },
+    { id: 'adnoc', ar: 'أدنوك', en: 'ADNOC', kind: 'org', names: ['ادنوك', 'adnoc'], domains: ['adnoc.ae'], brand: ['adnoc'] },
+    { id: 'emirates', ar: 'طيران الإمارات', en: 'Emirates', kind: 'org', names: ['طيران الامارات', 'emirates airline'], domains: ['emirates.com'], brand: [] },
+    { id: 'etihad', ar: 'الاتحاد للطيران', en: 'Etihad Airways', kind: 'org', names: ['الاتحاد للطيران', 'etihad airways'], domains: ['etihad.com'], brand: ['etihad'] },
+    { id: 'dubaigov', ar: 'حكومة دبي', en: 'Government of Dubai', kind: 'org', names: ['حكومه دبي'], domains: ['dubai.ae', 'dubai.gov.ae'], brand: [] },
+    { id: 'adgov', ar: 'حكومة أبوظبي', en: 'Abu Dhabi Government', kind: 'org', names: ['حكومه ابوظبي'], domains: ['abudhabi.ae', 'abudhabi.gov.ae'], brand: [] },
+    // علامات عالمية تُنتحل كثيرًا
+    { id: 'paypal', ar: 'باي بال', en: 'PayPal', kind: 'org', names: ['paypal', 'باي بال'], domains: ['paypal.com', 'paypal.me'], brand: ['paypal', 'paypai', 'paypa1'] },
+    { id: 'apple', ar: 'أبل', en: 'Apple', kind: 'org', names: ['apple id', 'icloud'], domains: ['apple.com', 'icloud.com'], brand: ['appleid', 'icloud'] },
+    { id: 'microsoft', ar: 'مايكروسوفت', en: 'Microsoft', kind: 'org', names: ['microsoft', 'outlook', 'office 365'], domains: ['microsoft.com', 'live.com', 'outlook.com', 'office.com', 'microsoftonline.com', 'office365.com'], brand: ['microsoft', 'office365', 'outlook', 'onedrive', 'sharepoint'] },
+    { id: 'google', ar: 'جوجل', en: 'Google', kind: 'org', names: ['google', 'gmail'], domains: ['google.com', 'google.ae', 'gmail.com', 'youtube.com', 'googleapis.com', 'gstatic.com'], brand: ['gmail'] },
+    { id: 'meta', ar: 'ميتا', en: 'Meta (Facebook/Instagram)', kind: 'org', names: ['facebook', 'instagram'], domains: ['facebook.com', 'instagram.com', 'fb.com', 'meta.com'], brand: ['facebook', 'instagram'] },
+    { id: 'netflix', ar: 'نتفليكس', en: 'Netflix', kind: 'org', names: ['netflix'], domains: ['netflix.com'], brand: ['netflix', 'netfiix'] },
+    { id: 'amazon', ar: 'أمازون', en: 'Amazon', kind: 'org', names: ['amazon'], domains: ['amazon.com', 'amazon.ae', 'amazon.sa', 'aws.amazon.com'], brand: ['amazon', 'amaz0n'] },
+    { id: 'dhl', ar: 'دي إتش إل', en: 'DHL', kind: 'org', names: ['dhl'], domains: ['dhl.com'], brand: ['dhl'] },
+    { id: 'fedex', ar: 'فيديكس', en: 'FedEx', kind: 'org', names: ['fedex'], domains: ['fedex.com'], brand: ['fedex'] },
+    { id: 'noon', ar: 'نون', en: 'noon', kind: 'org', names: ['noon'], domains: ['noon.com'], brand: [] },
+    { id: 'binance', ar: 'بينانس', en: 'Binance', kind: 'org', names: ['binance'], domains: ['binance.com'], brand: ['binance'] },
   ];
 
   // جهات عامة تُذكر في المكالمات (لصياغة الخطوة فقط)
@@ -671,5 +714,81 @@
     });
   }
 
-  return { setMl, analyzeMessage, analyzeUtterance, extractUrls, linkReport, senderClaim: (f, t) => { const e = senderClaim(f, norm(t || '')); return e ? e : null; }, norm, ENTITIES, setPatterns, predictDomains, getPatterns: () => PATTERNS };
+  /* ------------------------------------------------------------------ *
+   *  فحص رابط منفرد: درجة خطورة 0–100 + حكم + أسباب (لماسح الروابط وتقرير الأدلة)
+   *  opts (اختياري، يضيفه الخادم بعد الاتصال بالإنترنت):
+   *    finalUrl  الوجهة النهائية بعد إعادة التوجيه | chain سلسلة التحويلات
+   *    ageDays   عمر النطاق بالأيام (RDAP)       | cloaked اختلاف المحتوى بين زائر عادي وروبوت
+   *    page      { title, hasPassword, hasCard, brands: [ids] } من محتوى الصفحة
+   * ------------------------------------------------------------------ */
+  const FREE_HOST = /(^|\.)(000webhostapp\.com|weebly\.com|wixsite\.com|firebaseapp\.com|web\.app|netlify\.app|github\.io|pages\.dev|vercel\.app|glitch\.me|duckdns\.org|ngrok(-free)?\.(io|app)|blogspot\.com|sites\.google\.com|herokuapp\.com|repl\.co|workers\.dev|trycloudflare\.com|square\.site|webflow\.io|godaddysites\.com|r2\.dev|surge\.sh)$/;
+  const DECEPTIVE = /(secure|verify|verification|login|signin|sign-in|logon|update|account|support|wallet|bonus|gift|reward|prize|claim|refund|unlock|confirm|billing|invoice|payment|pay-|-pay|alert|suspend|recover|helpdesk|service-?center|customer-?care|authenticate|auth-|kyc)/;
+  function entropy(str) { const m = {}; for (const ch of str) m[ch] = (m[ch] || 0) + 1; let e = 0; for (const k in m) { const p = m[k] / str.length; e -= p * Math.log2(p); } return e; }
+  function scanUrl(raw, opts) {
+    opts = opts || {}; const lang = opts.lang === 'en' ? 'en' : 'ar';
+    const R = []; let score = 0;
+    const add = (pts, ar, en, key) => { score += pts; R.push({ key: key || '', pts, text: lang === 'en' ? en : ar }); };
+    const target = opts.finalUrl || raw;
+    const us = extractUrls(/^[a-z]+:\/\//i.test(target) ? target : 'http://' + String(target).replace(/^\/+/, ''));
+    if (!us.length) return { url: raw, host: '', score: 0, verdict: 'invalid', reasons: [{ key: 'invalid', pts: 0, text: lang === 'en' ? 'Not a valid link' : 'ليس رابطًا صالحًا' }] };
+    const u = us[0]; const host = u.host; const reg = registrable(host); const label = reg.split('.')[0];
+    const off = officialEntityOf(host);
+    const govTrusted = /(^|\.)gov\.ae$|(^|\.)ac\.ae$|(^|\.)mil\.ae$/.test(host);
+    const origUs = opts.finalUrl ? extractUrls(/^[a-z]+:\/\//i.test(raw) ? raw : 'http://' + raw) : null;
+    // الرابط الأصلي مختصر أو أعاد التوجيه لنطاق آخر
+    if (origUs && origUs[0] && registrable(origUs[0].host) !== reg) add(10, `أعاد التوجيه من ${origUs[0].host} إلى ${host}`, `Redirected from ${origUs[0].host} to ${host}`, 'redirect');
+    if ((opts.chain || []).length > 3) add(10, `سلسلة تحويل طويلة (${opts.chain.length} خطوات) لإخفاء الوجهة`, `Long redirect chain (${opts.chain.length} hops) hiding the destination`, 'chain');
+    if (opts.cloaked) add(30, 'يعرض محتوى مختلفًا للزائر عن محركات الفحص (إخفاء/Cloaking)', 'Shows different content to visitors than to scanners (cloaking)', 'cloak');
+    if (off || govTrusted) {
+      const name = off ? off[lang] : (lang === 'en' ? 'a UAE government domain' : 'نطاق حكومي إماراتي');
+      R.push({ key: 'official', pts: 0, text: lang === 'en' ? `Official domain of ${name}` : `نطاق رسمي لـ ${name}` });
+      score = Math.min(score, 10);
+      return { url: raw, finalUrl: opts.finalUrl || null, host, registrable: reg, official: off ? off[lang] : name, score, verdict: 'safe', reasons: R };
+    }
+    const rep = linkReport(target, lang)[0]; const hit = {}; for (const c of rep.checks) hit[c.id] = c;
+    const sub = subdomainEntityOf(host), swap = swapEntityOf(host), look = lookalikeEntityOf(host);
+    if (sub) add(45, `اسم «${sub.e[lang]}» موضوع كنطاق فرعي لخداعك — النطاق الحقيقي ${reg}`, `“${sub.e[lang]}” is used as a subdomain to fool you — the real domain is ${reg}`, 'subdomain');
+    else if (swap) add(45, `أرقام بدل حروف لتقليد ${swap.d}`, `Digits replacing letters to mimic ${swap.d}`, 'swap');
+    else if (look) add(40, `نطاق يشبه «${look[lang]}» وليس نطاقه الرسمي (${look.domains[0]})`, `Look-alike of “${look[lang]}”, not its official domain (${look.domains[0]})`, 'lookalike');
+    if (hit.puny.hit) add(35, 'أحرف مضللة بترميز Punycode', 'Deceptive Punycode characters', 'puny');
+    if (u.isIp) add(30, 'عنوان IP بدل اسم موقع', 'Raw IP address instead of a site name', 'ip');
+    if (u.hasAt) add(35, 'رمز @ يخفي الوجهة الحقيقية', 'An @ hides the real destination', 'at');
+    if (hit.short.hit && !opts.finalUrl) add(20, 'رابط مختصر يخفي الوجهة', 'Shortened link hides the destination', 'short');
+    if (hit.tld.hit) add(20, `امتداد عالي الخطورة (.${u.tld})`, `High-risk extension (.${u.tld})`, 'tld');
+    if (u.scheme === 'http') add(10, 'بدون تشفير (http)', 'No encryption (http)', 'http');
+    if (hit.kw.hit) add(15, `كلمة تصيّد في الرابط (${hit.kw.detail})`, `Phishing keyword in the link (${hit.kw.detail})`, 'kw');
+    if (hit.intel.hit) add(/^reported/.test(hit.intel.detail) ? 60 : 30, hit.intel.detail.startsWith('reported') ? `نطاق أبلغت عنه جهة: ${hit.intel.detail.split(':')[1]}` : `نطاق تنبأت به بوابة الجهات كانتحال لـ ${hit.intel.detail.split(':')[1]}`, hit.intel.detail.startsWith('reported') ? `Reported by ${hit.intel.detail.split(':')[1]}` : `Predicted impersonation of ${hit.intel.detail.split(':')[1]}`, 'intel');
+    { const path = u.raw.replace(/^[a-z]+:\/\/[^/]+/i, '').toLowerCase(); const pb = ENTITIES.find((e) => e.domains.some((d) => { const l = d.split('.')[0]; return l.length >= 4 && path.includes(l); }) || e.brand.some((b) => b.length >= 5 && path.includes(b)));
+      if (pb && path.length > 1) add(20, `اسم «${pb[lang]}» في مسار رابط على نطاق غير رسمي`, `“${pb[lang]}” appears in the path of an unofficial domain`, 'pathbrand'); }
+    if (/(^|[.-])gov-?ae([.-]|$)|(^|[.-])gov\.ae\.|govae/.test(host)) add(40, 'ينتحل لاحقة النطاقات الحكومية (gov.ae) في نطاق غير حكومي', 'Imitates the government suffix (gov.ae) in a non-government domain', 'govlook');
+    { const toks = host.split(/[.-]/); const LURE = ['free', 'winner', 'win', 'won', 'lucky', 'giveaway', 'tickets', 'promo', 'cashback', 'jackpot', 'congrats', 'congratulations'];
+      if (toks.some((t) => LURE.includes(t))) add(15, 'كلمات إغراء في اسم النطاق (مجاني/فائز/جائزة…)', 'Lure words in the domain name (free/winner/prize…)', 'lure'); }
+    if (hit.short.hit && !opts.finalUrl && /(pay|fine|fee|verify|login|update|claim|prize|gift|refund|unlock|kyc|account|مخالف|دفع)/i.test(u.raw.replace(/^[a-z]+:\/\/[^/]+/i, ''))) add(10, 'رابط مختصر يخفي وجهة دفع أو تحقق', 'A shortened link hiding a payment or verification page', 'shortlure');
+    if (FREE_HOST.test(host)) add(15, 'مستضاف على خدمة مجانية يكثر استخدامها في التصيّد', 'Hosted on a free service often abused for phishing', 'freehost');
+    const lblFull = host.replace(/\.[^.]+$/, '');
+    if (DECEPTIVE.test(lblFull)) add(15, 'كلمات خادعة في اسم النطاق (تحقق/دخول/تحديث…)', 'Deceptive words in the domain name (verify/login/update…)', 'deceptive');
+    if ((label.match(/-/g) || []).length >= 2) add(10, 'شرطات متعددة في اسم النطاق', 'Multiple hyphens in the domain name', 'hyphens');
+    if (host.split('.').length >= 5) add(10, 'نطاقات فرعية كثيرة', 'Many nested subdomains', 'deepsub');
+    if (host.length > 40) add(5, 'اسم نطاق طويل جدًا', 'Very long domain name', 'long');
+    if (label.length >= 10 && entropy(label) > 3.6 && /\d/.test(label)) add(10, 'اسم نطاق عشوائي', 'Random-looking domain name', 'random');
+    if (opts.ageDays != null) {
+      if (opts.ageDays < 7) add(35, `نطاق سُجّل قبل ${opts.ageDays} يوم فقط`, `Domain registered only ${opts.ageDays} days ago`, 'new');
+      else if (opts.ageDays < 30) add(25, `نطاق حديث (${opts.ageDays} يومًا)`, `New domain (${opts.ageDays} days)`, 'new');
+      else if (opts.ageDays < 180) add(8, `نطاق عمره أقل من ستة أشهر (${opts.ageDays} يومًا)`, `Domain under six months old (${opts.ageDays} days)`, 'young');
+    }
+    const pg = opts.page || null;
+    if (pg) {
+      const brand = (pg.brands || []).map((id) => ENTITIES.find((e) => e.id === id)).filter(Boolean)[0];
+      if (brand) add(30, `محتوى الصفحة يحمل اسم «${brand[lang]}» على نطاق غير رسمي`, `The page carries the “${brand[lang]}” name on an unofficial domain`, 'pagebrand');
+      if (pg.hasPassword) add(15, 'الصفحة تطلب كلمة مرور', 'The page asks for a password', 'pagepass');
+      if (pg.hasCard) add(20, 'الصفحة تطلب بيانات بطاقة', 'The page asks for card details', 'pagecard');
+    }
+    score = Math.min(100, score);
+    const verdict = score >= 40 ? 'phishing' : score >= 20 ? 'suspicious' : 'safe';
+    return { url: raw, finalUrl: opts.finalUrl || null, host, registrable: reg, official: null, score, verdict, reasons: R };
+  }
+  // العلامات التي تذكرها صفحة (للخادم بعد جلب الصفحة)
+  function brandsInText(text) { const n = norm(String(text || '').slice(0, 20000)); return ENTITIES.filter((e) => e.names.some((nm) => nm.length >= 4 && n.includes(norm(nm)))).map((e) => e.id); }
+
+  return { scanUrl, brandsInText, registrable, setMl, analyzeMessage, analyzeUtterance, extractUrls, linkReport, senderClaim: (f, t) => { const e = senderClaim(f, norm(t || '')); return e ? e : null; }, norm, ENTITIES, setPatterns, predictDomains, getPatterns: () => PATTERNS };
 });

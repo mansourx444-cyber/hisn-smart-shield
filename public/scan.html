@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>«حِصن» — ماسح الروابط والرصد المبكر</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    :root{--bg:#FAF8F4;--ink:#232528;--muted:#6b6b6b;--line:#e7e1d6;--bronze:#92722A;--gold:#B68A35;--dark:#2E2414;--ok:#2D7A47;--bad:#B42318;--warn:#B7791F}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Kufi Arabic","Segoe UI",Tahoma,sans-serif;line-height:1.6}
+    header{display:flex;align-items:center;gap:12px;padding:14px 24px;background:#fff;border-bottom:3px solid var(--gold)}
+    header b{font-size:19px;color:var(--dark)} header small{display:block;color:var(--muted);font-size:12.5px}
+    header .sp{flex:1} header a{color:var(--bronze);font-size:13px;text-decoration:none;margin-inline-start:12px}
+    main{max-width:1240px;margin:0 auto;padding:18px}
+    .tabs{display:flex;gap:6px;margin-bottom:12px}
+    .tabs button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 16px;font:inherit;font-size:14px;cursor:pointer;color:var(--dark)}
+    .tabs button.on{background:var(--dark);color:#fff;border-color:var(--dark)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+    h2{margin:0 0 6px;font-size:17px;color:var(--dark)} .note{color:var(--muted);font-size:13px;margin:0 0 10px}
+    textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:10px;padding:10px;font:13px/1.5 ui-monospace,Consolas,monospace;direction:ltr;text-align:left;background:#fffdf9}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+    .btn{background:var(--bronze);color:#fff;border:0;border-radius:10px;padding:9px 18px;font:inherit;font-size:14px;cursor:pointer}
+    .btn.ghost{background:#fff;color:var(--bronze);border:1px solid var(--bronze)} .btn:disabled{opacity:.5;cursor:wait}
+    label.chk{display:flex;gap:6px;align-items:center;font-size:13.5px}
+    select,input[type=number]{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:13.5px}
+    .sum{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+    .pill{border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700}
+    .p-phishing{background:#fdecea;color:var(--bad)} .p-suspicious{background:#fff4e0;color:var(--warn)} .p-safe{background:#e8f5ec;color:var(--ok)} .p-invalid,.p-error{background:#eee;color:#555}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:start;vertical-align:top}
+    th{background:#f6f1e7;color:var(--dark);font-size:12.5px;position:sticky;top:0}
+    td.u{direction:ltr;text-align:left;word-break:break-all;max-width:330px;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+    .bar{height:7px;border-radius:4px;background:#eee;overflow:hidden;width:80px;margin-top:4px}.bar i{display:block;height:100%}
+    ul.rs{margin:0;padding-inline-start:16px} ul.rs li{margin:1px 0}
+    .mini{font-size:11.5px;color:var(--muted)}
+    .wait{display:none;align-items:center;gap:8px;color:var(--muted);font-size:13px}.wait.on{display:flex}
+    .spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--bronze);border-radius:50%;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <header><img src="icon.svg" alt="" width="38" height="38"><div><b data-t="title"></b><small data-t="sub"></small></div><span class="sp"></span><button id="lng" class="btn ghost" type="button" style="padding:5px 12px">English</button><a href="/demo" data-t="toDemo"></a><a href="/partners" data-t="toPortal"></a></header>
+  <main>
+    <div class="tabs"><button type="button" class="on" data-tab="scan" data-t="tScan"></button><button type="button" data-tab="watch" data-t="tWatch"></button></div>
+
+    <section id="pScan">
+      <div class="card">
+        <h2 data-t="scanH"></h2>
+        <p class="note" data-t="scanNote"></p>
+        <textarea id="urls" spellcheck="false" placeholder="https://example.com/login&#10;adcb-secure-login.top/verify&#10;https://www.adcb.com"></textarea>
+        <div class="row">
+          <button class="btn" id="go" type="button" data-t="scanBtn"></button>
+          <label class="chk"><input type="checkbox" id="deep"> <span data-t="deep"></span></label>
+          <button class="btn ghost" id="ex" type="button" data-t="examples"></button>
+          <label class="btn ghost" style="cursor:pointer"><span data-t="upload"></span><input type="file" id="file" accept=".txt,.csv" hidden></label>
+          <span class="sp" style="flex:1"></span>
+          <button class="btn ghost" id="csv" type="button" disabled data-t="csv"></button>
+          <button class="btn ghost" id="jsn" type="button" disabled data-t="json"></button>
+          <div class="wait" id="wait"><span class="spin"></span><span data-t="scanning"></span></div>
+        </div>
+      </div>
+      <div class="card hidden" id="resCard">
+        <div class="sum" id="sum"></div>
+        <div style="overflow:auto;max-height:70vh"><table><thead><tr><th>#</th><th data-t="cUrl"></th><th data-t="cVerdict"></th><th data-t="cReasons"></th><th data-t="cFinal"></th><th data-t="cEv"></th></tr></thead><tbody id="tb"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="pWatch" class="hidden">
+      <div class="card">
+        <h2 data-t="watchH"></h2>
+        <p class="note" data-t="watchNote"></p>
+        <div class="row">
+          <select id="kw"></select>
+          <label class="chk"><span data-t="days"></span> <input type="number" id="days" value="30" min="1" max="90" style="width:70px"></label>
+          <button class="btn" id="wgo" type="button" data-t="watchBtn"></button>
+          <div class="wait" id="wwait"><span class="spin"></span><span data-t="watching"></span></div>
+        </div>
+      </div>
+      <div class="card hidden" id="wCard">
+        <div class="sum" id="wsum"></div>
+        <div style="overflow:auto;max-height:70vh"><table><thead><tr><th data-t="cDomain"></th><th data-t="cSeen"></th><th data-t="cVerdict"></th><th data-t="cReasons"></th><th></th></tr></thead><tbody id="wtb"></tbody></table></div>
+      </div>
+    </section>
+  </main>
+  <script>
+  (() => {
+    const L = {
+      ar: { title: 'ماسح الروابط والرصد المبكر', sub: 'لجنة التحكيم والشرطة: افحص قائمة روابط دفعة واحدة، وصدّر النتائج والأدلة', toDemo: 'صفحة العرض', toPortal: 'بوابة الجهات', tScan: '🔎 ماسح الروابط', tWatch: '🛰️ الرصد المبكر',
+        scanH: 'افحص قائمة روابط', scanNote: 'رابط في كل سطر (أو ملف txt/csv). الفحص السريع يحلّل الرابط نفسه (13 فحصًا + علامات محلية وعالمية). الفحص العميق يتتبّع التحويلات والروابط المختصرة حتى الوجهة الحقيقية، ويكشف الإخفاء (Cloaking)، ويقرأ محتوى الصفحة، ويجمع بيانات تسجيل النطاق والاستضافة كأدلة.',
+        scanBtn: 'افحص', deep: 'فحص عميق مع الأدلة (حتى 60 رابطًا)', examples: 'أمثلة', upload: 'رفع ملف', csv: 'تصدير CSV', json: 'تصدير JSON', scanning: 'جارٍ الفحص…',
+        cUrl: 'الرابط', cVerdict: 'الحكم والدرجة', cReasons: 'الأسباب', cFinal: 'الوجهة النهائية / عمر النطاق', cEv: 'الأدلة', evBtn: 'تقرير أدلة', phishing: 'احتيالي', suspicious: 'مشبوه', safe: 'سليم', invalid: 'غير صالح', error: 'خطأ',
+        age: (d) => `عمر النطاق: ${d} يوم`, total: (n, ms) => `${n} رابط في ${(ms / 1000).toFixed(1)} ث`,
+        watchH: 'رصد نطاقات جديدة تنتحل علامات محلية', watchNote: 'يبحث في سجلات شفافية الشهادات (Certificate Transparency) عن نطاقات حصلت على شهادة أمان حديثًا وتحمل اسم علامة محلية، قبل أن يصل أي رابط منها لضحية. النطاقات عالية الخطورة تُضاف تلقائيًا لاستخبارات الجهات، فيكشفها «حِصن» في الرسائل فورًا.',
+        days: 'آخر (أيام)', watchBtn: 'ارصد', watching: 'جارٍ البحث في سجلات الشهادات… (قد يأخذ حتى 20 ثانية)', cDomain: 'النطاق', cSeen: 'أول ظهور', addScan: 'افحص بعمق', found: (n, t) => `${n} نطاق جديد غير رسمي (من ${t} في السجلات)`, srcErr: 'تعذّر الوصول لسجلات الشهادات الآن، حاول بعد قليل.' },
+      en: { title: 'Link scanner & early detection', sub: 'For judges and police: scan a list of links at once and export the results and evidence', toDemo: 'Demo page', toPortal: 'Authority portal', tScan: '🔎 Link scanner', tWatch: '🛰️ Early detection',
+        scanH: 'Scan a list of links', scanNote: 'One link per line (or a txt/csv file). Quick scan analyses the link itself (13 checks + local and global brands). Deep scan follows redirects and shorteners to the real destination, detects cloaking, reads the page content, and collects domain registration and hosting data as evidence.',
+        scanBtn: 'Scan', deep: 'Deep scan with evidence (up to 60 links)', examples: 'Examples', upload: 'Upload file', csv: 'Export CSV', json: 'Export JSON', scanning: 'Scanning…',
+        cUrl: 'Link', cVerdict: 'Verdict & score', cReasons: 'Reasons', cFinal: 'Final destination / domain age', cEv: 'Evidence', evBtn: 'Evidence report', phishing: 'Phishing', suspicious: 'Suspicious', safe: 'Safe', invalid: 'Invalid', error: 'Error',
+        age: (d) => `Domain age: ${d} days`, total: (n, ms) => `${n} links in ${(ms / 1000).toFixed(1)} s`,
+        watchH: 'Watch for new domains impersonating local brands', watchNote: 'Searches Certificate Transparency logs for domains that recently got a TLS certificate and carry a local brand name — before any link reaches a victim. High-risk domains are added to the authority intel automatically, so HISN flags them in messages instantly.',
+        days: 'Last (days)', watchBtn: 'Watch', watching: 'Searching certificate logs… (up to 20 seconds)', cDomain: 'Domain', cSeen: 'First seen', addScan: 'Deep scan', found: (n, t) => `${n} new unofficial domains (of ${t} in the logs)`, srcErr: 'Certificate logs are unreachable right now, try again shortly.' },
+    };
+    let lang = 'ar'; try { lang = JSON.parse(localStorage.getItem('ds.lang') || '"ar"') === 'en' ? 'en' : 'ar'; } catch {}
+    const T = () => L[lang]; const $ = (q) => document.querySelector(q);
+    function applyLang() {
+      document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.querySelectorAll('[data-t]').forEach((e) => { const v = T()[e.dataset.t]; if (typeof v === 'string') e.textContent = v; });
+      $('#lng').textContent = lang === 'ar' ? 'English' : 'عربي'; if (last) render(last); if (wlast) wrender(wlast);
+    }
+    $('#lng').onclick = () => { lang = lang === 'ar' ? 'en' : 'ar'; try { localStorage.setItem('ds.lang', JSON.stringify(lang)); } catch {} applyLang(); };
+    document.querySelectorAll('.tabs button').forEach((b) => b.onclick = () => { document.querySelectorAll('.tabs button').forEach((x) => x.classList.toggle('on', x === b)); $('#pScan').classList.toggle('hidden', b.dataset.tab !== 'scan'); $('#pWatch').classList.toggle('hidden', b.dataset.tab !== 'watch'); });
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const color = (v) => v === 'phishing' ? 'var(--bad)' : v === 'suspicious' ? 'var(--warn)' : 'var(--ok)';
+    let last = null, wlast = null;
+    $('#ex').onclick = () => { $('#urls').value = ['https://www.adcb.com/en/personal/', 'https://online.emiratesnbd.com/', 'https://www.tamm.abudhabi/', 'https://smartservices.icp.gov.ae/', 'https://www.paypal.com/signin', 'https://adcb-secure-login.top/verify', 'http://emiratesnbd.com.account-verify.xyz/login', 'https://uaepass-update.com/auth', 'https://fines-adpolice-pay.com/pay', 'https://salik-recharge.online/topup', 'https://paypa1.com/signin', 'http://185.22.10.4/adcb/login.php', 'https://my-site.netlify.app/office365/login', 'https://bit.ly/3xYzAbc', 'https://www.khaleejtimes.com/uae'].join('\n'); };
+    $('#file').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const t = await f.text(); $('#urls').value = t.split(/\r?\n/).map((l) => l.split(',')[0].trim()).filter((l) => l && !/^url$/i.test(l)).join('\n'); };
+    $('#go').onclick = async () => {
+      const urls = $('#urls').value.split(/\r?\n/).map((s) => s.trim()).filter(Boolean); if (!urls.length) return;
+      $('#go').disabled = true; $('#wait').classList.add('on');
+      try { const r = await fetch('/api/scan', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ urls, deep: $('#deep').checked, lang }) }); last = await r.json(); render(last); }
+      catch (e) { alert(e.message); } finally { $('#go').disabled = false; $('#wait').classList.remove('on'); }
+    };
+    function render(d) {
+      if (!d || !d.results) return;
+      $('#resCard').classList.remove('hidden'); $('#csv').disabled = $('#jsn').disabled = false;
+      $('#sum').innerHTML = ['phishing', 'suspicious', 'safe', 'invalid', 'error'].filter((k) => d.summary[k]).map((k) => `<span class="pill p-${k}">${T()[k]}: ${d.summary[k]}</span>`).join('') + `<span class="mini">${T().total(d.count, d.ms)}</span>`;
+      $('#tb').innerHTML = d.results.map((r, i) => `<tr><td>${i + 1}</td><td class="u">${esc(r.url)}</td>
+        <td><span class="pill p-${r.verdict}">${T()[r.verdict] || r.verdict}</span><div class="bar"><i style="width:${r.score || 0}%;background:${color(r.verdict)}"></i></div><span class="mini">${r.score == null ? '' : r.score + '/100'}</span></td>
+        <td><ul class="rs">${(r.reasons || []).map((x) => `<li>${esc(x.text)}</li>`).join('')}</ul></td>
+        <td class="u">${r.finalUrl ? esc(r.finalUrl) : ''}${r.ageDays != null ? `<div class="mini" style="font-family:inherit">${T().age(r.ageDays)}</div>` : ''}</td>
+        <td>${r.verdict === 'phishing' || r.verdict === 'suspicious' ? `<button class="btn ghost" type="button" data-ev="${i}" style="padding:4px 10px;font-size:12px">${T().evBtn}</button>` : ''}</td></tr>`).join('');
+      $('#tb').querySelectorAll('[data-ev]').forEach((b) => b.onclick = () => { try { localStorage.setItem('ds.evidence', JSON.stringify(d.results[+b.dataset.ev])); } catch {} window.open('/evidence', '_blank'); });
+    }
+    const dl = (name, type, text) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+    const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    $('#csv').onclick = () => {
+      const q = (s) => '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"';
+      const rows = [['url', 'verdict', 'is_phishing', 'score', 'final_url', 'domain_age_days', 'reasons', 'scanned_at'].join(',')].concat(last.results.map((r) => [q(r.url), r.verdict, r.verdict === 'phishing' ? 1 : 0, r.score, q(r.finalUrl), r.ageDays == null ? '' : r.ageDays, q((r.reasons || []).map((x) => x.text).join(' | ')), r.scannedAt].join(',')));
+      dl(`hisn-scan-${stamp()}.csv`, 'text/csv;charset=utf-8', '﻿' + rows.join('\n'));
+    };
+    $('#jsn').onclick = () => dl(`hisn-scan-${stamp()}.json`, 'application/json', JSON.stringify(last, null, 2));
+    // الرصد المبكر
+    const KW = [['uaepass', 'UAE PASS'], ['tamm', 'TAMM / تم'], ['adcb', 'ADCB'], ['emiratesnbd', 'Emirates NBD'], ['bankfab', 'FAB'], ['mashreq', 'Mashreq'], ['adib', 'ADIB'], ['rakbank', 'RAKBANK'], ['etisalat', 'e& / اتصالات'], ['adpolice', 'Abu Dhabi Police'], ['dubaipolice', 'Dubai Police'], ['emiratespost', 'Emirates Post'], ['aramex', 'Aramex'], ['salik', 'Salik'], ['dewa', 'DEWA'], ['adnoc', 'ADNOC']];
+    $('#kw').innerHTML = KW.map(([k, n]) => `<option value="${k}">${n}</option>`).join('');
+    $('#wgo').onclick = async () => {
+      $('#wgo').disabled = true; $('#wwait').classList.add('on');
+      try { wlast = await fetch(`/api/watch?kw=${encodeURIComponent($('#kw').value)}&days=${$('#days').value}&lang=${lang}`).then((r) => r.json()); wrender(wlast); }
+      catch (e) { alert(e.message); } finally { $('#wgo').disabled = false; $('#wwait').classList.remove('on'); }
+    };
+    function wrender(d) {
+      $('#wCard').classList.remove('hidden');
+      if (d.error) { $('#wsum').innerHTML = `<span class="pill p-error">${T().srcErr}</span>`; $('#wtb').innerHTML = ''; return; }
+      $('#wsum').innerHTML = `<span class="pill p-phishing">${T().found(d.items.length, d.total)}</span>`;
+      $('#wtb').innerHTML = d.items.map((x, i) => `<tr><td class="u">${esc(x.domain)}</td><td class="mini">${esc(x.firstSeen.slice(0, 10))}</td><td><span class="pill p-${x.verdict}">${T()[x.verdict]}</span> <span class="mini">${x.score}/100</span></td><td><ul class="rs">${x.reasons.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></td><td><button class="btn ghost" type="button" data-w="${i}" style="padding:4px 10px;font-size:12px">${T().addScan}</button></td></tr>`).join('');
+      $('#wtb').querySelectorAll('[data-w]').forEach((b) => b.onclick = () => { $('#urls').value = 'https://' + d.items[+b.dataset.w].domain; $('#deep').checked = true; document.querySelector('[data-tab=scan]').click(); $('#go').click(); });
+    }
+    applyLang();
+  })();
+  </script>
+</body>
+</html>

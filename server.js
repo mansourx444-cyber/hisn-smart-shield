@@ -13,6 +13,7 @@ const path = require('path');
 const crypto = require('crypto');
 const engine = require('./public/engine.js');
 const learn = require('./public/learn.js');
+const scanner = require('./scanner.js');
 const LSEED = require('./learn-seed.js');
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -85,7 +86,7 @@ function loadPatterns() {
 function savePatterns() {
   try { fs.mkdirSync(DATA_DIR, { recursive: true }); fs.writeFileSync(PAT_FILE, JSON.stringify(patterns, null, 2)); } catch (e) { log('[patterns] save failed', e.message); }
 }
-function withPred(p) { return { ...p, predicted: p.official ? engine.predictDomains(p.official) : [] }; }
+function withPred(p) { return { ...p, predicted: [...(p.official ? engine.predictDomains(p.official) : []), ...(p.watch ? p.predicted || [] : [])] }; }
 function applyPatterns() { engine.setPatterns(patterns.map(withPred)); }
 function broadcastAll(type, data) { for (const r of rooms.values()) send(r, 'user', type, data); }
 loadPatterns();
@@ -213,6 +214,16 @@ function closeStt(room) {
 // شبكة عصبية خفيفة تتدرّب من: ممارسات الجهات + قرارات المحرك الواثقة + نتائج المكالمات. تُحفظ الأوزان فقط، لا النصوص.
 const MODEL_FILE = path.join(DATA_DIR, 'model.json');
 const reports = { total: 0, auto: 0, manual: 0, hosts: {} };
+const scanQuota = new Map(), watchCache = new Map();
+// نطاقات رصدها الكشف المبكر ← تُضاف كممارسة «متنبأ بها» حتى تُكشف في الرسائل قبل أن يبلّغ عنها أحد
+function addWatchIntel(domains, kw) {
+  let pt = patterns.find((x) => x.id === 'watch-ct');
+  if (!pt) { pt = { id: 'watch-ct', orgId: 'hisn', org: { ar: 'الرصد المبكر في «حِصن»', en: 'HISN early detection' }, title: { ar: 'نطاقات جديدة تنتحل علامات محلية (رُصدت من سجلات الشهادات)', en: 'New domains impersonating local brands (from certificate logs)' }, channel: 'any', description: '', phrases: [], domains: [], predicted: [], official: '', severity: 'high', createdAt: Date.now(), watch: true }; patterns.push(pt); }
+  const before = pt.predicted.length;
+  for (const d of domains) if (!pt.predicted.includes(d)) pt.predicted.push(d);
+  if (pt.predicted.length > 500) pt.predicted = pt.predicted.slice(-500);
+  if (pt.predicted.length !== before) { applyPatterns(); try { savePatterns(); } catch {} log('[watch]', kw, '+', pt.predicted.length - before, 'domains'); }
+}
 const mlStats = { sources: { seed: 0, authority: 0, rules: 0, outcome: 0 }, holdout: null, startedAt: Date.now() };
 let model = null;
 function holdoutAcc() { let ok = 0; for (const [t, y] of LSEED.HOLDOUT) if ((learn.predict(model, t) >= 0.5) === !!y) ok++; return Math.round(ok / LSEED.HOLDOUT.length * 100); }
@@ -311,7 +322,7 @@ function readBody(req, limit = 1 << 20) {
     req.on('error', reject);
   });
 }
-async function readJson(req) { try { return JSON.parse((await readBody(req, 65536)).toString() || '{}'); } catch { return {}; } }
+async function readJson(req, limit) { try { return JSON.parse((await readBody(req, limit || 65536)).toString() || '{}'); } catch { return {}; } }
 function json(res, code, obj) { res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(obj)); }
 
 function serveStatic(req, res, pathname) {
@@ -322,6 +333,8 @@ function serveStatic(req, res, pathname) {
   else if (p === '/partners') p = '/partners.html';
   else if (p === '/settings') p = '/settings.html';
   else if (p === '/phones') p = '/phones.html';
+  else if (p === '/scan') p = '/scan.html';
+  else if (p === '/evidence') p = '/evidence.html';
   const file = path.normalize(path.join(PUBLIC, p));
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, buf) => {
@@ -488,6 +501,29 @@ async function handler(req, res) {
     return json(res, 200, { ok: true, total: reports.total });
   }
   if (p === '/api/reports' && req.method === 'GET') return json(res, 200, { total: reports.total, auto: reports.auto, manual: reports.manual, topHosts: Object.entries(reports.hosts).sort((a, b) => b[1] - a[1]).slice(0, 10) });
+  // ماسح الروابط: قائمة روابط ← درجة خطورة وحكم وأسباب لكل رابط (سريع)، أو فحص عميق بالأدلة
+  if (p === '/api/scan' && req.method === 'POST') {
+    const b = await readJson(req, 2000000);
+    const urls = Array.isArray(b.urls) ? b.urls : String(b.text || '').split(/[\s,;]+/);
+    const deep = !!b.deep, lang = b.lang === 'en' ? 'en' : 'ar';
+    const ip = req.socket.remoteAddress || '';
+    if (deep) { const q = scanQuota.get(ip) || { n: 0, t: Date.now() }; if (Date.now() - q.t > 600000) { q.n = 0; q.t = Date.now(); } q.n += Math.min(60, urls.length); scanQuota.set(ip, q); if (q.n > 240 && !isLocalAdmin(req)) return json(res, 429, { error: 'rate' }); }
+    const t0 = Date.now(); const results = await scanner.scanMany(urls, { deep, lang });
+    const sum = results.reduce((a, r) => { a[r.verdict] = (a[r.verdict] || 0) + 1; return a; }, {});
+    log('[scan]', deep ? 'deep' : 'quick', results.length, 'urls', Date.now() - t0 + 'ms');
+    return json(res, 200, { deep, count: results.length, summary: sum, ms: Date.now() - t0, results });
+  }
+  // الرصد المبكر: نطاقات جديدة تحمل اسم علامة محلية (من سجلات شفافية الشهادات)، وتُضاف لاستخبارات الجهات
+  if (p === '/api/watch' && req.method === 'GET') {
+    const kw = url.searchParams.get('kw') || 'uaepass', days = Math.min(90, Number(url.searchParams.get('days')) || 30);
+    const key = kw + ':' + days; const c = watchCache.get(key);
+    const fresh = c && Date.now() - c.t < 1800000;
+    const out = fresh ? c.v : await scanner.watchBrand(kw, days, url.searchParams.get('lang') === 'en' ? 'en' : 'ar');
+    if (!fresh && !out.error) watchCache.set(key, { t: Date.now(), v: out });
+    const flagged = (out.items || []).filter((x) => x.score >= 40).map((x) => x.domain);
+    if (flagged.length) addWatchIntel(flagged, kw);
+    return json(res, 200, out);
+  }
   if (p === '/api/model' && req.method === 'GET') {
     const meta = { version: model.version, seen: model.seen, pos: model.pos, neg: model.neg, sources: mlStats.sources, holdout: mlStats.holdout, trainedAt: model.trainedAt, arch: 'char n-grams (3–5) + words → hashing 4096 → dense 16 (ReLU) → sigmoid' };
     if (url.searchParams.get('meta') === '1' || Number(url.searchParams.get('v')) === model.version) return json(res, 200, { ...meta, same: Number(url.searchParams.get('v')) === model.version });

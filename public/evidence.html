@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>«حِصن» — تقرير أدلة رابط احتيالي</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    :root{--ink:#232528;--muted:#666;--line:#e3dccd;--bronze:#92722A;--gold:#B68A35;--dark:#2E2414;--bad:#B42318;--ok:#2D7A47}
+    *{box-sizing:border-box} body{margin:0;background:#efe9dd;color:var(--ink);font-family:"Noto Kufi Arabic","Segoe UI",Tahoma,sans-serif;line-height:1.65}
+    .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:12px;background:var(--dark)}
+    .bar button,.bar a{background:#fff;color:var(--dark);border:0;border-radius:8px;padding:7px 14px;font:inherit;font-size:13.5px;cursor:pointer;text-decoration:none}
+    .sheet{max-width:900px;margin:18px auto;background:#fff;padding:34px 40px;border-radius:6px;box-shadow:0 4px 20px #0002}
+    .hd{display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--gold);padding-bottom:12px;margin-bottom:14px}
+    .hd h1{margin:0;font-size:21px;color:var(--dark)} .hd small{color:var(--muted);font-size:12.5px;display:block}
+    .case{margin-inline-start:auto;text-align:end;font-size:12.5px;color:var(--muted)} .case b{display:block;color:var(--dark);font-size:14px;direction:ltr}
+    h2{font-size:15px;color:var(--bronze);margin:18px 0 6px;border-bottom:1px solid var(--line);padding-bottom:4px}
+    table{width:100%;border-collapse:collapse;font-size:13px} th,td{border:1px solid var(--line);padding:6px 8px;text-align:start;vertical-align:top} th{background:#f7f2e8;width:30%;font-weight:600}
+    .ltr{direction:ltr;text-align:left;font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all}
+    .verdict{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;background:#fdecea;border:1px solid #f3c4bf}
+    .verdict.safe{background:#e8f5ec;border-color:#bfe1ca} .verdict b{font-size:20px;color:var(--bad)} .verdict.safe b{color:var(--ok)}
+    .score{font-size:30px;font-weight:800;color:var(--bad)} .verdict.safe .score{color:var(--ok)}
+    ul{margin:4px 0;padding-inline-start:20px} .shot{max-width:100%;border:1px solid var(--line);border-radius:6px;margin-top:6px}
+    .letter{white-space:pre-wrap;background:#fbf8f2;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:13px}
+    .letter.en{direction:ltr;text-align:left;font-family:"Segoe UI",Arial,sans-serif}
+    .muted{color:var(--muted);font-size:12px} .empty{padding:40px;text-align:center;color:var(--muted)}
+    @media print{body{background:#fff}.bar{display:none}.sheet{box-shadow:none;margin:0;max-width:none;padding:0}h2{break-after:avoid}table,.letter{break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <div class="bar"><button type="button" id="print">🖨️ طباعة / حفظ PDF</button><button type="button" id="json">⬇️ تنزيل الأدلة (JSON)</button><button type="button" id="copy">📋 نسخ طلب الإزالة</button><a id="mail" href="#">✉️ إرسال طلب الإزالة</a><button type="button" id="deep" hidden>🔎 جمع الأدلة الآن (فحص عميق)</button></div>
+  <div class="sheet" id="sheet"><div class="empty">لا يوجد رابط محدد. افتح هذا التقرير من <a href="/scan">ماسح الروابط</a>.</div></div>
+  <script>
+  (async () => {
+    const $ = (q) => document.querySelector(q);
+    const esc = (s) => String(s == null ? '—' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    let r = null; try { r = JSON.parse(localStorage.getItem('ds.evidence') || 'null'); } catch {}
+    const q = new URLSearchParams(location.search).get('url');
+    if (q && (!r || r.url !== q)) r = { url: q };
+    if (!r) return;
+    async function deepScan() { $('#deep').disabled = true; $('#deep').textContent = '⏳ جارٍ جمع الأدلة…'; const d = await fetch('/api/scan', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ urls: [r.url], deep: true, lang: 'ar' }) }).then((x) => x.json()); r = d.results[0]; try { localStorage.setItem('ds.evidence', JSON.stringify(r)); } catch {} render(); }
+    $('#deep').onclick = deepScan;
+    if (!r.evidence) { $('#deep').hidden = false; if (!r.reasons) return deepScan(); }
+    await render();
+    async function render() {
+      const e = r.evidence || {}; const w = e.whois || {}; const h = e.hosting || {}; const pg = e.page || {};
+      const at = r.scannedAt || new Date().toISOString();
+      const host = r.host || (() => { try { return new URL(/^[a-z]+:/i.test(r.url) ? r.url : 'http://' + r.url).hostname; } catch { return r.url; } })();
+      const canon = JSON.stringify({ url: r.url, finalUrl: r.finalUrl, verdict: r.verdict, score: r.score, reasons: (r.reasons || []).map((x) => x.text), evidence: e, scannedAt: at });
+      const hashBuf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canon));
+      const hash = [...new Uint8Array(hashBuf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+      const caseNo = 'HISN-' + at.slice(0, 10).replace(/-/g, '') + '-' + hash.slice(0, 6).toUpperCase();
+      const local = new Date(at).toLocaleString('ar-AE', { timeZone: 'Asia/Dubai', dateStyle: 'full', timeStyle: 'medium' });
+      const abuse = [w.abuse, h.abuse].filter(Boolean);
+      const reasonsAr = (r.reasons || []).map((x) => '- ' + x.text).join('\n');
+      const letterAr = `إلى: فريق البلاغات لدى ${w.registrar || 'مسجّل النطاق'}${h.org ? ' / ' + h.org : ''}\nالموضوع: طلب إيقاف عاجل لنطاق احتيالي — ${host}\nرقم البلاغ: ${caseNo}\n\nنفيدكم بأن الرابط التالي يُستخدم في الاحتيال الإلكتروني على مستخدمين في دولة الإمارات العربية المتحدة:\n${r.url}${r.finalUrl ? '\n(الوجهة النهائية: ' + r.finalUrl + ')' : ''}\n\nتاريخ ووقت الرصد: ${at} (UTC)\nدرجة الخطورة: ${r.score}/100\nالأسباب:\n${reasonsAr}\n${e.ips && e.ips.length ? '\nعناوين IP: ' + e.ips.join('، ') : ''}${pg.sha256 ? '\nبصمة محتوى الصفحة (SHA-256): ' + pg.sha256 : ''}\nبصمة هذا التقرير (SHA-256): ${hash}\n\nنرجو إيقاف النطاق وحجب المحتوى، والاحتفاظ بسجلات التسجيل والاستضافة لصالح جهات إنفاذ القانون.\n\nمع الشكر،\nفريق «حِصن» بالتنسيق مع شرطة أبوظبي`;
+      const letterEn = `To: Abuse team at ${w.registrar || 'the domain registrar'}${h.org ? ' / ' + h.org : ''}\nSubject: Urgent takedown request — fraudulent domain ${host}\nReference: ${caseNo}\n\nThe following link is being used to defraud users in the United Arab Emirates:\n${r.url}${r.finalUrl ? '\n(final destination: ' + r.finalUrl + ')' : ''}\n\nDetected at: ${at} (UTC)\nRisk score: ${r.score}/100\n${e.ips && e.ips.length ? 'IP addresses: ' + e.ips.join(', ') + '\n' : ''}${pg.sha256 ? 'Page content hash (SHA-256): ' + pg.sha256 + '\n' : ''}Report hash (SHA-256): ${hash}\n\nPlease suspend the domain, remove the content, and preserve registration and hosting records for law enforcement.\n\nRegards,\nHISN team, in coordination with Abu Dhabi Police`;
+      const v = r.verdict === 'phishing' ? 'رابط احتيالي' : r.verdict === 'suspicious' ? 'رابط مشبوه' : r.verdict === 'safe' ? 'رابط سليم' : r.verdict;
+      $('#sheet').innerHTML = `
+        <div class="hd"><img src="icon.svg" width="46" height="46" alt=""><div><h1>تقرير أدلة — رابط احتيالي مشتبه</h1><small>صادر عن نظام «حِصن» — جاهز للاستخدام كدليل ولطلبات الإزالة</small></div><div class="case">رقم البلاغ<b>${caseNo}</b>${esc(local)}</div></div>
+        <div class="verdict ${r.verdict === 'safe' ? 'safe' : ''}"><span class="score">${r.score ?? '—'}</span><div><b>${esc(v)}</b><div class="muted">درجة الخطورة من 100 — ${r.deep ? 'فحص عميق (تتبع ومحتوى وتسجيل واستضافة)' : 'فحص سريع (تحليل الرابط فقط)'}</div></div></div>
+        <h2>1. الرابط</h2>
+        <table><tr><th>الرابط كما ورد</th><td class="ltr">${esc(r.url)}</td></tr><tr><th>الوجهة النهائية</th><td class="ltr">${esc(r.finalUrl || e.finalUrl || r.url)}</td></tr><tr><th>النطاق</th><td class="ltr">${esc(r.registrable || host)}</td></tr><tr><th>وقت الرصد (UTC)</th><td class="ltr">${esc(at)}</td></tr><tr><th>الإخفاء (Cloaking)</th><td>${e.cloaked ? '⚠️ نعم — يعرض محتوى مختلفًا لأدوات الفحص' : (r.deep ? 'لا' : '—')}</td></tr></table>
+        <h2>2. أسباب التصنيف</h2><ul>${(r.reasons || []).map((x) => `<li>${esc(x.text)}${x.pts ? ` <span class="muted">(+${x.pts})</span>` : ''}</li>`).join('')}</ul>
+        ${(e.chain || []).length ? `<h2>3. سلسلة إعادة التوجيه</h2><table><tr><th style="width:6%">#</th><th>العنوان</th><th style="width:10%">الحالة</th><th style="width:22%">IP</th></tr>${e.chain.map((c, i) => `<tr><td>${i + 1}</td><td class="ltr">${esc(c.url)}</td><td class="ltr">${c.status}</td><td class="ltr">${esc((c.ips || []).join(', '))}</td></tr>`).join('')}</table>` : ''}
+        <h2>4. تسجيل النطاق (RDAP / WHOIS)</h2>
+        <table><tr><th>المسجّل</th><td>${esc(w.registrar)}</td></tr><tr><th>تاريخ التسجيل</th><td class="ltr">${esc(w.created)}${r.ageDays != null ? ` <span class="muted">(${r.ageDays} يوم)</span>` : ''}</td></tr><tr><th>تاريخ الانتهاء</th><td class="ltr">${esc(w.expires)}</td></tr><tr><th>خوادم الأسماء</th><td class="ltr">${esc((w.nameservers || []).join(', ') || null)}</td></tr><tr><th>بريد البلاغات لدى المسجّل</th><td class="ltr">${esc(w.abuse)}</td></tr></table>
+        <h2>5. الاستضافة</h2>
+        <table><tr><th>عناوين IP</th><td class="ltr">${esc((e.ips || []).join(', ') || null)}</td></tr><tr><th>مزوّد الاستضافة</th><td>${esc(h.org)}</td></tr><tr><th>الدولة</th><td class="ltr">${esc(h.country)}</td></tr><tr><th>بريد البلاغات لدى المستضيف</th><td class="ltr">${esc(h.abuse)}</td></tr></table>
+        <h2>6. محتوى الصفحة</h2>
+        <table><tr><th>عنوان الصفحة</th><td>${esc(pg.title)}</td></tr><tr><th>حالة الاستجابة</th><td class="ltr">${esc(pg.status)}</td></tr><tr><th>تطلب كلمة مرور / بيانات بطاقة</th><td>${pg.hasPassword ? 'كلمة مرور ✓' : '—'} ${pg.hasCard ? ' · بيانات بطاقة ✓' : ''}</td></tr><tr><th>علامات مذكورة في الصفحة</th><td>${esc((pg.brands || []).join(', ') || null)}</td></tr><tr><th>بصمة المحتوى (SHA-256)</th><td class="ltr">${esc(pg.sha256)}</td></tr></table>
+        ${e.screenshot ? `<h2>7. لقطة الشاشة</h2><img class="shot" src="${esc(e.screenshot)}" alt="لقطة شاشة للصفحة" referrerpolicy="no-referrer"><div class="muted">تُلتقط عبر خدمة خارجية (thum.io) وقت فتح التقرير.</div>` : ''}
+        <h2>8. طلب الإزالة (عربي)</h2><div class="letter" id="lAr">${esc(letterAr)}</div>
+        <h2>9. Takedown request (English)</h2><div class="letter en" id="lEn">${esc(letterEn)}</div>
+        <h2>10. سلامة التقرير</h2><table><tr><th>بصمة التقرير (SHA-256)</th><td class="ltr">${hash}</td></tr><tr><th>الأداة</th><td>«حِصن» — الدرع الذكي ضد الاحتيال (https://github.com/mansourx444-cyber/hisn-smart-shield)</td></tr></table>
+        <p class="muted">أي تعديل على بيانات التقرير يغيّر البصمة. ملف JSON المرفق يحوي البيانات الخام نفسها.</p>`;
+      $('#print').onclick = () => window.print();
+      $('#json').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ caseNo, reportSha256: hash, ...JSON.parse(canon) }, null, 2)], { type: 'application/json' })); a.download = caseNo + '.json'; a.click(); };
+      $('#copy').onclick = async () => { try { await navigator.clipboard.writeText(letterAr + '\n\n' + letterEn); $('#copy').textContent = '✓ تم النسخ'; } catch {} };
+      $('#mail').href = 'mailto:' + encodeURIComponent(abuse.join(',')) + '?subject=' + encodeURIComponent('Takedown request — ' + host + ' — ' + caseNo) + '&body=' + encodeURIComponent(letterEn + '\n\n---\n\n' + letterAr);
+      document.title = caseNo + ' — «حِصن»';
+    }
+  })();
+  </script>
+</body>
+</html>
