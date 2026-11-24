@@ -95,13 +95,30 @@ loadPatterns();
 
 /* ------------------------------ تسجيلات المكالمات (أصوات يرفعها المستخدم) ------------------------------ */
 const CLIP_DIR = path.join(DATA_DIR, 'clips');
-// التسجيلات الصوتية المرفقة مع المشروع (voices/) تُنسخ عند أول تشغيل — مهم للاستضافة على الإنترنت
+// التسجيلات الصوتية المرفقة مع المشروع (voices/) تُنسخ عند التشغيل — مهم للاستضافة على الإنترنت
+// إذا تحدّث ملف في voices/ يحلّ محل النسخة القديمة، إلا إذا رفع المستخدم تسجيلًا بديلًا من صفحة الإعدادات
 try {
   const SEED = path.join(__dirname, 'voices');
   if (fs.existsSync(SEED)) {
     fs.mkdirSync(CLIP_DIR, { recursive: true });
-    const have = new Set(fs.readdirSync(CLIP_DIR).map((f) => path.basename(f, path.extname(f))));
-    for (const f of fs.readdirSync(SEED)) if (!have.has(path.basename(f, path.extname(f)))) fs.copyFileSync(path.join(SEED, f), path.join(CLIP_DIR, f));
+    const MARK = path.join(CLIP_DIR, '.seed.json');
+    let mark = {}; try { mark = JSON.parse(fs.readFileSync(MARK, 'utf8')); } catch {}
+    const sha = (f) => crypto.createHash('sha1').update(fs.readFileSync(f)).digest('hex');
+    const existing = {}; for (const f of fs.readdirSync(CLIP_DIR)) if (!f.startsWith('.')) existing[path.basename(f, path.extname(f))] = f;
+    let n = 0;
+    for (const f of fs.readdirSync(SEED)) {
+      const base = path.basename(f, path.extname(f)), src = path.join(SEED, f), h = sha(src);
+      const cur = existing[base];
+      if (cur) {
+        const curH = sha(path.join(CLIP_DIR, cur));
+        if (curH === h) { mark[base] = h; continue; }
+        if (mark[base] && curH !== mark[base]) continue; // تسجيل رفعه المستخدم بنفسه
+        if (cur !== f) fs.unlinkSync(path.join(CLIP_DIR, cur));
+      }
+      fs.copyFileSync(src, path.join(CLIP_DIR, f)); mark[base] = h; n++;
+    }
+    fs.writeFileSync(MARK, JSON.stringify(mark));
+    if (n) console.log('[voices] updated', n);
   }
 } catch (e) { console.error('[voices]', e.message); }
 const CLIP_KEY = /^(bank|police|approve|remote|boss|refuse):(dialog|cont|comply|line):\d{1,2}$/;
