@@ -173,14 +173,16 @@ function lookalikes(kw) {
   const aff = ['login', 'verify', 'secure', 'update', 'online', 'pay', 'account', 'support', 'help', 'card', 'uae', 'app', 'portal', 'service', 'fines', 'reward', 'gift', 'refund'];
   const tlds = ['com', 'net', 'top', 'xyz', 'online', 'info'];
   for (const a of aff) for (const t of tlds) { out.add(`${kw}-${a}.${t}`); out.add(`${kw}${a}.${t}`); }
+  // الأسماء القصيرة (أقل من 5 أحرف) تتصادم مع مواقع حقيقية لا علاقة لها، فلا نحذف منها حروفًا ولا نبدّلها
   const typos = new Set();
-  for (let i = 0; i < kw.length; i++) typos.add(kw.slice(0, i) + kw.slice(i + 1)); // حذف حرف
-  for (let i = 0; i < kw.length - 1; i++) typos.add(kw.slice(0, i) + kw[i + 1] + kw[i] + kw.slice(i + 2)); // تبديل حرفين
+  const long = kw.length >= 5;
+  if (long) for (let i = 0; i < kw.length; i++) typos.add(kw.slice(0, i) + kw.slice(i + 1)); // حذف حرف
+  if (long) for (let i = 0; i < kw.length - 1; i++) typos.add(kw.slice(0, i) + kw[i + 1] + kw[i] + kw.slice(i + 2)); // تبديل حرفين
   for (let i = 0; i < kw.length; i++) typos.add(kw.slice(0, i + 1) + kw[i] + kw.slice(i + 1)); // تكرار حرف
   const glyph = { o: '0', l: '1', i: '1', e: '3', a: '4', s: '5' };
   for (let i = 0; i < kw.length; i++) if (glyph[kw[i]]) typos.add(kw.slice(0, i) + glyph[kw[i]] + kw.slice(i + 1));
   typos.delete(kw);
-  for (const t of typos) if (t.length >= 3) for (const d of ['com', 'net', 'ae', 'top', 'xyz']) out.add(`${t}.${d}`);
+  for (const t of typos) if (t.length >= 4) for (const d of ['com', 'net', 'ae', 'top', 'xyz']) out.add(`${t}.${d}`);
   for (const t of tlds) out.add(`${kw}.${t}`);
   return [...out];
 }
@@ -191,7 +193,8 @@ async function dnsWatch(kw) {
   const cands = lookalikes(kw); const hits = []; let i = 0;
   await Promise.all(Array.from({ length: 30 }, async () => { while (i < cands.length) { const d = cands[i++]; const ips = await resolves(d, 3000); if (ips.length && !ips.some(privateIp)) hits.push({ domain: d, ips }); } }));
   // تاريخ التسجيل لأول 12 نطاق فقط (لتسريع الرد)
-  await Promise.all(hits.slice(0, 12).map(async (h) => { const w = await rdapDomain(h.domain); if (w) { h.created = w.created; h.registrar = w.registrar; } }));
+  const top = hits.filter((h) => h.domain.includes(kw)).concat(hits.filter((h) => !h.domain.includes(kw))).slice(0, 12); let k = 0;
+  await Promise.all(Array.from({ length: 4 }, async () => { while (k < top.length) { const h = top[k++]; const w = await rdapDomain(h.domain); if (w) { h.created = w.created; h.registrar = w.registrar; } } }));
   return { checked: cands.length, hits };
 }
 async function ctWatch(kw, days) {
@@ -225,7 +228,11 @@ async function watchBrand(keyword, days, lang) {
   const items = [...all.values()].map((x) => {
     const age = daysSince(x.registered || x.firstSeen);
     const r = engine.scanUrl('https://' + x.domain, { lang, ageDays: age });
-    return { ...x, ageDays: age, score: r.score, verdict: r.verdict, official: r.official, reasons: r.reasons.map((y) => y.text) };
+    const hasBrand = x.domain.includes(kw);
+    let score = r.score, verdict = r.verdict;
+    // خطأ إملائي بلا اسم العلامة وعمره غير معروف أو قديم: قد يكون موقعًا حقيقيًا لا علاقة له — يحتاج تحقق فقط
+    if (!hasBrand && !(age != null && age < 365) && verdict === 'phishing') { score = Math.min(score, 35); verdict = 'suspicious'; }
+    return { ...x, ageDays: age, hasBrand, score, verdict, official: r.official, reasons: r.reasons.map((y) => y.text) };
   }).filter((x) => !x.official && x.verdict !== 'safe')
     .sort((a, b) => b.score - a.score || String(b.firstSeen || '').localeCompare(String(a.firstSeen || ''))).slice(0, 60);
   return { keyword: kw, days: days || 30, checkedAt: new Date().toISOString(), sources: { ct: ct ? 'ok' : 'unavailable', dns: dw.checked }, total: all.size, items };

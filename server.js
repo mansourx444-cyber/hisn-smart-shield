@@ -520,9 +520,10 @@ async function handler(req, res) {
     const fresh = c && Date.now() - c.t < 1800000;
     const out = fresh ? c.v : await scanner.watchBrand(kw, days, url.searchParams.get('lang') === 'en' ? 'en' : 'ar');
     if (!fresh && !out.error) watchCache.set(key, { t: Date.now(), v: out });
-    const flagged = (out.items || []).filter((x) => x.score >= 40).map((x) => x.domain);
+    // تُضاف للاستخبارات فقط النطاقات التي تحمل اسم العلامة، أو الشبيهة المسجّلة خلال آخر سنة (لتجنّب حظر مواقع حقيقية)
+    const flagged = (out.items || []).filter((x) => x.score >= 40 && (x.hasBrand || (x.ageDays != null && x.ageDays < 365))).map((x) => x.domain);
     if (flagged.length) addWatchIntel(flagged, kw);
-    return json(res, 200, out);
+    return json(res, 200, url.searchParams.get('debug') ? { ...out, rdapLog: scanner.rdapLog.slice(-15) } : out);
   }
   if (p === '/api/model' && req.method === 'GET') {
     const meta = { version: model.version, seen: model.seen, pos: model.pos, neg: model.neg, sources: mlStats.sources, holdout: mlStats.holdout, trainedAt: model.trainedAt, arch: 'char n-grams (3–5) + words → hashing 4096 → dense 16 (ReLU) → sigmoid' };
